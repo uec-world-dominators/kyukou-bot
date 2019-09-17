@@ -1,4 +1,4 @@
-mongo_url: 'mongodb://localhost: 8070/'
+mongo_url: 'mongodb://localhost:8070/'
 
 line:
   __ENV__access_token: KYUKOU_LINE_ACCESS_TOKEN

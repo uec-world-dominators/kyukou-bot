@@ -9,15 +9,7 @@ class Db:
     @classmethod
     def init(cls, url):
         cls.client = MongoClient(url)
+        print(f'connected to mongo db with url {settings["mongo_url"]} .')
         cls.db = cls.client.kyukou
         cls.users = cls.db.users
         cls.lectures = cls.db.lectures
-
-
-Db.init(settings.url)
-Db.lectures.insert_one({"id": "",
-                        "periods": [1, 2],
-                        "dayofweek": 2,
-                        "date": None,
-                        "teachers": ["佐藤"]
-                        })

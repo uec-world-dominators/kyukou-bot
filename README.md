@@ -6,7 +6,8 @@ pip install pymongo bs4 requests
 ```
 ## 起動
 ```
-python run.py
+mongod --dbpath ~/repos/wd-kyukou-bot/db --port 8070
+python3 run.py
 ```
 
 ## リポジトリ構成
