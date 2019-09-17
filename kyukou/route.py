@@ -1,13 +1,14 @@
+import json as pkg_json
 
 
 class Route():
-    def __init__(self, info):
-        self.method = info['method']
-        self.path = info['path']
-        self.func = info['func']
+    def __init__(self, func, args):
+        self.method = args['method'].lower()
+        self.path = args['path'].lower()
+        self.func = func
 
-    def match(self, info):
-        return self.method == info['method'] and info['path'].startswith(self.path)
+    def match(self, args):
+        return self.method == args['method'].lower() and args['path'].lower().startswith(self.path)
 
     def get_func(self):
         return self.func
@@ -16,31 +17,34 @@ class Route():
 class Router():
     routes = []
 
-    def __init__(self):
-        print('hoge')
+    @classmethod
+    def append_route(cls, func, args):
+        cls.routes.append(Route(func, args))
 
     @classmethod
-    def append_route(cls, info):
-        cls.routes.append(Route(info))
-
-    @classmethod
-    def search(cls, info):
+    def search(cls, args):
         for route in cls.routes:
-            if route.match(info):
+            if route.match(args):
                 return route.get_func()
 
 
-def route(method, path):
+def route(method, path, **kwargs):
     def wrapper(func):
         def _wrapper():
             return func('environ')
-        Router.append_route({
-            "method": method,
-            "path": path,
-            "func": func
-        })
+        kwargs.update(method=method, path=path)
+        Router.append_route(func, kwargs)
         return _wrapper
     return wrapper
 
+
 def text(text):
-    return [text.encode('utf-8')]
+    status = '200 OK'
+    headers = [('Content-type', 'text/plain; charset=utf-8')]
+    return status, headers, [text.encode('utf-8')]
+
+
+def json(obj):
+    status = '200 OK'
+    headers = [('Content-type', 'text/plain; charset=utf-8')]
+    return status, headers, [pkg_json.dumps(obj).encode('utf-8')]

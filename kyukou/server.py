@@ -5,7 +5,7 @@ import json
 from .route import Router
 
 
-def simple_app(environ, start_response):
+def app(environ, start_response):
     status, headers, ret = Router.search({
         "method": environ['REQUEST_METHOD'],
         "path": environ['PATH_INFO']
@@ -15,6 +15,6 @@ def simple_app(environ, start_response):
 
 
 def run_server(port=8000):
-    with make_server('', port, simple_app) as httpd:
+    with make_server('', port, app) as httpd:
         print(f'listen on port {port}.')
         httpd.serve_forever()

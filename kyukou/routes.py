@@ -1,15 +1,17 @@
-from .route import route, text
+from .route import route, text, json
 
+# 上から順に優先
 
 @route('get', '/hoge')
 def hoge(environ):
-    status = '200 OK'
-    headers = [('Content-type', 'text/plain; charset=utf-8')]
-    return status, headers, text('hello hoge')
+    return text('hello hoge')
 
 
 @route('get', '/hige')
-def hoge(environ):
-    status = '200 OK'
-    headers = [('Content-type', 'text/plain; charset=utf-8')]
-    return status, headers, text('hello hige')
+def hige(environ):
+    return json({"hoge": 47563})
+
+
+@route('get', '/')
+def fallback(environ):
+    return text('This is fallback')
