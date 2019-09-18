@@ -1,15 +1,23 @@
-from .route import route, text
+from .route import *
+from pprint import pprint
+from . import line_api
+import re
+
+# 上から順に優先
+
+# LINE botからイベントがあったときに来る
+@route('post', '/api/line/webhook')
+def line_webhook(environ):
+    body = get_body(environ)
+    o = body_to_json(body)
+    if line_api.validate(environ, body):
+        print(body_to_utf8(body))
+        line_api.parse(o)
+        return status(200)
+    else:
+        return status(403)
 
 
-@route('get', '/hoge')
-def hoge(environ):
-    status = '200 OK'
-    headers = [('Content-type', 'text/plain; charset=utf-8')]
-    return status, headers, text('hello hoge')
-
-
-@route('get', '/hige')
-def hoge(environ):
-    status = '200 OK'
-    headers = [('Content-type', 'text/plain; charset=utf-8')]
-    return status, headers, text('hello hige')
+@route(re.compile('.*'), '/')
+def fallback(environ):
+    return text('This is fallback')

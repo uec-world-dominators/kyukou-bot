@@ -2,22 +2,24 @@ from pprint import pprint
 from pymongo import MongoClient
 import datetime
 
-from .settings import settings
-
 
 class Db:
     @classmethod
     def init(cls, url):
-        cls.client = MongoClient(url)
-        cls.db = cls.client.kyukou
-        cls.users = cls.db.users
-        cls.lectures = cls.db.lectures
+        cls._client = MongoClient(url)
+        print(f'Connected to DB: "{url}"')
+        cls._db = cls._client.kyukou
+        cls._users = cls._db.users
+        cls._lectures = cls._db.lectures
 
+        print(f'----------------------------')
+        print(f'Number of Users: {cls._users.count()}')
+        print(f'----------------------------')
 
-Db.init(settings.url)
-Db.lectures.insert_one({"id": "",
-                        "periods": [1, 2],
-                        "dayofweek": 2,
-                        "date": None,
-                        "teachers": ["佐藤"]
-                        })
+    @classmethod
+    def get_users_db(cls):
+        return cls._users
+
+    @classmethod
+    def get_lectures_db(cls):
+        return cls._lectures
