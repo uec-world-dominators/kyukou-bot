@@ -1,21 +1,28 @@
 import json as pkg_json
 from typing import Pattern
+from . import util
 
 
 class Route():
     def __init__(self, func, args):
-        self.method = args['method'] if isinstance(args['method'], Pattern) else args['method'].lower()
-        self.path = args['path'] if isinstance(args['path'], Pattern) else args['path'].lower()
+        self.method = self._normalize_arg(args['method'])
+        self.path = self._normalize_arg(args['path'])
         self.func = func
 
     def match(self, args):
         r = True
-        r &= bool(self.method.match(args['method'].lower())) if isinstance(self.method, Pattern) else args['method'].lower() == self.method
-        r &= bool(self.method.match(args['path'].lower())) if isinstance(self.path, Pattern) else args['path'].lower().startswith(self.path)
+        r &= self._match_regex_or('method', args, lambda key: args[key].lower() == self.__dict__[key])
+        r &= self._match_regex_or('path', args, lambda key: args[key].lower().startswith(self.__dict__[key]))
         return r
 
     def get_func(self):
         return self.func
+
+    def _normalize_arg(self, arg):
+        return arg if isinstance(arg, Pattern) else arg.lower()
+
+    def _match_regex_or(self, key, args, fn):
+        return bool(self.__dict__[key].match(args[key].lower())) if isinstance(self.__dict__[key], Pattern) else fn(key)
 
 
 class Router():
@@ -42,20 +49,18 @@ def route(method, path, **kwargs):
     return wrapper
 
 
-def text(text):
-    status = '200 OK'
-    headers = [('Content-type', 'text/plain; charset=utf-8')]
-    return status, headers, [text.encode('utf-8')]
+def text(text, headers={}, status=200):
+    default_headers = [('Content-type', 'text/plain; charset=utf-8')]
+    return str(status).ljust(4), util.dict_to_tuples(headers) if len(headers) else default_headers, [text.encode('utf-8')]
 
 
-def status(n):
-    return str(n).ljust(4), [], []
+def status(n, headers={}):
+    return str(n).ljust(4), util.dict_to_tuples(headers), []
 
 
-def json(obj):
-    status = '200 OK'
-    headers = [('Content-type', 'application/json; charset=utf-8')]
-    return status, headers, [pkg_json.dumps(obj).encode('utf-8')]
+def json(obj, headers={}, status=200):
+    default_headers = [('Content-type', 'application/json; charset=utf-8')]
+    return str(status).ljust(4), util.dict_to_tuples(headers) if len(headers) else default_headers, [pkg_json.dumps(obj).encode('utf-8')]
 
 
 def get_body(environ):
@@ -78,3 +83,4 @@ def body_to_utf8(body):
 
 def body_to_json(body):
     return pkg_json.loads(body_to_utf8(body))
+
