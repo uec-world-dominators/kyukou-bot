@@ -1,5 +1,8 @@
 from . import line_api
+import json
 
+import sys,codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 def follow(user_id):
     print(f'followed by {user_id}')

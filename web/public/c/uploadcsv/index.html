@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>君の休講情報</title>
+</head>
+
+<body>
+    <input type="file">
+    <button onclick="upload();">アップロード</button>
+    <script>
+        function upload() {
+            file = document.querySelector('input').files[0];
+            fetch('/api/v1/upload', {
+                method: 'post',
+                headers: {
+                    'content-type': 'text/plain'
+                },
+                body: file
+            }).then(async res => {
+                console.log(await res.text());
+            }).catch(reason => {
+                console.log(reason);
+            });
+        }
+    </script>
+</body>
+
+</html>

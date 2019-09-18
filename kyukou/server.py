@@ -4,10 +4,13 @@ from wsgiref.simple_server import make_server
 import json
 from .route import Router
 
+import sys
+
 
 def app(environ, start_response):
     status, headers, ret = Router.do(environ)
     start_response(status, headers)
+    sys.stdout.flush()
     return ret
 
 

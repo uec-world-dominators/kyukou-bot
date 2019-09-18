@@ -12,9 +12,9 @@ class Db:
         cls._users = cls._db.users
         cls._lectures = cls._db.lectures
 
-        print(f'----------------------------')
+        print('-'*50)
         print(f'Number of Users: {cls._users.count()}')
-        print(f'----------------------------')
+        print('-'*50)
 
     @classmethod
     def get_users_db(cls):

@@ -31,6 +31,22 @@ def validate(environ, body):
 users_db = Db.get_users_db()
 
 
+def register(_user_id, _reply_token):
+    profile = get_profile(_user_id)
+    users_db.insert_one({
+        "connections": {
+            "line": {
+                "user_id": _user_id,
+                "reply_token": _reply_token,
+                "follow_time": time.time(),
+                "display_name": profile["displayName"],
+                "picture_url": profile["pictureUrl"],
+                "status_message": profile["statusMessage"]
+            }
+        }
+    })
+
+
 def parse(o):
     try:
         for event in o["events"]:
@@ -38,30 +54,24 @@ def parse(o):
             _user_id = event["source"]["userId"]
             if _type == 'follow':
                 _reply_token = event["replyToken"]
-                users_db.insert_one({
-                    "user_id": _user_id,
-                    "reply_token": _reply_token,
-                    "follow_time": time.time()
-                })
+                register(_user_id, _reply_token)
                 line.follow(_user_id)
             elif _type == 'unfollow':
-                users_db.delete_one({"user_id": _user_id})
+                users_db.update_one({"connections.line.user_id": _user_id}, {
+                    "$set": {"connections": {"line": {}}}
+                })
                 line.unfollow(_user_id)
             elif _type == 'message':
                 _msg_type = event["message"]["type"]
                 if _msg_type == 'text':
                     _reply_token = event["replyToken"]
                     _msg_text = event["message"]["text"]
-                    if not users_db.find_one({"user_id": _user_id}):
-                        users_db.insert_one({
-                            "user_id": _user_id,
-                            "reply_token": _reply_token,
-                            "follow_time": time.time()
-                        })
-                    users_db.update_one({"user_id": _user_id, }, {
+                    if not users_db.find_one({"connections.line.user_id": _user_id}):
+                        register(_user_id, _reply_token)
+                    users_db.update_one({"connections.line.user_id": _user_id}, {
                         "$set": {
-                            "reply_token": _reply_token,
-                            "last_message_time": time.time()
+                            "connections.line.reply_token": _reply_token,
+                            "connections.line.last_message_time": time.time(),
                         }
                     })
                     line.message(_user_id, _msg_text)
@@ -74,9 +84,7 @@ def parse(o):
 
 
 def reply(user_id, msg_texts):
-    data = users_db.find_one({
-        "user_id": user_id
-    })
+    data = users_db.find_one({"connections.line.user_id": user_id})["connections"]["line"]
     if data:
         url = 'https://api.line.me/v2/bot/message/reply'
         res = requests.post(url, json={
@@ -92,19 +100,19 @@ def reply(user_id, msg_texts):
 
 
 def push(user_id, msg_texts):
-    data = users_db.find_one({
-        "user_id": user_id
-    })
-    url = 'https://api.line.me/v2/bot/message/push'
-    res = requests.post(url, json={
-        "to": user_id,
-        "messages": [{"type": "text", "text": text}for text in msg_texts]
-    }, headers={
-        'content-type': 'application/json',
-        'authorization': f'Bearer {settings["line"]["access_token"]}'
-    })
-    return res.status_code
-
+    data = users_db.find_one({"connections.line.user_id": user_id})["connections"]["line"]
+    if data:
+        url = 'https://api.line.me/v2/bot/message/push'
+        res = requests.post(url, json={
+            "to": user_id,
+            "messages": [{"type": "text", "text": text}for text in msg_texts]
+        }, headers={
+            'content-type': 'application/json',
+            'authorization': f'Bearer {settings["line"]["access_token"]}'
+        })
+        return res.status_code
+    else:
+        raise RuntimeError
 
 def broadcast(msg_texts):
     url = 'https://api.line.me/v2/bot/message/broadcast'
@@ -127,3 +135,11 @@ def multicast(user_ids, msg_texts):
         'authorization': f'Bearer {settings["line"]["access_token"]}'
     })
     return res.status_code
+
+
+def get_profile(user_id):
+    url = f'https://api.line.me/v2/bot/profile/{user_id}'
+    res = requests.get(url, headers={
+        'authorization': f'Bearer {settings["line"]["access_token"]}'
+    })
+    return res.json()

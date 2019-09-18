@@ -1,6 +1,10 @@
+import mimetypes
+import os
 import json as pkg_json
-from typing import Pattern
-from . import util
+if __name__ != '__main__':
+    from typing import Pattern
+    from . import util
+    from .settings import settings
 
 
 class Route():
@@ -46,7 +50,7 @@ class Router():
             "path": environ['PATH_INFO']
         })(environ)
         # except:
-            # return status(500)
+        # return status(500)
 
 
 def route(method, path, **kwargs):
@@ -71,6 +75,27 @@ def status(n, headers={}):
 def json(obj, headers={}, status=200):
     default_headers = [('Content-type', 'application/json; charset=utf-8')]
     return str(status).ljust(4), util.dict_to_tuples(headers) if len(headers) else default_headers, [pkg_json.dumps(obj).encode('utf-8')]
+
+
+def file(path):
+    try:
+        public_dir = settings["public_dir"]
+        rootpath = os.path.abspath(public_dir)
+        abspath = os.path.abspath(os.path.join(public_dir, path[1:]))
+        if abspath.startswith(rootpath):
+            if os.path.isdir(abspath):
+                abspath = os.path.join(abspath, settings["index"])
+            _type, _ = mimetypes.guess_type(abspath)
+            if _type:
+                default_headers = [('Content-type', _type)]
+            else:
+                raise FileNotFoundError
+            with open(abspath, 'rb') as fp:
+                return '200 OK', default_headers, [fp.read()]
+        else:
+            raise FileNotFoundError
+    except FileNotFoundError:
+        return status(404)
 
 
 def get_body(environ):
