@@ -41,5 +41,10 @@ a.columns = a.iloc[0, :]
 a.drop(4, axis=0)
 a
 index = []
-time_table = pd.DataFrame(columns=[i for i in range(0, 7)], index=["{}限_科目名".format(i) for i in range(1, 8)])
+a
+#%%
+for i in range(1, 8):
+    index.append("{}限_科目名".format(i))
+    index.append("{}限_教員名".format(i))
+time_table = pd.DataFrame(columns=[i for i in range(0, 7)], index=index)
 time_table
