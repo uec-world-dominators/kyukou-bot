@@ -1,6 +1,6 @@
 from .route import *
 from pprint import pprint
-from . import line
+from . import line_api
 import re
 
 # 上から順に優先
@@ -10,9 +10,8 @@ import re
 def line_webhook(environ):
     body = get_body(environ)
     o = body_to_json(body)
-    print(o)
-    if line.validate(environ, body):
-        line.reply(o)
+    if line_api.validate(environ, body):
+        line_api.parse(o)
         return status(200)
     else:
         return status(400)
