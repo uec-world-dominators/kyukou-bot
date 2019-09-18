@@ -80,18 +80,18 @@ def json(obj, headers={}, status=200):
 def file(path):
     try:
         public_dir = settings["public_dir"]
-        if path.endswith('/'):
-            path += settings["index"]
-        _type, _ = mimetypes.guess_type(path)
-        if _type:
-            default_headers = [('Content-type', _type)]
-            rootpath = os.path.abspath(public_dir)
-            abspath = os.path.abspath(os.path.join(public_dir, path[1:]))
-            if abspath.startswith(rootpath):
-                with open(abspath, 'rb') as fp:
-                    return '200 OK', default_headers, [fp.read()]
+        rootpath = os.path.abspath(public_dir)
+        abspath = os.path.abspath(os.path.join(public_dir, path[1:]))
+        if abspath.startswith(rootpath):
+            if os.path.isdir(abspath):
+                abspath = os.path.join(abspath, settings["index"])
+            _type, _ = mimetypes.guess_type(abspath)
+            if _type:
+                default_headers = [('Content-type', _type)]
             else:
-                return status(403)
+                raise FileNotFoundError
+            with open(abspath, 'rb') as fp:
+                return '200 OK', default_headers, [fp.read()]
         else:
             raise FileNotFoundError
     except FileNotFoundError:
