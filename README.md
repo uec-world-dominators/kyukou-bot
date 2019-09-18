@@ -11,6 +11,19 @@ mongod --dbpath `pwd`/db --port 8070
 python3 run.py
 ```
 
+## IO
+
+```
+
+line bot csv コピペ--\
+                      \
+csv upload link    -----------> LINE Bot
+                      /
+画面コピペ to web   --/
+
+```
+
+
 ## リポジトリ構成
 * uec-world-dominators/kyukou-bot
 * <自分のid>/kyukou-bot (forked)\
