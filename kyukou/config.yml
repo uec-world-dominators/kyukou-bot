@@ -4,3 +4,6 @@ line:
   __ENV__access_token: KYUKOU_LINE_ACCESS_TOKEN
   __ENV__channel_secret: KYUKOU_LINE_CHANNEL_SECRET
   channel_id: 1622536568
+
+public_dir: ./web/public
+index: index.html
