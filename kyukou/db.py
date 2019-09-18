@@ -2,14 +2,20 @@ from pprint import pprint
 from pymongo import MongoClient
 import datetime
 
-from .settings import settings
-
 
 class Db:
     @classmethod
     def init(cls, url):
-        cls.client = MongoClient(url)
-        print(f'connected to mongo db with url {settings["mongo_url"]} .')
-        cls.db = cls.client.kyukou
-        cls.users = cls.db.users
-        cls.lectures = cls.db.lectures
+        cls._client = MongoClient(url)
+        print(f'connected to mongo db with url {url} .')
+        cls._db = cls._client.kyukou
+        cls._users = cls._db.users
+        cls._lectures = cls._db.lectures
+
+    @classmethod
+    def get_users_db(cls):
+        return cls._users
+
+    @classmethod
+    def get_lectures_db(cls):
+        return cls._lectures
