@@ -24,3 +24,12 @@ python3 run.py
 6. pushする
 7. ある程度できたらgithub.comからuec-world-dominators/kyukou-bot devブランチ宛にプルリクエストをさくせいする
 8. みんながチェックして良かったらマージする -->
+
+```
+# 上位のリポジトリを設定
+git remote add upstream https://github.com/uec-world-dominators/kyukou-bot
+# そこから他の人が変更したものを取ってくる
+git fetch upstream dev
+# 自分の変更と競合しないように合体する
+git merge upstream/dev
+```
