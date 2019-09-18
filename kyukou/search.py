@@ -1,36 +1,121 @@
 #%%
+from .db import Db
 import datetime
+import pandas as pd
 
 #%%
-canceled = {
-    "id":"",
-    "periods":[1,2],
-    "dayofweek":2,
-    "date":"2019-10-5",
-    "teachers":[""],
-    "lecture":""
-}
-canceled["date"] = datetime.datetime.strptime(canceled["date"], "%Y-%m-%d")
+users_db=Db.get_users_db()
+lectures_db=Db.get_lectures_db()
 
 #%%
-lectures = {
-        "lecture": "",
-        "periods": [1,2],
-        "dayofweek": 2,
-        "teachers": "",
-}
+# users = [
+#     {
+#         "user_id": "091234jv094hg904jvl4389c",
+#         "reply_token": "k;54bl2k46hlk25jh6l42k5j6",
+#         "follow_time": 1568792293.934327,
+#         "last_message_time": 1568792293.944138,
+#         "lectures": [
+#             {
+#                 "periods": [
+#                     1,
+#                     2
+#                 ],
+#                 "dayofweek": 3,
+#                 "teachers": "千葉"
+#             },
+#             {
+#                 "periods": [
+#                     3
+#                 ],
+#                 "dayofweek": 4,
+#                 "teachers": "牧"
+#             },
+#             {
+#                 "periods": [
+#                     2
+#                 ],
+#                 "dayofweek": 3,
+#                 "teachers": "前川"
+#             },
+#             {
+#                 "periods": [
+#                     3
+#                 ],
+#                 "dayofweek": 4,
+#                 "teachers": "安井"
+#             }
+#         ],
+#         "notifies": [
+#             {
+#                 "offset": -1440
+#             }
+#         ]
+#     },
+#     {
+#         "user_id": "091234jv094hg904jvl4389c",
+#         "reply_token": "k;54bl2k46hlk25jh6l42k5j6",
+#         "follow_time": 1568792293.934327,
+#         "last_message_time": 1568792293.944138,
+#         "lectures": [
+#             {
+#                 "periods": [
+#                     1,
+#                     2
+#                 ],
+#                 "dayofweek": 3,
+#                 "teachers": "加藤"
+#             },
+#             {
+#                 "periods": [
+#                     3
+#                 ],
+#                 "dayofweek": 4,
+#                 "teachers": "秋田"
+#             }
+#         ],
+#         "notifies": [
+#             {
+#                 "offset": -1440
+#             }
+#         ]
+#     }
+# ]
 
 #%%
-user = {
-    "id":"",
-    "lectures": [lectures],
-    "notify":[]
-}
+# canceled = [
+#     {
+#         "periods": [
+#             1,
+#             2
+#         ],
+#         "date": 20191003,
+#         "teachers": "千葉",
+#         "dayofweek": 4,
+#         "subject": "数学",
+#         "targets": "1年昼"
+#     },
+#     {
+#         "periods": [
+#             3
+#         ],
+#         "date": 20191004,
+#         "teachers": "牧",
+#         "dayofweek": 4,
+#         "subject": "数学",
+#         "targets": "1年昼"
+#     }
+# ]
 
 #%%
-for i in range(len(user["lectures"])):
-    if (user["lectures"][i]["periods"] in canceled["periods"]) and (user["lectures"][i]["dayofweek"] == canceled["dayofweek"]) and (user["lectures"][i]["teachers"] in canceled["teachers"]):
-        print("aiu")
+for user in users_db.find({}):
+    for lecture in lectures_db.find({}):
+        lectures = user["lectures"]
+        periods = (set(lectures["periods"]) <= set(lecture["periods"]))
+        dayofweek = (lectures["dayofweek"] == lecture["dayofweek"])
+        teachers = (lectures["teachers"] == lecture["teachers"])
+        if periods and dayofweek and teachers:
+            return "通知"
+
 
 #%%
 import pandas as pd
