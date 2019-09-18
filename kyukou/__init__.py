@@ -1,3 +1,5 @@
+print('Kyukou Bot started')
+
 from .settings import *
 load_settings('config.yml')
 
