@@ -38,11 +38,21 @@ class Router():
             if route.match(args):
                 return route.get_func()
 
+    @classmethod
+    def do(cls, environ):
+        # try:
+        return Router.search({
+            "method": environ['REQUEST_METHOD'],
+            "path": environ['PATH_INFO']
+        })(environ)
+        # except:
+            # return status(500)
+
 
 def route(method, path, **kwargs):
     def wrapper(func):
         def _wrapper():
-            return func('environ')
+            return func
         kwargs.update(method=method, path=path)
         Router.append_route(func, kwargs)
         return _wrapper
@@ -83,4 +93,3 @@ def body_to_utf8(body):
 
 def body_to_json(body):
     return pkg_json.loads(body_to_utf8(body))
-
