@@ -108,13 +108,13 @@ lectures_db=Db.get_lectures_db()
 
 #%%
 for user in users_db.find({}):
-    for lecture in lectures_db.find({}):
-        lectures = user["lectures"]
-        periods = (set(lectures["periods"]) <= set(lecture["periods"]))
-        dayofweek = (lectures["dayofweek"] == lecture["dayofweek"])
-        teachers = (lectures["teachers"] == lecture["teachers"])
-        if periods and dayofweek and teachers:
-            return "通知"
+    for lecture in user["lectures"]
+        for canceled_lecture in lectures_db.find({}):
+            periods = (set(lecture["periods"]) <= set(canceled_lecture["periods"]))
+            dayofweek = (lecture["dayofweek"] == canceled_lecture["dayofweek"])
+            teachers = (lecture["teachers"] == canceled_lecture["teachers"])
+            if periods and dayofweek and teachers:
+                return "通知"
 
 
 #%%
