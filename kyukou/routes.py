@@ -21,7 +21,7 @@ def line_webhook(environ):
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
-    if realid and token and upload.validate_upload_token(realid, token):
+    if realid and token and upload.validate_token(realid, token):
         line_user_id = line_api.get_line_user_id(realid)
         line_api.push(line_user_id, ['CSVファイルがアップロードされました'])
         return text(f'validated. user={line_user_id}')

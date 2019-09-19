@@ -20,7 +20,7 @@ def unfollow(user_id):
 
 def message(user_id, msg_text):
     if msg_text.strip().lower() == 'csv':
-        link = upload.generate_upload_link(line_api.get_real_user_id(user_id))
+        link = upload.generate_link(line_api.get_real_user_id(user_id))
         line_api.reply(user_id, [link,'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。'])
     else:
         print(f'message from {user_id}: {msg_text}')

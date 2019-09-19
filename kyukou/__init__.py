@@ -13,7 +13,7 @@ import sys
 sys.stdout.flush()
 
 
-from . import task
-task.init()
+from . import scheduler
+scheduler.init()
 
 __all__ = ['run_server']
