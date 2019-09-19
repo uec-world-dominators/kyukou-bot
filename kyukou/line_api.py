@@ -6,7 +6,7 @@ import hmac
 import hashlib
 import base64
 from . import line
-from .db import Db
+from .db import get_collection
 import time
 
 
@@ -21,15 +21,7 @@ def validate(environ, body):
         return False
 
 
-{
-    "user_id": "",
-    "reply_token": "",
-    "follow_time": 000000000,
-    "last_message_time": 0000000000,
-    "lectures": []
-}
-
-users_db = Db.get_users_db()
+users_db = get_collection('users')
 
 
 def register(_user_id, _reply_token):
@@ -43,7 +35,8 @@ def register(_user_id, _reply_token):
                 "display_name": profile["displayName"],
                 "picture_url": profile["pictureUrl"],
                 "status_message": profile["statusMessage"]
-            }
+            },
+            "length": 1
         }
     })
 
@@ -59,8 +52,10 @@ def parse(o):
                 line.follow(_user_id)
             elif _type == 'unfollow':
                 users_db.update_one({"connections.line.user_id": _user_id}, {
-                    "$set": {"connections": {"line": {}}}
+                    "$unset": {"connections.line": None},
+                    "$inc": {"connections.length": -1}
                 })
+                users_db.delete_many({"connections.length": 0})
                 line.unfollow(_user_id)
             elif _type == 'message':
                 _msg_type = event["message"]["type"]
