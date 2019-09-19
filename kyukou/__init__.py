@@ -14,6 +14,6 @@ sys.stdout.flush()
 
 
 from . import scheduler
-scheduler.init()
+scheduler.init(tick_interval_sec=1)
 
 __all__ = ['run_server']
