@@ -1,3 +1,3 @@
 import kyukou
 
-kyukou.run_server(port=5426)
+kyukou.run_server()

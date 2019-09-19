@@ -6,6 +6,8 @@ from .route import Router
 
 import sys
 
+from .settings import settings
+
 
 def app(environ, start_response):
     status, headers, ret = Router.do(environ)
@@ -14,7 +16,8 @@ def app(environ, start_response):
     return ret
 
 
-def run_server(port=8000):
+def run_server():
+    port = settings["port"]
     with make_server('', port, app) as httpd:
         print(f'Listen on port: {port}')
         httpd.serve_forever()
