@@ -6,5 +6,14 @@ line:
   __ENV__channel_secret: KYUKOU_LINE_CHANNEL_SECRET
   channel_id: 1622536568
 
+email:
+  __ENV__password: KYUKOU_LINE_CHANNEL_SECRET
+  smtp_server: yellowcoyote4.sakura.ne.jp
+  smtp_port: 587
+  from_addr: kyukou@shosato.jp
+  
 public_dir: ./web/public
 index: index.html
+
+
+__ENV__hash_salt: KYUKOU_HASH_SALT
