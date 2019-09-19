@@ -3,7 +3,7 @@ from pprint import pprint
 from . import line_api
 from . import email_api
 import re
-
+from . import upload
 # 上から順に優先
 
 # LINE botからイベントがあったときに来る
@@ -20,8 +20,13 @@ def line_webhook(environ):
 
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
-    print(get_body(environ))
-    return status(200)
+    realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
+    if realid and token and upload.validate_upload_token(realid, token):
+        line_user_id = line_api.get_line_user_id(realid)
+        line_api.push(line_user_id, ['CSVファイルがアップロードされました'])
+        return text(f'validated. user={line_user_id}')
+    else:
+        return status(403)
 
 
 @route('post', '/api/v1/email/register')

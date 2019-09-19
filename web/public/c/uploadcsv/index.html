@@ -12,20 +12,48 @@
     <input type="file">
     <button onclick="upload();">アップロード</button>
     <script>
+        const query = {};
+        (function parse() {
+            if (location.search) {
+                location.search.substr(1).split('&').forEach(e => {
+                    s = e.split('=');
+                    query[s[0]] = s[1];
+                });
+            }
+        })();
+        console.log(query)
         function upload() {
             file = document.querySelector('input').files[0];
             fetch('/api/v1/upload', {
                 method: 'post',
                 headers: {
-                    'content-type': 'text/plain'
+                    'content-type': 'text/plain',
+                    'x-kyukou-token': query.token,
+                    'x-kyukou-realid': query.realid
                 },
                 body: file
             }).then(async res => {
                 console.log(await res.text());
+                const p = document.createElement('p');
+                if (res.status == 200) {
+                    p.textContent = 'アップロードを受け付けました。';
+                } else {
+                    p.textContent = 'このリンクは無効です。LINEボットに「CSV」とメッセージを送ってリンクを再取得してください。';
+                }
+                document.body.appendChild(p);
             }).catch(reason => {
                 console.log(reason);
+
             });
         }
+        
+        (function () {
+            console.log('a');
+            setTimeout(() => console.log('b'), 0);
+            console.log('c');
+        })();
+
+
     </script>
 </body>
 

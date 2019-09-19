@@ -1,4 +1,5 @@
 
+from bson.objectid import ObjectId
 import requests
 from .settings import settings
 import hmac
@@ -114,6 +115,7 @@ def push(user_id, msg_texts):
     else:
         raise RuntimeError
 
+
 def broadcast(msg_texts):
     url = 'https://api.line.me/v2/bot/message/broadcast'
     res = requests.post(url, json={
@@ -143,3 +145,15 @@ def get_profile(user_id):
         'authorization': f'Bearer {settings["line"]["access_token"]}'
     })
     return res.json()
+
+
+def get_real_user_id(user_id):
+    return str(users_db.find_one({"connections.line.user_id": user_id})["_id"])
+
+
+def get_line_user_id(real_user_id):
+    data = users_db.find_one({"_id": ObjectId(real_user_id)})
+    if data and 'line' in data["connections"]:
+        return data["connections"]["line"]["user_id"]
+    else:
+        raise RuntimeError

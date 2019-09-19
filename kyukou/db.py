@@ -11,6 +11,7 @@ class Db:
         cls._db = cls._client.kyukou
         cls._users = cls._db.users
         cls._lectures = cls._db.lectures
+        cls._upload = cls._db.upload
 
         print('-'*50)
         print(f'Number of Users: {cls._users.count()}')
@@ -23,3 +24,7 @@ class Db:
     @classmethod
     def get_lectures_db(cls):
         return cls._lectures
+
+    @classmethod
+    def get_upload_db(cls):
+        return cls._upload
