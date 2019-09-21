@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import json as pkg_json
+import http.client
 if __name__ != '__main__':
     from typing import Pattern
     from . import util
@@ -63,18 +64,22 @@ def route(method, path, **kwargs):
     return wrapper
 
 
+def status_message(code):
+    return str(code)+' ' + http.client.responses[code]
+
+
 def text(text, headers={}, status=200):
     default_headers = [('Content-type', 'text/plain; charset=utf-8')]
-    return str(status).ljust(4), util.dict_to_tuples(headers) if len(headers) else default_headers, [text.encode('utf-8')]
+    return status_message(status), util.dict_to_tuples(headers) if len(headers) else default_headers, [text.encode('utf-8')]
 
 
 def status(n, headers={}):
-    return str(n).ljust(4), util.dict_to_tuples(headers), []
+    return status_message(n), util.dict_to_tuples(headers), []
 
 
 def json(obj, headers={}, status=200):
     default_headers = [('Content-type', 'application/json; charset=utf-8')]
-    return str(status).ljust(4), util.dict_to_tuples(headers) if len(headers) else default_headers, [pkg_json.dumps(obj).encode('utf-8')]
+    return status_message(status), util.dict_to_tuples(headers) if len(headers) else default_headers, [pkg_json.dumps(obj).encode('utf-8')]
 
 
 def file(path):
@@ -91,7 +96,7 @@ def file(path):
             else:
                 raise FileNotFoundError
             with open(abspath, 'rb') as fp:
-                return '200 OK', default_headers, [fp.read()]
+                return status_message(200), default_headers, [fp.read()]
         else:
             raise FileNotFoundError
     except FileNotFoundError:

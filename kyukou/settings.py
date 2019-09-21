@@ -1,5 +1,6 @@
 import os
 import yaml
+from .util import Just
 
 settings = {}
 env_mark = '__ENV__'
@@ -11,9 +12,12 @@ def load_settings(relative_path):
         global settings
         settings = yaml.load(f, Loader=yaml.SafeLoader)
         resolve_env(settings)
+        settings = Just(settings)
+
 
 def get_settings():
     return settings
+
 
 def resolve_env(d):
     tmp = {}

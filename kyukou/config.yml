@@ -1,9 +1,19 @@
 mongo_url: 'mongodb://localhost:8070/'
+port: 5426
 
 line:
   __ENV__access_token: KYUKOU_LINE_ACCESS_TOKEN
   __ENV__channel_secret: KYUKOU_LINE_CHANNEL_SECRET
   channel_id: 1622536568
 
+email:
+  __ENV__password: KYUKOU_LINE_CHANNEL_SECRET
+  smtp_server: yellowcoyote4.sakura.ne.jp
+  smtp_port: 587
+  from_addr: kyukou@shosato.jp
+  
 public_dir: ./web/public
 index: index.html
+
+
+__ENV__hash_salt: KYUKOU_HASH_SALT

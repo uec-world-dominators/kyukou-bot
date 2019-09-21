@@ -2,24 +2,21 @@ from pprint import pprint
 from pymongo import MongoClient
 import datetime
 
+db = None
 
-class Db:
-    @classmethod
-    def init(cls, url):
-        cls._client = MongoClient(url)
-        print(f'Connected to DB: "{url}"')
-        cls._db = cls._client.kyukou
-        cls._users = cls._db.users
-        cls._lectures = cls._db.lectures
 
-        print('-'*50)
-        print(f'Number of Users: {cls._users.count()}')
-        print('-'*50)
+def init(url):
+    client = MongoClient(url)
+    global db
+    db = client.kyukou
+    print(f'Connected to DB: "{url}"')
+    print('-'*50)
+    print(f'Number of Users: {get_collection("users").count()}')
+    print('-'*50)
 
-    @classmethod
-    def get_users_db(cls):
-        return cls._users
 
-    @classmethod
-    def get_lectures_db(cls):
-        return cls._lectures
+def get_collection(name):
+    return db[name]
+
+
+__all__ = ["init", "get_collection"]

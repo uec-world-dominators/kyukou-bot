@@ -2,8 +2,9 @@ from .route import *
 from pprint import pprint
 from . import line_api
 from . import email_api
+from . import google_api
 import re
-
+from . import certificate
 # 上から順に優先
 
 # LINE botからイベントがあったときに来る
@@ -18,15 +19,40 @@ def line_webhook(environ):
         return status(403)
 
 
+@route('head', '/api/v1/upload/validate')
+def validate_upload_token(environ):
+    realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
+    if realid and token and certificate.validate_token(realid, token, expire=False):
+        return status(200)
+    else:
+        return status(403)
+
+
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
-    print(get_body(environ))
-    return status(200)
+    realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
+    if realid and token and certificate.validate_token(realid, token):
+        line_user_id = line_api.get_line_user_id(realid)
+        line_api.push(line_user_id, ['CSVファイルがアップロードされました'])
+        return text(f'validated. user={line_user_id}')
+    else:
+        return status(403)
+
+
+@route('get', '/oauth/google/redirect_link')
+def google_oauth_start_auth(environ):
+    return text(google_api.get_redirect_link())
+
+
+@route('get', '/oauth/google/redirect')
+def google_oauth_redirect(environ):
+    pass
 
 
 @route('post', '/api/v1/email/register')
 def email(environ):
-    email_api.register(get_body_json(environ))
+    if email_api.register(get_body_json(environ)):
+        certificate.generate_token()
     return status(200)
 
 

@@ -1,15 +1,35 @@
 # 休講Bot
 
 ## 依存関係のインストール
-```
-pip install pymongo bs4 requests
-```
-## 起動
 ```sh
-mkdir db
-mongod --dbpath `pwd`/db --port 8070
-python3 run.py
+pip install pymongo bs4 requests pyyaml
 ```
+
+## 起動
+* Access TokenとChannel Secretは環境変数に設定する
+```sh
+# 初回DB用ディレクトリ作成
+mkdir db
+# DBは起動しておく必要がある
+mongod --dbpath `pwd`/db --port 8070
+# 起動用スクリプトから起動(python3.x required)
+python3 run.py
+# Address already in useのとき
+kill -9 `lsof -t -i:5426`
+```
+
+## IO
+
+```
+
+line bot csv コピペ--\
+                      \
+csv upload link    -----------> LINE Bot
+                      /
+画面コピペ to web   --/
+
+```
+
 
 ## リポジトリ構成
 * uec-world-dominators/kyukou-bot
