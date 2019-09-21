@@ -42,6 +42,9 @@ class Procedure():
         else:
             return len(self.processes) > self.get_progress(id) > -1
 
+    def end(self, id):
+        self.set_progress(id, -1)
+
 
 class ProcedureSelector():
     def __init__(self, procedures):
@@ -55,6 +58,9 @@ class ProcedureSelector():
         print('false')
         return None
 
+    def end(self, id):
+        for procedure in self.procedures:
+            procedure.end(id)
 
 
 if __name__ == '__main__':

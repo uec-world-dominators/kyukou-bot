@@ -41,11 +41,12 @@ def validate_email(user_id, msg_text):
 
 ps = ProcedureSelector([email_procedure])
 
-
 def message(user_id, msg_text):
-    if ps.run(user_id, msg_text):
-        return
     msg = msg_text.strip().lower()
+    if msg == 'end':
+        ps.end(user_id)
+    if ps.run(user_id, msg):
+        return
     p = users_db.find_one({"connections.line.user_id": user_id})
     if msg == 'csv':
         real_user_id, token = certificate.generate_token(line_api.get_real_user_id(user_id))
