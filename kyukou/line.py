@@ -45,6 +45,7 @@ def message(user_id, msg_text):
     msg = msg_text.strip().lower()
     if msg == 'end':
         ps.end(user_id)
+        return
     if ps.run(user_id, msg):
         return
     p = users_db.find_one({"connections.line.user_id": user_id})
