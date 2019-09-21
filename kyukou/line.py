@@ -26,17 +26,17 @@ email_procedure = Procedure(lambda user_id, msg_text: msg_text == 'mail')
 @process(email_procedure, 0)
 def please_enter_email(user_id, msg_text):
     line_api.reply(user_id, ['メールアドレスを入力してください'])
-    email_procedure.set_progress(0)
+    email_procedure.set_progress(user_id, 0)
 
 
 @process(email_procedure, 1)
 def validate_email(user_id, msg_text):
     if re.match('.*@.*', msg_text):
         line_api.reply(user_id, ['メールアドレスを登録しました。'])
-        email_procedure.set_progress(1)
+        email_procedure.set_progress(user_id, 1)
     else:
         line_api.reply(user_id, ['メールアドレスの書式が間違っています。もう一度入力してください'])
-        email_procedure.set_progress(0)
+        email_procedure.set_progress(user_id, 0)
 
 
 ps = ProcedureSelector([email_procedure])
