@@ -52,7 +52,7 @@ class ProcedureSelector():
         self.current = {}
 
     def run(self, id, *args):
-        if self.procedures[self.current[id]].check(id, *args):
+        if self.current.get(id) and self.procedures[self.current[id]].check(id, *args):
             return True
         for i, procedure in enumerate(self.procedures):
             if procedure.check(id, *args):
