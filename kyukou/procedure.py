@@ -49,13 +49,16 @@ class Procedure():
 class ProcedureSelector():
     def __init__(self, procedures):
         self.procedures = procedures
+        self.current = {}
 
     def run(self, id, *args):
-        for procedure in self.procedures:
+        if self.procedures[self.current[id]].check(id, *args):
+            return True
+        for i, procedure in enumerate(self.procedures):
             if procedure.check(id, *args):
                 procedure.run(id, *args)
+                self.current[id] = i
                 return True
-        print('false')
         return None
 
     def end(self, id):

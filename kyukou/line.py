@@ -22,6 +22,14 @@ def unfollow(user_id):
     print(f'unfollowed by {user_id}')
 
 
+csv_procedure = Procedure(lambda user_id, msg_text: msg_text == 'csv')
+@process(csv_procedure, 0)
+def reply_csv_upload_link(user_id, msg_text):
+    real_user_id, token = certificate.generate_token(line_api.get_real_user_id(user_id))
+    link = f'https://kyukou.shosato.jp/c/uploadcsv/?token={token}&realid={real_user_id}'
+    line_api.reply(user_id, [link, 'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'])
+
+
 email_procedure = Procedure(lambda user_id, msg_text: msg_text == 'mail')
 @process(email_procedure, 0)
 def please_enter_email(user_id, msg_text):
@@ -37,14 +45,6 @@ def validate_email(user_id, msg_text):
     else:
         line_api.reply(user_id, ['メールアドレスの書式が間違っています。もう一度入力してください'])
         email_procedure.set_progress(user_id, 0)
-
-
-csv_procedure = Procedure(lambda user_id, msg_text: msg_text == 'csv')
-@process(csv_procedure, 0)
-def reply_csv_upload_link(user_id, msg_text):
-    real_user_id, token = certificate.generate_token(line_api.get_real_user_id(user_id))
-    link = f'https://kyukou.shosato.jp/c/uploadcsv/?token={token}&realid={real_user_id}'
-    line_api.reply(user_id, [link, 'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'])
 
 
 ps = ProcedureSelector([email_procedure, csv_procedure])
