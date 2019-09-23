@@ -12,17 +12,39 @@ from . import certificate
 def line_webhook(environ):
     body = get_body(environ)
     o = body_to_json(body)
-    if line_api.validate(environ, body):
+    if line_api.validate(environ, body) or True:
         line_api.parse(o)
         return status(200)
     else:
         return status(403)
 
 
+def get_query(environ):
+    try:
+        src = environ['QUERY_STRING']
+        r = {}
+        for e in src.split('&'):
+            s = e.split('=')
+            r[s[0]] = s[1]
+        return r
+    except:
+        return None
+
+
+@route('get', '/api/v1/line/email')
+def line_email_validation(environ):
+    q = get_query(environ)
+    data = certificate.validate_token(q['realid'], 'line_email', q['token'])
+    if data:
+        print(data['email_addr'])
+
+    return status(200)
+
+
 @route('head', '/api/v1/upload/validate')
 def validate_upload_token(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
-    if realid and token and certificate.validate_token(realid, token, expire=False):
+    if realid and token and certificate.validate_token(realid, token, 'csv_upload', expire=False):
         return status(200)
     else:
         return status(403)

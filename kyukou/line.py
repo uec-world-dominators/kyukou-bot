@@ -7,7 +7,8 @@ from . import certificate
 from .util import Just
 import sys
 import codecs
-from .procedure import Procedure, ProcedureSelector, process
+from . import email_api
+from .procedure import Procedure, ProcedureSelector, process, ProcedureDB
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 users_db = get_collection('users')
@@ -22,15 +23,16 @@ def unfollow(user_id):
     print(f'unfollowed by {user_id}')
 
 
-csv_procedure = Procedure(lambda user_id, msg_text: msg_text == 'csv')
+csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv')
 @process(csv_procedure, 0)
 def reply_csv_upload_link(user_id, msg_text):
-    real_user_id, token = certificate.generate_token(line_api.get_real_user_id(user_id))
+    real_user_id = line_api.get_real_user_id(user_id)
+    token = certificate.generate_token(real_user_id, 'csv_upload')
     link = f'https://kyukou.shosato.jp/c/uploadcsv/?token={token}&realid={real_user_id}'
     line_api.reply(user_id, [link, 'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'])
 
 
-email_procedure = Procedure(lambda user_id, msg_text: msg_text == 'mail')
+email_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'mail')
 @process(email_procedure, 0)
 def please_enter_email(user_id, msg_text):
     line_api.reply(user_id, ['メールアドレスを入力してください'])
@@ -40,6 +42,10 @@ def please_enter_email(user_id, msg_text):
 @process(email_procedure, 1)
 def validate_email(user_id, msg_text):
     if re.match('.*@.*', msg_text):
+        real_user_id = line_api.get_real_user_id(user_id)
+        link = f'https://kyukou.shosato.jp/api/v1/line/email/?token={certificate.generate_token(real_user_id, "line_email",{"email_addr":msg_text})}&realid={real_user_id}'
+        print(link)
+        email_api.send_mails([email_api.make_message(msg_text, '【私の休講情報】メールアドレスの確認', link)])
         line_api.reply(user_id, ['メールアドレスを登録しました。'])
         email_procedure.set_progress(user_id, 1)
     else:
@@ -47,7 +53,7 @@ def validate_email(user_id, msg_text):
         email_procedure.set_progress(user_id, 0)
 
 
-ps = ProcedureSelector([email_procedure, csv_procedure])
+ps = ProcedureSelector(email_procedure, csv_procedure)
 
 
 def message(user_id, msg_text):

@@ -7,21 +7,25 @@ from . import util
 certificate = get_collection('certificate')
 
 
-def generate_token(real_user_id, expire_in=3600):
-    certificate.delete_many({"real_user_id": real_user_id})
+def generate_token(real_user_id, type, options={}, expire_in=3600):
+    certificate.delete_many({"real_user_id": real_user_id, 'type': type})
     while True:
         token = util.generate_id(50)
         if not certificate.find_one({"token": token}):
             break
-    certificate.insert_one({"real_user_id": real_user_id, "token": token, "expire_at": time.time()+expire_in})
-    return real_user_id, token
+    default = {"real_user_id": real_user_id, 'type': type, "token": token, "expire_at": time.time()+expire_in}
+    default.update(options)
+    certificate.insert_one(default)
+    return token
 
 
-def validate_token(real_user_id, token, expire=True):
-    data = certificate.find_one({"token": token})
+def validate_token(real_user_id, type, token, expire=True):
+    data = certificate.find_one({"token": token, 'type': type})
     if expire and data:
-        certificate.delete_one({"token": token})
-    return data and data["real_user_id"] == real_user_id
+        certificate.delete_one({"token": token, 'type': type})
+        return data["real_user_id"] == real_user_id and data
+    else:
+        return False
 
 
 def delete_expired():
