@@ -57,6 +57,3 @@ def run():
     compare(kyuukou(),get_collection('lectures'))
 
 add_task(3600,run)
-
-
-pprint(kyuukou())
