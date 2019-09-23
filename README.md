@@ -1,5 +1,6 @@
 # 休講Bot
 
+
 ## 依存関係のインストール
 ```sh
 pip install pymongo bs4 requests pyyaml
