@@ -5,6 +5,8 @@ from pprint import pprint
 import datetime,re
 import hashlib
 import time
+from .scheduler import add_task
+from .db import get_collection
 
 
 def kyuukou():
@@ -50,5 +52,11 @@ def compare(new,old_collection):
         if not next(filter(lambda e:e['hash']==x['hash'],new),None):
             # 消された
             old_collection.delete_one({'hash':x['hash']})
+
+def run():
+    compare(kyuukou(),get_collection('lectures'))
+
+add_task(3600,run)
+
 
 pprint(kyuukou())
