@@ -5,7 +5,7 @@ import json
 from .route import Router
 
 import sys
-
+from .util import log
 from .settings import settings
 
 
@@ -19,5 +19,5 @@ def app(environ, start_response):
 def run_server():
     port = settings["port"]
     with make_server('', port, app) as httpd:
-        print(f'Listen on port: {port}')
+        log(__name__,f'Listen on port: {port}')
         httpd.serve_forever()

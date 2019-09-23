@@ -102,7 +102,7 @@ class ProcedureSelector():
                 procedure.clear()
 
 
-if __name__ == '__main__' or True:
+if __name__ == '__main__':
     p = ProcedureDB(lambda id, *args: args[0] == 'mail')
     @process(p, 0)
     def process0(id, args):

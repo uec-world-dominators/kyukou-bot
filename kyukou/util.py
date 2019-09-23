@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 import inspect
 
@@ -7,6 +8,14 @@ def dict_to_tuples(d):
 
 
 id_string = 'abcdefghijklmnopqrstuvwxyz0123456789'
+
+
+def log(__name__, message):
+    from .settings import settings
+    msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
+    print(msg)
+    with open(settings.logfile(), 'at', encoding='utf-8') as f:
+        f.write(msg+'\n')
 
 
 def generate_id(n):
