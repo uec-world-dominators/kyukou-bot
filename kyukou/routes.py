@@ -44,7 +44,7 @@ def line_email_validation(environ):
 @route('head', '/api/v1/upload/validate')
 def validate_upload_token(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
-    if realid and token and certificate.validate_token(realid, token, 'csv_upload', expire=False):
+    if realid and token and certificate.validate_token('csv_upload', realid, token, expire=False):
         return status(200)
     else:
         return status(403)
@@ -53,7 +53,7 @@ def validate_upload_token(environ):
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
-    if realid and token and certificate.validate_token(realid, token):
+    if realid and token and certificate.validate_token('csv_upload', realid, token):
         line_user_id = line_api.get_line_user_id(realid)
         line_api.push(line_user_id, ['CSVファイルがアップロードされました'])
         return text(f'validated. user={line_user_id}')

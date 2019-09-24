@@ -19,10 +19,11 @@ def generate_token(real_user_id, type, options={}, expire_in=3600):
     return token
 
 
-def validate_token(real_user_id, type, token, expire=True):
+def validate_token(type,real_user_id, token,expire=True):
     data = certificate.find_one({"token": token, 'type': type})
-    if expire and data:
-        certificate.delete_one({"token": token, 'type': type})
+    if data:
+        if expire:
+            certificate.delete_one({"token": token, 'type': type})
         return data["real_user_id"] == real_user_id and data
     else:
         return False
