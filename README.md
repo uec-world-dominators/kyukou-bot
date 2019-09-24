@@ -16,7 +16,7 @@ mongod --dbpath `pwd`/db --port 8070
 # 起動用スクリプトから起動(python3.x required)
 python3 run.py
 # Address already in useのとき
-kill -9 `lsof -t -i:5426`
+kill -9 `lsof -t -i:5426` && python3 run.py
 ```
 
 ## IO
