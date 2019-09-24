@@ -9,14 +9,7 @@ pip install pymongo bs4 requests pyyaml
 ## 起動
 * Access TokenとChannel Secretは環境変数に設定する
 ```sh
-# 初回DB用ディレクトリ作成
-mkdir db
-# DBは起動しておく必要がある
-mongod --dbpath `pwd`/db --port 8070
-# 起動用スクリプトから起動(python3.x required)
-python3 run.py
-# Address already in useのとき
-kill -9 `lsof -t -i:5426` && python3 run.py
+./run
 ```
 
 ## IO
