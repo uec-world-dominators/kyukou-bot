@@ -8,6 +8,7 @@ from .util import Just
 import sys
 import codecs
 from . import email_api
+from .settings import settings
 from .procedure import Procedure, ProcedureSelector, process, ProcedureDB
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
@@ -28,8 +29,9 @@ csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv')
 def reply_csv_upload_link(user_id, msg_text):
     real_user_id = line_api.get_real_user_id(user_id)
     token = certificate.generate_token(real_user_id, 'csv_upload')
-    link = f'https://kyukou.shosato.jp/c/uploadcsv/?token={token}&realid={real_user_id}'
+    link = f'{settings.url_prefix()}/c/uploadcsv/?token={token}&realid={real_user_id}'
     line_api.reply(user_id, [link, 'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'])
+    csv_procedure.set_progress(id, 0)
 
 
 email_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'mail')
