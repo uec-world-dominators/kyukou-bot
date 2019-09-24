@@ -7,6 +7,7 @@ from .route import Router
 import sys
 from .util import log
 from .settings import settings
+import subprocess
 
 
 def app(environ, start_response):
@@ -18,6 +19,7 @@ def app(environ, start_response):
 
 def run_server():
     port = settings["port"]
+    subprocess.run(['bash', '-c', f'kill -9 `lsof -t -i:{port}`'])
     with make_server('', port, app) as httpd:
-        log(__name__,f'Listen on port: {port}')
+        log(__name__, f'Listen on port: {port}')
         httpd.serve_forever()
