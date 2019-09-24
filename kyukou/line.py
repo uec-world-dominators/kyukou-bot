@@ -31,7 +31,7 @@ def reply_csv_upload_link(user_id, msg_text):
     token = certificate.generate_token(real_user_id, 'csv_upload')
     link = f'{settings.url_prefix()}/c/uploadcsv/?token={token}&realid={real_user_id}'
     line_api.reply(user_id, [link, 'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'])
-    csv_procedure.set_progress(id, 0)
+    csv_procedure.set_progress(user_id, 0)
 
 
 email_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'mail')
@@ -56,7 +56,6 @@ def validate_email(user_id, msg_text):
 
 
 ps = ProcedureSelector(email_procedure, csv_procedure)
-
 
 def message(user_id, msg_text):
     msg = msg_text.strip().lower()
