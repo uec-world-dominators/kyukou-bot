@@ -2,7 +2,7 @@ from datetime import datetime
 import random
 import inspect
 from threading import Lock
-
+import sys
 
 def dict_to_tuples(d):
     return [(key, value) for key, value in d.items()]
@@ -16,7 +16,9 @@ def log(__name__, message):
     from .settings import settings
     msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
     with log_lock:
-        print(msg)
+        sys.stdout.write(msg)
+        sys.stdout.write('\n')
+        sys.stdout.flush()
         with open(settings.logfile(), 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 
