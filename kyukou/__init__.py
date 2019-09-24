@@ -1,12 +1,12 @@
-
 from .settings import *
 load_settings('config.yml')
+settings=get_settings()
 
 from .util import log
-log(__name__,'Kyukou Bot started')
+log(__name__,f'Kyukou Bot started at: "{settings.url_prefix()}"')
 
 from . import db
-db.init(get_settings()["mongo_url"])
+db.init(settings.mongo_url())
 
 from .server import run_server
 from .routes import *
