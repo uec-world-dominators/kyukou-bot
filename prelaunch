@@ -1,5 +1,5 @@
 user=sho
-mongod="mongod --dbpath `pwd`/db --port 8070 >/dev/null &"
+mongod="mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port 8070 >/dev/null &"
 runserver="python3 run.py"
 {
     mkdir db
