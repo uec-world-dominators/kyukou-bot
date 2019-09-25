@@ -10,6 +10,7 @@ pip install pymongo bs4 requests pyyaml
 * Access TokenとChannel Secretは環境変数に設定する
 ```sh
 ./run
+# Ctrl+Z to terminate
 ```
 
 ## IO
