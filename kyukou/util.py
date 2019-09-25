@@ -4,6 +4,7 @@ import inspect
 from threading import Lock
 import sys
 
+
 def dict_to_tuples(d):
     return [(key, value) for key, value in d.items()]
 
@@ -12,13 +13,14 @@ id_string = 'abcdefghijklmnopqrstuvwxyz0123456789'
 log_lock = Lock()
 
 
-def log(__name__, message):
+def log(__name__, message, log_level=2):
     from .settings import settings
     msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
     with log_lock:
-        sys.stdout.write(msg)
-        sys.stdout.write('\n')
-        sys.stdout.flush()
+        if log_level >= settings.log_level(0):
+            sys.stdout.write(msg)
+            sys.stdout.write('\n')
+            sys.stdout.flush()
         with open(settings.logfile(), 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 

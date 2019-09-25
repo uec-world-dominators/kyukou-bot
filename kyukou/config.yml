@@ -13,9 +13,13 @@ email:
   smtp_port: 587
   from_addr: kyukou@shosato.jp
   
+google:
+  __ENV__google_client_secret: KYUKOU_GOOGLE_CLIENT_SECRET
+
 public_dir: ./web/public
 index: index.html
 
 
 __ENV__hash_salt: KYUKOU_HASH_SALT
 logfile: /home/sho/repos/wd-kyukou-bot/log.txt
+log_level: 1
