@@ -37,26 +37,28 @@ class Procedure():
         else:
             r = self.processes[self.get_progress(_id)+1]["func"](_id, *args)
             if self.get_progress(_id) == len(self.processes)-1:
-                self.set_progress(_id, -1)
+                self.remove(_id)
             return r
 
     def check(self, _id, *args):
         if self.oncondition(_id, *args):
-            self.set_progress(_id, -1)
             return True
         else:
             return len(self.processes) > self.get_progress(_id) > -1
 
     def end(self, _id):
-        self.set_progress(_id, -1)
+        self.remove(_id)
+
+    def remove(self, _id):
+        del self.collection['_id']
 
 
 class ProcedureDB(Procedure):
-    def __init__(self, oncondition, timeout=3600):
+    def __init__(self, oncondition, procedure_id, timeout=3600):
         self.collection = get_collection('procedure')
         self.processes = []
         self.oncondition = oncondition
-        self.procedure_id = random.random()
+        self.procedure_id = procedure_id
         self.timeout = timeout
         add_task(60, self.clear)
 
@@ -76,6 +78,10 @@ class ProcedureDB(Procedure):
     def clear(self):
         self.collection.delete_many({'procedure_id': self.procedure_id,
                                      'expired_at': {'$lt': time.time()}})
+        self.collection.delete_many({'progress': -1})
+
+    def remove(self, _id):
+        self.collection.delete_one({'id': _id, 'procedure_id': self.procedure_id})
 
 
 class ProcedureSelector():
