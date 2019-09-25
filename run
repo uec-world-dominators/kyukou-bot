@@ -1,13 +1,3 @@
-user=sho
-mongod="mongod --dbpath `pwd`/db --port 8070 >/dev/null &"
+./prelaunch
 runserver="python3 run.py"
-{
-    mkdir db
-    kill -9 `lsof -t -i:8070`
-    eval $mongod
-
-    kill -9 `lsof -t -i:5426`
-    pkill -f "$runserver"
-} 2>/dev/null
-
 eval $runserver
