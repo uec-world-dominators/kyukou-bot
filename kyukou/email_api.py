@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 from email.mime.text import MIMEText
 import smtplib
 import requests
@@ -35,6 +36,24 @@ def register(o={
     else:
         return False
 
+
+def append(o={
+    'email_addr': '',
+    'real_user_id': '',
+    'referrer': '',
+}):
+    users_db.update_one({'_id': ObjectId(o['real_user_id'])}, {
+        '$set': {
+            'connections.email': {
+                'email_addr': o['email_addr'],
+                'referrer': o['referrer'],
+                'verified': True
+            }
+        },
+        '$inc': {
+            'connections.length': 1
+        }
+    })
 
 
 def send_mails(msgs):

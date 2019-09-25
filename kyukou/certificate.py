@@ -19,10 +19,11 @@ def generate_token(real_user_id, type, options={}, expire_in=3600):
     return token
 
 
-def validate_token(real_user_id, type, token, expire=True):
+def validate_token(type, real_user_id, token, expire=True):
     data = certificate.find_one({"token": token, 'type': type})
-    if expire and data:
-        certificate.delete_one({"token": token, 'type': type})
+    if data:
+        if expire:
+            certificate.delete_one({"token": token, 'type': type})
         return data["real_user_id"] == real_user_id and data
     else:
         return False
@@ -30,6 +31,29 @@ def validate_token(real_user_id, type, token, expire=True):
 
 def delete_expired():
     certificate.delete_many({"expire_at": {"$lt": time.time()}})
+
+
+def register_state(state, type, options={}, expire_in=3600):
+    d = {
+        'state': state,
+        'type': type,
+        "expire_at": time.time()+expire_in
+    }
+    d.update(options)
+    certificate.delete_many({"state": state, 'type': type})
+    certificate.insert_one(d)
+
+
+def validate_state(state, type, expire=True):
+    d = {
+        'state': state,
+        'type': type,
+        'expire_at': {'$gt': time.time()}
+    }
+    data = certificate.find_one(d)
+    if expire:
+        certificate.delete_one(d)
+    return data
 
 
 scheduler.add_task(60, delete_expired)

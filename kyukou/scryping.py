@@ -7,6 +7,7 @@ import hashlib
 import time
 from .scheduler import add_task
 from .db import get_collection
+from .util import log
 
 
 def kyuukou():
@@ -38,25 +39,26 @@ def kyuukou():
         }
 
         limits.append(limit)
-
     return limits
 
 
 def compare(new,old_collection):
+    c_insert=0
+    c_delete=0
     for x in new:
         if not old_collection.find_one({'hash':x['hash']}):
             # 新しい情報
             old_collection.insert_one(x)
+            c_insert+=1
     # oldの今日以降の予定を見ていって、newになければ削除された
     for x in old_collection.find({'date':{'$gt':time.time()}}):
         if not next(filter(lambda e:e['hash']==x['hash'],new),None):
             # 消された
             old_collection.delete_one({'hash':x['hash']})
+            c_delete+=1
+    log(__name__,f'Scraped: {len(new)} , Insert: {c_insert} , Delete: {c_delete}')
 
 def run():
     compare(kyuukou(),get_collection('lectures'))
 
 add_task(3600,run)
-
-
-pprint(kyuukou())
