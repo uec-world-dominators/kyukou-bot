@@ -24,13 +24,9 @@ def kyuukou():
         a=tr.select('td')
         m = c.match(a[1].text)
         date = datetime.datetime(2019, int(m.group(1)), int(m.group(2)))
-        # if "○" in a[4].text:
-        #     tmp = a[4].text.replace("o", "")
-        # else:
-        #     tmp = a[4].text
         limit={
             "date":date.timestamp(),
-            "teachers":a[4].text, # tmp
+            "teachers":a[4].text.replace("o", "")
             "periods":list(map(int, a[2].text.split('・'))),
             "class":a[0].text,
             "subject":a[3].text,
