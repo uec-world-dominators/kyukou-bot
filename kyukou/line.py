@@ -25,7 +25,7 @@ def unfollow(user_id):
     print(f'unfollowed by {user_id}')
 
 
-csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv')
+csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv', 'csv')
 @process(csv_procedure, 0)
 def reply_csv_upload_link(user_id, msg_text):
     real_user_id = line_api.get_real_user_id(user_id)
@@ -35,7 +35,7 @@ def reply_csv_upload_link(user_id, msg_text):
     csv_procedure.set_progress(user_id, 0)
 
 
-email_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'mail')
+email_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'mail', 'mail')
 @process(email_procedure, 0)
 def please_enter_email(user_id, msg_text):
     line_api.reply(user_id, ['メールアドレスを入力してください'])
@@ -55,7 +55,7 @@ def validate_email(user_id, msg_text):
         email_procedure.set_progress(user_id, 0)
 
 
-google_oauth_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'google')
+google_oauth_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'google', 'google')
 @process(google_oauth_procedure, 0)
 def redirect_to_google_auth(user_id, msg_text):
     line_api.reply(user_id, [google_api.get_redirect_link(line_api.get_real_user_id(user_id))])

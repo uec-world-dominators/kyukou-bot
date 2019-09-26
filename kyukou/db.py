@@ -12,8 +12,8 @@ def init(url):
     db = client.kyukou
     log(__name__, f'Connected to DB: "{url}"')
     log(__name__, '-'*50)
-    log(__name__, f'Number of Users   : {get_collection("users").count()}')
-    log(__name__, f'Number of Lectures: {get_collection("lectures").count()}')
+    log(__name__, f'Number of Users   : {len(list(get_collection("users").find({})))}')
+    log(__name__, f'Number of Lectures: {len(list(get_collection("lectures").find({})))}')
     log(__name__, '-'*50)
 
 
