@@ -12,6 +12,8 @@ line_notify:
   __ENV__client_secret: KYUKOU_LINE_NOTIFY_client_SECRET
   redirect_uri: /api/v1/line/notify
 
+twitter:
+  callback_path: /api/v1/twitter/callback
 
 email:
   __ENV__password: KYUKOU_LINE_CHANNEL_SECRET
