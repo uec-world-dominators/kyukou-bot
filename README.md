@@ -16,13 +16,10 @@ pip install pymongo bs4 requests pyyaml
 ## IO
 
 ```
-
-line bot csv コピペ--\
-                      \
-csv upload link    -----------> LINE Bot
-                      /
-画面コピペ to web   --/
-
+LINE Botと友だちになる -> LINE Notifyと連携 
+                     -> アップロードリンクからCSVをアップロード 
+                     
+-> やり取りはLINE Botと、こちらから送るのはLINE Notify
 ```
 
 
