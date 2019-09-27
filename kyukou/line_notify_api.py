@@ -38,6 +38,9 @@ def code_to_access_token(code):
 
 
 def append(realid, tokens):
+    tokens.update({
+        'follow_time': time.time()
+    })
     user = users_db.find_one({'_id': ObjectId(realid)})
     users_db.update_one({'_id': ObjectId(realid)}, {
         '$set': {
@@ -47,7 +50,6 @@ def append(realid, tokens):
             'connections.length': 0 if Just(user).connections.line_notify() else 1
         }
     })
-    print('add line notify info')
 
 
 def get_access_token(realid):
@@ -55,6 +57,16 @@ def get_access_token(realid):
 
 
 def send(realid, message):
+    '''
+    # `send()`
+    1000回/ユーザー時 まで
+    '''
     res = requests.post('https://notify-api.line.me/api/notify', headers={
         'Authorization': f'Bearer {get_access_token(realid)}'
     }, params={"message":  message})
+    users_db.update_one({'_id': ObjectId(realid)}, {
+        '$push': {'connections.line_notify.history': {
+            'message': message,
+            'time': time.time()
+        }}
+    })
