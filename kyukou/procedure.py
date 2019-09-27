@@ -3,6 +3,7 @@ from .db import get_collection
 import random
 from pprint import pprint
 from .scheduler import add_task
+from .util import Just
 
 
 def process(p, n):
@@ -41,6 +42,7 @@ class Procedure():
             return r
 
     def check(self, _id, *args):
+        print(self.oncondition(_id, *args), self.get_progress(_id))
         if self.oncondition(_id, *args):
             return True
         else:
@@ -87,15 +89,17 @@ class ProcedureDB(Procedure):
 class ProcedureSelector():
     def __init__(self, *procedures):
         self.procedures = procedures
-        self.current = {}
+        self.current = get_collection('current_procedure')
 
     def run(self, _id, *args):
-        if self.current.get(_id) and self.procedures[self.current[_id]].check(_id, *args):
+        procedure_id = Just(self.current.find_one({'id': _id})).procedure()
+        if procedure_id and self.procedures[procedure_id].get_progress(_id) != -1:
+            self.procedures[procedure_id].run(_id, *args)
             return True
         for i, procedure in enumerate(self.procedures):
             if procedure.check(_id, *args):
                 procedure.run(_id, *args)
-                self.current[_id] = i
+                self.current.update({'id': _id}, {'procedure': i}, True)
                 return True
         return None
 

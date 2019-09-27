@@ -4,6 +4,7 @@ from pprint import pprint
 from . import line_api
 from . import email_api
 from . import google_api
+from . import line_notify_api
 import re
 from . import certificate
 # 上から順に優先
@@ -18,6 +19,27 @@ def line_webhook(environ):
         return status(200)
     else:
         return status(403)
+
+
+@route('get', '/api/v1/line/notify/redirect_link')
+def line_notify_redirect_link(environ):
+    realid = get_query(environ).get('realid')
+    if realid:
+        return redirect(line_notify_api.get_redirect_link(realid))
+    else:
+        return status(400)
+
+
+@route('get', '/api/v1/line/notify')
+def line_notify(environ):
+    q = get_query(environ)
+    data = certificate.validate_state(q['state'], 'line_notify_oauth')
+    if data:
+        tokens = line_notify_api.code_to_access_token(q['code'])
+        if tokens:
+            line_notify_api.append(data['realid'], tokens)
+            return file('/')
+    return status(400)
 
 
 def get_query(environ):
@@ -61,7 +83,11 @@ def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
     if realid and token and certificate.validate_token('csv_upload', realid, token):
         line_user_id = line_api.get_line_user_id(realid)
-        line_api.push(line_user_id, ['CSVファイルがアップロードされました'])
+        line_api.push(line_user_id, [
+            'おめでとうございます！CSVファイルがアップロードされました！',
+            '休講情報を配信するためにLINE Notifyの連携をお願いします。これが最後のステップです',
+            line_notify_api.get_redirect_link(realid)
+        ])
         return text(f'validated. user={line_user_id}')
     else:
         return status(403)
