@@ -3,6 +3,7 @@ import time
 from .db import get_collection
 from . import line_api
 from . import google_api
+from . import line_notify_api
 import json
 from . import certificate
 from .util import Just
@@ -18,7 +19,10 @@ users_db = get_collection('users')
 
 def follow(user_id):
     print(f'followed by {user_id}')
-    line_api.reply(user_id, ['こんにちは！！\n休講ボットにようこそ。', 'あなたに合わせた休講情報をお届けするには履修情報の登録が必要です。「csv」とメッセージを送ってアップロードリンクを取得してください。'])
+    line_api.reply(user_id, [
+        'こんにちは！！\n休講ボットにようこそ。',
+        'あなたに合わせた休講情報をお届けするには履修情報の登録が必要です。「csv」とメッセージを送ってアップロードリンクを取得してください。',
+    ])
 
 
 def unfollow(user_id):
@@ -72,3 +76,4 @@ def message(user_id, msg_text):
     if ps.run(user_id, msg):
         return
     line_api.reply(user_id, [msg_text])
+    line_notify_api.send(line_api.get_real_user_id(user_id), msg_text)

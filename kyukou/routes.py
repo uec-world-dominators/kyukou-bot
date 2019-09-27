@@ -38,7 +38,7 @@ def line_notify(environ):
         tokens = line_notify_api.code_to_access_token(q['code'])
         if tokens:
             line_notify_api.append(data['realid'], tokens)
-            return status(200)
+            return file('/')
     return status(400)
 
 
@@ -83,7 +83,11 @@ def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
     if realid and token and certificate.validate_token('csv_upload', realid, token):
         line_user_id = line_api.get_line_user_id(realid)
-        line_api.push(line_user_id, ['CSVファイルがアップロードされました'])
+        line_api.push(line_user_id, [
+            'おめでとうございます！CSVファイルがアップロードされました！',
+            '休講情報を配信するためにLINE Notifyの連携をお願いします。これが最後のステップです',
+            line_notify_api.get_redirect_link(realid)
+        ])
         return text(f'validated. user={line_user_id}')
     else:
         return status(403)
