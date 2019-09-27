@@ -17,46 +17,43 @@
         }
 
 
-        .x{
-           position: relative;
+        .inner {
+            position: relative;
+            margin: 0 auto;
+            width: 40%;
+            padding: 20px;
+            background: #ffffffcc;
         }
-        
-       .x p#msg{
-            transform : translate(-50%,-50%);
+
+        #msg {
             font-size: 30px;
             font-weight: bold;
             color: #000000;
             text-shadow: 0px 0px 0 rgb(0, 0, 0);
         }
- 
-        
-        .btn1 {
-            transform : translate(-50%,-50%);
-            border-radius: 5px;
-        }
 
-        .btn1:hover {
-            background: #0aa;
-        }
 
-       
 
-        .x div {
-            transform : translate(-50%,-50%);
+        .button {
+            margin: 5px;
+            border: none;
+            padding: 3px;
+            width: 100%;
             display: inline-block;
             position: relative;
             overflow: hidden;
-            border-radius: 3px;
+            border-radius: 6px;
             background: rgb(139, 139, 139);
             color: #fff;
             text-align: center;
-            padding: 10px;
-            line-height: 30px;
-            width: 180px;
             cursor: pointer;
+            height: 50px;
+            line-height: 50px;
+            font-size: large;
+            font-weight: bold;
         }
 
-        .uploadButton:hover {
+        .button:hover {
             background: #0aa;
         }
 
@@ -70,29 +67,43 @@
             opacity: 0;
         }
 
-        .uploadValue {
-            display: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            padding: 3px;
-            color: #ffffff;
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #name{
+            font-size: x-large;
+            font-weight: 900;
         }
     </style>
 </head>
 
 <body>
-　
-    <div class="x">
-    
-    <button onclick="upload();" class="btn1">アップロード</button>
-    
-    <p id="msg"></p>
+    　 <div class="wrapper">
 
-    <div class="uploadButton">
-        ファイルを選択
-        <input type="file" onchange="uv.style.display='inline-block'; uv.value = this.value;" />
-        <input type="text" id="uv" class="uploadValue" disabled />
-    </div>
+        <div class="inner">
+            <div id="name">履修登録のCSVファイルをアップロードしてください</div>
+            <img width="100%" src="./logo.png">
+            <div>by UEC World Dominators</div>
+            <div id="buttons">
+                <div class="uploadButton button">
+                    ファイルを選択
+                    <input type="file" onchange="uv.style.display='inline-block'; uv.value = this.value;" />
+                    <input type="text" id="uv" style="display: none" disabled />
+                </div>
+                <button onclick="upload();" class="button">アップロード</button>
+            </div>
+            <div id="message" style="display: none">
+                <!-- <p id="msg"></p> -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -117,6 +128,8 @@
                 if (res.status !== 200) {
                     const p = document.querySelector('#msg');
                     p.textContent = 'このリンクは無効です'
+                    document.querySelector('#message').style.display = 'block';
+                    // document.querySelector('#buttons').style.display = 'none';
                 }
             })
         }
@@ -139,6 +152,8 @@
                 } else {
                     p.textContent = 'このリンクは無効です。LINEボットに「CSV」とメッセージを送ってリンクを再取得してください。';
                 }
+                document.querySelector('#message').style.display = 'block';
+                // document.querySelector('#buttons').style.display = 'none';
             }).catch(reason => {
                 console.log(reason);
 
