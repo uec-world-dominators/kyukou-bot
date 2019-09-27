@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 /db/
 /*.json
+private/
+/log.txt

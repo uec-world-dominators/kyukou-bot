@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 from email.mime.text import MIMEText
 import smtplib
 import requests
@@ -11,7 +12,12 @@ if __name__ != '__main__':
     users_db = get_collection('users')
 
 
-def register(o):
+def register(o={
+    'email_addr': '',
+    'password': '',
+    'name': '',
+    'referrer': 'line|web'
+}):
     if "email_addr" in o and not users_db.find_one({"connections.email.email_addr": o["email_addr"], "connections.email.validated": True}):
         password_hash = hashlib.sha256((o["password"]+settings["hash_salt"] or '').encode()).hexdigest()
         users_db.insert_one({
@@ -21,6 +27,7 @@ def register(o):
                     "name": o["name"],
                     "password_hash": password_hash,
                     "varidated": False,
+                    "referrer": o['referrer']
                 }
             },
             "length": 1
@@ -28,6 +35,25 @@ def register(o):
         return True
     else:
         return False
+
+
+def append(o={
+    'email_addr': '',
+    'real_user_id': '',
+    'referrer': '',
+}):
+    users_db.update_one({'_id': ObjectId(o['real_user_id'])}, {
+        '$set': {
+            'connections.email': {
+                'email_addr': o['email_addr'],
+                'referrer': o['referrer'],
+                'verified': True
+            }
+        },
+        '$inc': {
+            'connections.length': 1
+        }
+    })
 
 
 def send_mails(msgs):

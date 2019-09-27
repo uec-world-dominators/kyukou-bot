@@ -1,3 +1,9 @@
+import time
+from .db import get_collection
+import random
+from pprint import pprint
+from .scheduler import add_task
+from .util import Just
 
 
 def process(p, n):
@@ -19,55 +25,96 @@ class Procedure():
         self.processes = []
         self.oncondition = oncondition
 
-    def set_progress(self, id, progress):
-        self.collection[id] = progress
+    def set_progress(self, _id, progress):
+        self.collection[_id] = progress
 
-    def get_progress(self, id):
-        progress = self.collection.get(id)
+    def get_progress(self, _id):
+        progress = self.collection.get(_id)
         return -1 if progress == None else progress
 
-    def run(self, id, *args):
-        if self.get_progress(id)+1 >= len(self.processes):
+    def run(self, _id, *args):
+        if self.get_progress(_id)+1 >= len(self.processes):
             raise RuntimeError
         else:
-            r = self.processes[self.get_progress(id)+1]["func"](id, *args)
-            if self.get_progress(id) == len(self.processes)-1:
-                self.set_progress(id, -1)
+            r = self.processes[self.get_progress(_id)+1]["func"](_id, *args)
+            if self.get_progress(_id) == len(self.processes)-1:
+                self.remove(_id)
             return r
 
-    def check(self, id, *args):
-        if self.oncondition(id, *args):
-            self.set_progress(id, -1)
+    def check(self, _id, *args):
+        print(self.oncondition(_id, *args), self.get_progress(_id))
+        if self.oncondition(_id, *args):
             return True
         else:
-            return len(self.processes) > self.get_progress(id) > -1
+            return len(self.processes) > self.get_progress(_id) > -1
 
-    def end(self, id):
-        self.set_progress(id, -1)
+    def end(self, _id):
+        self.remove(_id)
+
+    def remove(self, _id):
+        del self.collection['_id']
+
+
+class ProcedureDB(Procedure):
+    def __init__(self, oncondition, procedure_id, timeout=3600):
+        self.collection = get_collection('procedure')
+        self.processes = []
+        self.oncondition = oncondition
+        self.procedure_id = procedure_id
+        self.timeout = timeout
+        add_task(60, self.clear)
+
+    def set_progress(self, _id, progress):
+        if not self.collection.update_one({'id': _id, 'procedure_id': self.procedure_id}, {
+                '$set': {
+                    'progress': progress
+                }}).matched_count:
+            self.collection.insert_one({'id': _id, 'procedure_id': self.procedure_id,
+                                        'progress': progress,
+                                        'expired_at': time.time()+self.timeout})
+
+    def get_progress(self, _id):
+        r = self.collection.find_one({'id': _id, 'procedure_id': self.procedure_id})
+        return -1 if r == None else r.get('progress')
+
+    def clear(self):
+        self.collection.delete_many({'procedure_id': self.procedure_id,
+                                     'expired_at': {'$lt': time.time()}})
+        self.collection.delete_many({'progress': -1})
+
+    def remove(self, _id):
+        self.collection.delete_one({'id': _id, 'procedure_id': self.procedure_id})
 
 
 class ProcedureSelector():
-    def __init__(self, procedures):
+    def __init__(self, *procedures):
         self.procedures = procedures
-        self.current = {}
+        self.current = get_collection('current_procedure')
 
-    def run(self, id, *args):
-        if self.current.get(id) and self.procedures[self.current[id]].check(id, *args):
+    def run(self, _id, *args):
+        procedure_id = Just(self.current.find_one({'id': _id})).procedure()
+        if procedure_id and self.procedures[procedure_id].get_progress(_id) != -1:
+            self.procedures[procedure_id].run(_id, *args)
             return True
         for i, procedure in enumerate(self.procedures):
-            if procedure.check(id, *args):
-                procedure.run(id, *args)
-                self.current[id] = i
+            if procedure.check(_id, *args):
+                procedure.run(_id, *args)
+                self.current.update({'id': _id}, {'procedure': i}, True)
                 return True
         return None
 
-    def end(self, id):
+    def end(self, _id):
         for procedure in self.procedures:
-            procedure.end(id)
+            procedure.end(_id)
+
+    def clear(self):
+        for procedure in self.procedures:
+            if hasattr(procedure, 'clear'):
+                procedure.clear()
 
 
 if __name__ == '__main__':
-    p = Procedure(lambda id, *args: args[0] == 'mail')
+    p = ProcedureDB(lambda id, *args: args[0] == 'mail')
     @process(p, 0)
     def process0(id, args):
         print('0', id)
@@ -78,14 +125,14 @@ if __name__ == '__main__':
         print('1', id)
         p.set_progress(id, 1)
 
-    p2 = Procedure(lambda id, *args: args[0] == 'csv')
+    p2 = ProcedureDB(lambda id, *args: args[0] == 'csv')
 
     @process(p2, 0)
     def process20(id, args):
         print('p2', id)
         p2.set_progress(id, 0)
 
-    ps = ProcedureSelector([p, p2])
+    ps = ProcedureSelector(p, p2)
     args = ['mail']
     ps.run('hoge', *args)
     ps.run('hige', *args)
@@ -94,4 +141,4 @@ if __name__ == '__main__':
     args = ['me@shosato.jp']
     ps.run('hoge', *args)
 
-__all__ = ["Procedure", "process", "ProcedureSelector"]
+__all__ = ["Procedure", "ProcedureDB", "process", "ProcedureSelector"]
