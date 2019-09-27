@@ -7,6 +7,12 @@ line:
   __ENV__channel_secret: KYUKOU_LINE_CHANNEL_SECRET
   channel_id: 1622536568
 
+line_notify:
+  client_id: UC00AINvR0Jtm3mThDVZPS
+  __ENV__client_secret: KYUKOU_LINE_NOTIFY_client_SECRET
+  redirect_uri: /api/v1/line/notify
+
+
 email:
   __ENV__password: KYUKOU_LINE_CHANNEL_SECRET
   smtp_server: yellowcoyote4.sakura.ne.jp
