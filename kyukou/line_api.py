@@ -35,7 +35,7 @@ def register(_user_id, _reply_token):
                 "follow_time": time.time(),
                 "display_name": profile["displayName"],
                 "picture_url": profile["pictureUrl"],
-                "status_message": profile["statusMessage"]
+                "status_message": profile.get('statusMessage')
             },
             "length": 1
         }
