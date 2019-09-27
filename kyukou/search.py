@@ -200,15 +200,19 @@ lectures_list = [{
 
 #%%
 weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
+period = {1:datetime.timedelta(hours=9), 2:datetime.timedelta(hours=10, minutes=40), 3:datetime.timedelta(hours=13), 4:datetime.timedelta(hours=14, minutes=40), 5:datetime.timedelta(hours=16, minutes=15)}
 #%%
 # users_dict = users_db.find({})
 # lectures_dict = lectures_list.find({})
 
-def notify(line_user_id,msg_texts=[]):
+def notify_func(line_user_id, notifies, msg_texts=[]):
     # line_api.push(line_user_id,msg_texts)
-    print(f'Notify for "{line_user_id}"')
+    print(f'Notify for "{line_user_id}"', end="")
     for msg_text in msg_texts:
         print(msg_text)
+    for notify in notifies:
+        print(f'type: {notify["type"]}, offset:{notify["offset"]}')
+    print("")
     # print(f'Notify for "{line_user_id}"',msg_texts)
 
 #%%
@@ -241,6 +245,14 @@ for user in users_list:
                 msg_texts_teachers = user_lecture["teachers"]
                 # 備考
                 msg_texts_remark = canceled_lecture["remark"] or "無し"
+                # notifyのリスト
+                notify_list = user["notifies"]
+                # notifyのリストから辞書を取り出す
+                for notify_dict in notify_list:
+                    if notify_dict["type"] == "day":
+                        notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
+                    if notify_dict["type"] == "lecture":
+                        notify_lecture = datetime.datetime.combine(date, datetime.time()) + period[min(periods)] + datetime.timedelta(seconds=notify_dict["offset"])
                 # msg_textsに追加
                 msg_texts.append(
                     f"""
@@ -249,8 +261,11 @@ for user in users_list:
 時限: {msg_texts_periods}
 科目: {msg_texts_subject}
 教員: {msg_texts_teachers}
-備考: {msg_texts_remark}""")
-    notify(user["_id"], msg_texts)
+備考: {msg_texts_remark}
+day: {notify_day}
+lecture: {notify_lecture}""")
+
+    notify_func(user["_id"], user["notifies"], msg_texts)
 
 
 
