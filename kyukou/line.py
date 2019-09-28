@@ -52,7 +52,6 @@ def validate_email(user_id, msg_text):
         line_api.reply(user_id, ['メールアドレスの書式が間違っています。もう一度入力してください'])
         email_procedure.set_progress(user_id, 0)
 
-##中井担当
 time_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'time')
 @process(time_procedure, 0)
 def please_enter_day(user_id, msg_text):
@@ -78,7 +77,7 @@ def validate_time(user_id, msg_text):
         time_procedure.set_progress(user_id, 1)
 
 
-ps = ProcedureSelector(email_procedure, csv_procedure, time_procedure,)
+ps = ProcedureSelector(email_procedure, csv_procedure, time_procedure, )
 
 
 def message(user_id, msg_text):
