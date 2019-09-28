@@ -115,3 +115,14 @@ def perse_csv(row_data):
     return result_list
 
 # print(perse_csv(row_data))
+
+
+from .db import get_collection
+from bson.objectid import ObjectId
+users_db=get_collection('users')
+def register(realid,data):
+    users_db.update_one({'_id':ObjectId(realid)},{
+        '$set':{
+            'lectures':data
+        }
+    })
