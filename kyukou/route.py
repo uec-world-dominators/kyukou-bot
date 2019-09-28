@@ -77,6 +77,10 @@ def status(n, headers={}):
     return status_message(n), util.dict_to_tuples(headers), []
 
 
+def redirect(url):
+    return status(302, {'Location': url})
+
+
 def json(obj, headers={}, status=200):
     default_headers = [('Content-type', 'application/json; charset=utf-8')]
     return status_message(status), util.dict_to_tuples(headers) if len(headers) else default_headers, [pkg_json.dumps(obj).encode('utf-8')]
