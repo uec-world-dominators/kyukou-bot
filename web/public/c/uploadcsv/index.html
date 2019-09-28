@@ -18,11 +18,11 @@
 
 
         .inner {
-            position: relative;
             margin: 0 auto;
-            width: 40%;
             padding: 20px;
             background: #ffffffcc;
+            max-width: 500px;
+            overflow-y: auto;
         }
 
         #msg {
@@ -30,6 +30,7 @@
             font-weight: bold;
             color: #000000;
             text-shadow: 0px 0px 0 rgb(0, 0, 0);
+            word-wrap: break-word;
         }
 
 
@@ -47,7 +48,6 @@
             color: #fff;
             text-align: center;
             cursor: pointer;
-            height: 50px;
             line-height: 50px;
             font-size: large;
             font-weight: bold;
@@ -55,6 +55,14 @@
 
         .button:hover {
             background: #0aa;
+        }
+
+        .button:disabled {
+            background: #666;
+        }
+
+        .button:hover {
+            background: #666;
         }
 
         .uploadButton input[type=file] {
@@ -78,9 +86,25 @@
             width: 100%;
         }
 
-        #name{
+
+
+        #message {
             font-size: x-large;
             font-weight: 900;
+        }
+
+        .filename {
+            outline: none;
+            border: none;
+            color: white;
+            display: block;
+            margin: 0 auto;
+            background: none;
+            margin-bottom: 10px;
+            font-size: large;
+            font-family: monospace;
+            width: 100%;
+            text-align: center;
         }
     </style>
 </head>
@@ -89,19 +113,27 @@
     　 <div class="wrapper">
 
         <div class="inner">
-            <div id="name">履修登録のCSVファイルをアップロードしてください</div>
+            <div id="message">履修登録のCSVファイルをアップロードしてください</div>
             <img width="100%" src="./logo.png">
             <div>by UEC World Dominators</div>
             <div id="buttons">
                 <div class="uploadButton button">
                     ファイルを選択
-                    <input type="file" onchange="uv.style.display='inline-block'; uv.value = this.value;" />
-                    <input type="text" id="uv" style="display: none" disabled />
+                    <input id="fileselector" type="file" />
+                    <script>
+                        document.querySelector('#fileselector').addEventListener('change', (e) => {
+                            if (e.target.files.length && e.target.value.endsWith('.csv')) {
+                                const filename = document.querySelector('#uv');
+                                filename.value = e.target.value;
+                                filename.style.display = 'block';
+                                const uploadbutton = document.querySelector('#upload');
+                                uploadbutton.style.display = 'block'
+                            }
+                        });
+                    </script>
+                    <input type="text" class="filename" id="uv" style="display: none" />
                 </div>
-                <button onclick="upload();" class="button">アップロード</button>
-            </div>
-            <div id="message" style="display: none">
-                <!-- <p id="msg"></p> -->
+                <button id="upload" onclick="upload();" class="button" style="display: none;">アップロード</button>
             </div>
         </div>
     </div>
@@ -126,8 +158,8 @@
                 }
             }).then(res => {
                 if (res.status !== 200) {
-                    const p = document.querySelector('#msg');
-                    p.textContent = 'このリンクは無効です'
+                    const p = document.querySelector('#message');
+                    p.textContent = 'このリンクは無効ですああああああああああああああああああああああああああああああああああ'
                     document.querySelector('#message').style.display = 'block';
                     // document.querySelector('#buttons').style.display = 'none';
                 }
@@ -146,7 +178,7 @@
                 body: file
             }).then(async res => {
                 console.log(await res.text());
-                const p = document.querySelector('#msg');
+                const p = document.querySelector('#message');
                 if (res.status == 200) {
                     p.textContent = 'アップロードを受け付けました。';
                 } else {
