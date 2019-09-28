@@ -166,7 +166,8 @@ def parse(o):
     # follow event
     event = data.follow_events[lambda l:l[0]]
     if event():
-        register(event.source.id(), event.source())
+        user_id = event.source.id()
+        register(user_id, event.source())
         twitter.follow(user_id)
         return
     # dm indicate typing event
