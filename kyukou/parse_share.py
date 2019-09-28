@@ -38,7 +38,7 @@
 # 登録されていません。
 # '''
 
-def perse_csv(row_data):
+def parse_csv(row_data):
 
     monday = []
     tuesday = []
