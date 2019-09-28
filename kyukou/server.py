@@ -1,3 +1,5 @@
+import asyncio
+from socketserver import ThreadingMixIn
 from wsgiref.util import setup_testing_defaults
 from wsgiref.simple_server import make_server, WSGIServer, WSGIRequestHandler
 
@@ -26,14 +28,18 @@ class NoLoggingWSGIRequestHandler(WSGIRequestHandler):
         pass
 
 
+class ThreadingWsgiServer(ThreadingMixIn, WSGIServer):
+    pass
+
+
 def run_server():
     port = settings["port"]
     try:
-        subprocess.check_call(['bash', '-c', f'kill -9 `lsof -t -i:{port}`'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        subprocess.check_call(['bash', '-c', f'kill -9 `lsof -t -i:{port}`'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except:
         pass
     finally:
         time.sleep(1)
-    with make_server('', port, app, handler_class=NoLoggingWSGIRequestHandler) as httpd:
+    with make_server('', port, app, ThreadingWsgiServer, handler_class=NoLoggingWSGIRequestHandler) as httpd:
         log(__name__, f'Listen on port: {port}')
         httpd.serve_forever()
