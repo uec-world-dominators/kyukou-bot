@@ -1,5 +1,8 @@
+from datetime import datetime
 import random
 import inspect
+from threading import Lock
+import sys
 
 
 def dict_to_tuples(d):
@@ -7,6 +10,19 @@ def dict_to_tuples(d):
 
 
 id_string = 'abcdefghijklmnopqrstuvwxyz0123456789'
+log_lock = Lock()
+
+
+def log(__name__, message, log_level=2):
+    from .settings import settings
+    msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
+    with log_lock:
+        if log_level >= settings.log_level(0):
+            sys.stdout.write(msg)
+            sys.stdout.write('\n')
+            sys.stdout.flush()
+        with open(settings.logfile(), 'at', encoding='utf-8') as f:
+            f.write(msg+'\n')
 
 
 def generate_id(n):

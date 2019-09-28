@@ -9,26 +9,17 @@ pip install pymongo bs4 requests pyyaml
 ## 起動
 * Access TokenとChannel Secretは環境変数に設定する
 ```sh
-# 初回DB用ディレクトリ作成
-mkdir db
-# DBは起動しておく必要がある
-mongod --dbpath `pwd`/db --port 8070
-# 起動用スクリプトから起動(python3.x required)
-python3 run.py
-# Address already in useのとき
-kill -9 `lsof -t -i:5426`
+./run
+# Ctrl+Z to terminate
 ```
 
 ## IO
 
 ```
-
-line bot csv コピペ--\
-                      \
-csv upload link    -----------> LINE Bot
-                      /
-画面コピペ to web   --/
-
+LINE Botと友だちになる -> LINE Notifyと連携 
+                     -> アップロードリンクからCSVをアップロード 
+                     
+-> やり取りはLINE Botと、こちらから送るのはLINE Notify
 ```
 
 
@@ -53,3 +44,7 @@ git fetch upstream dev
 # 自分の変更と競合しないように合体する
 git merge upstream/dev
 ```
+
+# Twitter API申請
+私は大学生です。学校が休講情報をウェブページ上にアップロードしますが、自分が履修している講義に関する情報を探すのは面倒です。Twitter APIを使用してその人が履修する講義だけを通知するアプリケーションを作成し、皆の大学生活を便利にしようと思います。
+Twitterのダイレクトメッセージを使用して、各個人が履修する講義を、このアプリケーションに登録し、パーソナライズされた休講情報を提供しようと考えています。
