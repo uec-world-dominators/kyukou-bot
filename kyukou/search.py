@@ -44,7 +44,7 @@ users_list = [{
         {
             "periods": [2],
             "dayofweek": 2,
-            "teachers": "くとう"
+            "teachers": "くとう・りくな 雄一"
         }
     ],
     "notifies": [
@@ -95,7 +95,7 @@ users_list = [{
                 3
             ],
             "dayofweek": 1,
-            "teachers": "りくな"
+            "teachers": "りくな 雄一"
         }
     ],
     "notifies": [
@@ -180,7 +180,7 @@ lectures_list = [{
 {
     "_id":"5d89a8fafa3e02f3fe8102ac",
     "date":1570028400-86400,
-    "teachers":"くとう",
+    "teachers":"○くとう・りくな(雄)",
     "periods":[1, 2, 3],
     "class":"2年昼",
     "subject":"中国語運用演習",
@@ -190,7 +190,7 @@ lectures_list = [{
 {
     "_id":"5d89a8fafa3e02f3fe8102ac",
     "date":1570028400-86400*2,
-    "teachers":"りくな",
+    "teachers":"りくな(雄)",
     "periods":[1, 2, 3],
     "class":"2年昼",
     "subject":"中国語運用演習",
@@ -230,8 +230,15 @@ for user in users_list:
             # 受講科目と休講科目の曜日の判定
             dayofweek = user_lecture["dayofweek"] == dayofweek
             # 受講科目と休講科目の教員の判定
-            teachers = user_lecture["teachers"] == canceled_lecture["teachers"]
-            # print(periods, dayofweek, teachers)
+            teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")
+            teachers_list = []
+            for teacher in teachers:
+                if " " in teacher:
+                    tmp = teacher.split(" ")
+                    tmp2 = "(" + tmp[1][0] + ")"
+                    teacher = tmp[0] + tmp2
+                teachers_list.append(teacher)
+            teachers = set(teachers_list) & set(canceled_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")) or False
             if periods and dayofweek and teachers:
                 # ○月○日に変更
                 msg_texts_date = date.strftime('%m月%d日'.encode('unicode-escape').decode()).encode().decode("unicode-escape")
