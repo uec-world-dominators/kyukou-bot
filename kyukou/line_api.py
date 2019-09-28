@@ -56,7 +56,7 @@ def parse(o):
                 "$unset": {"connections.line": None},
                 "$inc": {"connections.length": -1}
             })
-            users_db.delete_many({"connections.length": 0})
+            # users_db.delete_many({"connections.length": 0})
             line.unfollow(_user_id)
         elif _type == 'message':
             _msg_type = event.message.type()

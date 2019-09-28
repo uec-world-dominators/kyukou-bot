@@ -5,3 +5,4 @@ __pycache__/
 /*.json
 private/
 /log.txt
+tokens
