@@ -52,8 +52,33 @@ def validate_email(user_id, msg_text):
         line_api.reply(user_id, ['メールアドレスの書式が間違っています。もう一度入力してください'])
         email_procedure.set_progress(user_id, 0)
 
+##中井担当
+time_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'time')
+@process(time_procedure, 0)
+def please_enter_day(user_id, msg_text):
+    line_api.reply(user_id, ['休講の何日前に通知しますか？\n当日の場合は"0"、前日の場合は"1"、2日前の場合は"2"...のように入力してください。'])
+    time_procedure.set_progress(user_id, 0)
 
-ps = ProcedureSelector(email_procedure, csv_procedure)
+@process(time_procedure, 1)
+def please_enter_time(user_id, msg_text):
+    if re.match("\d*", msg_text):
+        line_api.reply(user_id, ['その日の何時に通知しますか？\n"6:30"、"23:00"のように"時:分"となるよう24時間表記で送信してください。'])
+        time_procedure.set_progress(user_id, 1)
+    else:
+        line_api.reply(user_id, ['数値の形式が間違っています。もう一度入力してください。なお、全角数字は対応しておりません。'])
+        email_procedure.set_progress(user_id, 0)
+
+@process(time_procedure, 2)
+def validate_time(user_id, msg_text):
+    if re.match("\d*:\d*", msg_text):
+        line_api.reply(user_id, ['通知時間を登録しました。']
+        time_procedure.set_progress(user_id, 2)
+    else:
+        line_api.reply(user_id, ['数値の形式が間違っています。もう一度入力してください。'])
+        time_procedure.set_progress(user_id, 1)
+
+
+ps = ProcedureSelector(email_procedure, csv_procedure, time_procedure,)
 
 
 def message(user_id, msg_text):
