@@ -1,3 +1,4 @@
+from . import perse_share
 import base64
 import json
 import hmac
@@ -120,14 +121,23 @@ def validate_upload_token(environ):
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
-    if realid and token and certificate.validate_token('csv_upload', realid, token):
-        line_user_id = line_api.get_line_user_id(realid)
-        line_api.push(line_user_id, [
-            'おめでとうございます！CSVファイルがアップロードされました！',
-            '休講情報を配信するためにLINE Notifyの連携をお願いします。これが最後のステップです',
-            line_notify_api.get_redirect_link(realid)
-        ])
-        return text(f'validated. user={line_user_id}')
+    if True or realid and token and certificate.validate_token('csv_upload', realid, token):
+        try:
+            csv = get_body(environ).decode('cp932')
+            data = perse_share.perse_csv(csv)
+        except:
+            return status(406)
+        if data:
+            perse_share.register(realid, data)
+            line_user_id = line_api.get_line_user_id(realid)
+            line_api.push(line_user_id, [
+                'おめでとうございます！CSVファイルがアップロードされました！',
+                '休講情報を配信するためにLINE Notifyの連携をお願いします。これが最後のステップです',
+                line_notify_api.get_redirect_link(realid)
+            ])
+            return text(f'validated. user={line_user_id}')
+        else:
+            return status(406)
     else:
         return status(403)
 
