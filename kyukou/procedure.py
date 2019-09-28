@@ -42,7 +42,6 @@ class Procedure():
             return r
 
     def check(self, _id, *args):
-        print(self.oncondition(_id, *args), self.get_progress(_id))
         if self.oncondition(_id, *args):
             return True
         else:
@@ -88,7 +87,9 @@ class ProcedureDB(Procedure):
 
 class ProcedureSelector():
     def __init__(self, *procedures):
-        self.procedures = procedures
+        self.procedures = {}
+        for procedure in procedures:
+            self.procedures[procedure.procedure_id] = procedure
         self.current = get_collection('current_procedure')
 
     def run(self, _id, *args):
@@ -96,19 +97,20 @@ class ProcedureSelector():
         if procedure_id and self.procedures[procedure_id].get_progress(_id) != -1:
             self.procedures[procedure_id].run(_id, *args)
             return True
-        for i, procedure in enumerate(self.procedures):
+        for k, procedure in self.procedures.items():
             if procedure.check(_id, *args):
                 procedure.run(_id, *args)
-                self.current.update({'id': _id}, {'procedure': i}, True)
+                self.current.update({'id': _id}, {'procedure': k, 'id': _id}, True)
                 return True
         return None
 
     def end(self, _id):
-        for procedure in self.procedures:
+        self.current.delete_one({'id': _id})
+        for procedure in self.procedures.values():
             procedure.end(_id)
 
     def clear(self):
-        for procedure in self.procedures:
+        for procedure in self.procedures.values():
             if hasattr(procedure, 'clear'):
                 procedure.clear()
 
