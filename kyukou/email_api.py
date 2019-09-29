@@ -3,13 +3,19 @@ from email.mime.text import MIMEText
 import smtplib
 import requests
 import time
-from . import certificate
 import hashlib
+isinpackage = not __name__ in ['email_api', '__main__']
 
-if __name__ != '__main__':
+if isinpackage:
+    from . import certificate
     from .settings import settings
     from .db import get_collection
-    users_db = get_collection('users')
+else:
+    import certificate
+    from settings import settings
+    from db import get_collection
+
+users_db = get_collection('users')
 
 
 def register(o={

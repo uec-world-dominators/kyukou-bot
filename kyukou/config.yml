@@ -29,6 +29,11 @@ email:
   
 google:
   __ENV__google_client_secret: KYUKOU_GOOGLE_CLIENT_SECRET
+  client_id: 723530674332-g9bq3lq6e921pip895vk6mgg91fhui4l.apps.googleusercontent.com
+  scope: 'email profile openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events'
+  access_type: offline
+  prompt: consent # select_account
+  response_type: code
 
 public_dir: ./web/public
 index: index.html

@@ -24,5 +24,9 @@ def init(url):
 def get_collection(name):
     return db[name]
 
+if not isinpackage:
+    from settings import settings
+    init(settings.mongo_url())
+
 
 __all__ = ["init", "get_collection"]

@@ -2,15 +2,23 @@ from datetime import datetime
 import time
 import json
 import base64
-from .settings import settings
 import requests
-from . import util
-from .util import Just
-from .db import get_collection
 import urllib
-from .import certificate
 from bson.objectid import ObjectId
-
+isinpackage = not __name__ in ['line_notify_api', '__main__']
+if isinpackage:
+    from .settings import settings
+    from . import util
+    from .util import Just
+    from .db import get_collection
+    from .import certificate
+else:
+    import util
+    import certificate
+    from settings import settings
+    from util import Just
+    from db import get_collection
+    
 users_db = get_collection('users')
 
 

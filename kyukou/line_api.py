@@ -11,7 +11,13 @@ if isinpackage:
     from .settings import settings
     from .db import get_collection
     from .util import Just, Curry
-    users_db = get_collection('users')
+else:
+    from settings import settings
+    from db import get_collection
+    from util import Just, Curry
+    import line
+
+users_db = get_collection('users')
 
 
 def validate(environ, body):
@@ -186,7 +192,3 @@ def get_line_user_id(real_user_id):
     else:
         raise RuntimeError
 
-
-if not isinpackage:
-    def reply(user_id, msg_texts):
-        print(user_id, msg_texts)

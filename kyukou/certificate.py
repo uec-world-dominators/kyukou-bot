@@ -1,8 +1,14 @@
-from . import scheduler
-from .db import get_collection
 import time
 from bson.objectid import ObjectId
-from . import util
+isinpackage = not __name__ in ['certificate', '__main__']
+if isinpackage:
+    from . import scheduler
+    from .db import get_collection
+    from . import util
+else:
+    import scheduler
+    from db import get_collection
+    import util
 
 certificate = get_collection('certificate')
 
