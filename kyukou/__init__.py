@@ -19,4 +19,6 @@ sys.stdout.flush()
 from . import scheduler
 scheduler.init(tick_interval_sec=1)
 
+from . import search
+
 __all__ = ['run_server']
