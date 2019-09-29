@@ -5,3 +5,5 @@ __pycache__/
 /*.json
 private/
 /log.txt
+tokens
+/node_modules/

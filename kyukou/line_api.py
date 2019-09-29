@@ -1,14 +1,17 @@
 
 from bson.objectid import ObjectId
 import requests
-from .settings import settings
 import hmac
 import hashlib
 import base64
-from . import line
-from .db import get_collection
 import time
-from .util import Just, Curry
+isinpackage = not __name__ in ['line_api', '__main__']
+if isinpackage:
+    from . import line
+    from .settings import settings
+    from .db import get_collection
+    from .util import Just, Curry
+    users_db = get_collection('users')
 
 
 def validate(environ, body):
@@ -20,9 +23,6 @@ def validate(environ, body):
         return xsignature == base64_digest
     else:
         return False
-
-
-users_db = get_collection('users')
 
 
 def register(_user_id, _reply_token):
@@ -56,7 +56,7 @@ def parse(o):
                 "$unset": {"connections.line": None},
                 "$inc": {"connections.length": -1}
             })
-            users_db.delete_many({"connections.length": 0})
+            # users_db.delete_many({"connections.length": 0})
             line.unfollow(_user_id)
         elif _type == 'message':
             _msg_type = event.message.type()
@@ -176,7 +176,7 @@ def get_profile(user_id):
 
 
 def get_real_user_id(user_id):
-    return str(users_db.find_one({"connections.line.user_id": user_id})["_id"])
+    return Just(users_db.find_one({"connections.line.user_id": user_id}))._id[lambda e:None if e == None else str(e)]()
 
 
 def get_line_user_id(real_user_id):
@@ -185,3 +185,8 @@ def get_line_user_id(real_user_id):
         return data.connections.line.user_id()
     else:
         raise RuntimeError
+
+
+if not isinpackage:
+    def reply(user_id, msg_texts):
+        print(user_id, msg_texts)

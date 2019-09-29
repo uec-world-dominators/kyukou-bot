@@ -44,7 +44,7 @@ users_list = [{
         {
             "periods": [2],
             "dayofweek": 2,
-            "teachers": "くとう"
+            "teachers": "くとう・りくな 雄一"
         }
     ],
     "notifies": [
@@ -95,7 +95,7 @@ users_list = [{
                 3
             ],
             "dayofweek": 1,
-            "teachers": "りくな"
+            "teachers": "りくな 雄一"
         }
     ],
     "notifies": [
@@ -180,7 +180,7 @@ lectures_list = [{
 {
     "_id":"5d89a8fafa3e02f3fe8102ac",
     "date":1570028400-86400,
-    "teachers":"くとう",
+    "teachers":"○くとう・りくな(雄)",
     "periods":[1, 2, 3],
     "class":"2年昼",
     "subject":"中国語運用演習",
@@ -190,7 +190,7 @@ lectures_list = [{
 {
     "_id":"5d89a8fafa3e02f3fe8102ac",
     "date":1570028400-86400*2,
-    "teachers":"りくな",
+    "teachers":"りくな(雄)",
     "periods":[1, 2, 3],
     "class":"2年昼",
     "subject":"中国語運用演習",
@@ -200,15 +200,19 @@ lectures_list = [{
 
 #%%
 weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
+period = {1:datetime.timedelta(hours=9), 2:datetime.timedelta(hours=10, minutes=40), 3:datetime.timedelta(hours=13), 4:datetime.timedelta(hours=14, minutes=40), 5:datetime.timedelta(hours=16, minutes=15)}
 #%%
 # users_dict = users_db.find({})
 # lectures_dict = lectures_list.find({})
 
-def notify(line_user_id,msg_texts=[]):
+def notify_func(line_user_id, notifies, msg_texts=[]):
     # line_api.push(line_user_id,msg_texts)
-    print(f'Notify for "{line_user_id}"')
+    print(f'Notify for "{line_user_id}"', end="")
     for msg_text in msg_texts:
         print(msg_text)
+    for notify in notifies:
+        print(f'type: {notify["type"]}, offset:{notify["offset"]}')
+    print("")
     # print(f'Notify for "{line_user_id}"',msg_texts)
 
 #%%
@@ -226,8 +230,15 @@ for user in users_list:
             # 受講科目と休講科目の曜日の判定
             dayofweek = user_lecture["dayofweek"] == dayofweek
             # 受講科目と休講科目の教員の判定
-            teachers = user_lecture["teachers"] == canceled_lecture["teachers"]
-            # print(periods, dayofweek, teachers)
+            teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")
+            teachers_list = []
+            for teacher in teachers:
+                if " " in teacher:
+                    tmp = teacher.split(" ")
+                    tmp2 = "(" + tmp[1][0] + ")"
+                    teacher = tmp[0] + tmp2
+                teachers_list.append(teacher)
+            teachers = set(teachers_list) & set(canceled_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")) or False
             if periods and dayofweek and teachers:
                 # ○月○日に変更
                 msg_texts_date = date.strftime('%m月%d日'.encode('unicode-escape').decode()).encode().decode("unicode-escape")
@@ -241,6 +252,14 @@ for user in users_list:
                 msg_texts_teachers = user_lecture["teachers"]
                 # 備考
                 msg_texts_remark = canceled_lecture["remark"] or "無し"
+                # notifyのリスト
+                notify_list = user["notifies"]
+                # notifyのリストから辞書を取り出す
+                for notify_dict in notify_list:
+                    if notify_dict["type"] == "day":
+                        notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
+                    if notify_dict["type"] == "lecture":
+                        notify_lecture = datetime.datetime.combine(date, datetime.time()) + period[min(periods)] + datetime.timedelta(seconds=notify_dict["offset"])
                 # msg_textsに追加
                 msg_texts.append(
                     f"""
@@ -249,8 +268,11 @@ for user in users_list:
 時限: {msg_texts_periods}
 科目: {msg_texts_subject}
 教員: {msg_texts_teachers}
-備考: {msg_texts_remark}""")
-    notify(user["_id"], msg_texts)
+備考: {msg_texts_remark}
+day: {notify_day}
+lecture: {notify_lecture}""")
+
+    notify_func(user["_id"], user["notifies"], msg_texts)
 
 
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="/css/github.css">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="dt">int</span> main(){
+    printf(<span class="st">&quot;%d&quot;</span>,<span class="dv">222</span>)
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode py"><code class="sourceCode python"><span class="kw">def</span> main():
+    <span class="bu">print</span>(<span class="st">&#39;hoge&#39;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode makefile"><code class="sourceCode makefile"><span class="dt">ROOTDIR</span><span class="ch">=</span><span class="st">#&#39;/web/public&#39;</span>
+<span class="dt">SOURCEDIR </span><span class="ch">=</span><span class="st"> .</span><span class="ch">$(</span><span class="dt">ROOTDIR</span><span class="ch">)</span>
+<span class="dt">MDS </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="kw">shell</span><span class="st"> find </span><span class="ch">$(</span><span class="dt">SOURCEDIR</span><span class="ch">)</span><span class="st"> -name &#39;*.md&#39;</span><span class="ch">)</span>
+<span class="dt">HTMLS </span><span class="ch">:=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">MDS</span><span class="er">:</span><span class="dt">%.md</span><span class="er">=</span><span class="dt">%.html</span><span class="ch">)</span>
+<span class="dt">CSS </span><span class="ch">=</span><span class="st"> </span><span class="ch">$(</span><span class="dt">ROOTDIR</span><span class="ch">)</span><span class="st">/css/github.css</span>
+
+<span class="dv">%.html:</span><span class="dt">%.md</span>
+    pandoc <span class="ch">$&lt;</span> -t html5 -c <span class="ch">$(</span><span class="dt">CSS</span><span class="ch">)</span> --mathjax -o <span class="ch">$@</span> --highlight-style=tango
+
+<span class="dv">default:</span><span class="dt"> </span><span class="ch">$(</span><span class="dt">HTMLS</span><span class="ch">)</span>
+
+<span class="dv">clean:</span>
+    rm <span class="ch">$(</span><span class="dt">HTMLS</span><span class="ch">)</span></code></pre></div>
+</body>
+</html>

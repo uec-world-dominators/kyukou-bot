@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 import random
 import inspect
@@ -29,7 +30,7 @@ def generate_id(n):
     return ''.join([random.choice(id_string) for i in range(n)])
 
 
-class Just(object):
+class Just(json.JSONEncoder):
     """
     # Maybe Monad
     ## usage
@@ -76,7 +77,11 @@ class Just(object):
 
     def __getitem__(self, f):
         if callable(f):
-            return Just(f(object.__getattribute__(self, 'a')))
+            try:
+                r = f(object.__getattribute__(self, 'a'))
+            except:
+                r = None
+            return Just(r)
         elif isinstance(f, str):
             return object.__getattribute__(self, 'a')[f]  # 既存コードとの互換性のためJustは返さない
         else:
@@ -85,7 +90,6 @@ class Just(object):
     def __rshift__(self, f):
         if callable(f):
             return Just(f(object.__getattribute__(self, 'a')))
-
 
 class Curry(object):
     """

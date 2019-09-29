@@ -1,3 +1,4 @@
+import urllib
 import mimetypes
 import os
 import json as pkg_json
@@ -68,7 +69,7 @@ def status_message(code):
     return str(code)+' ' + http.client.responses[code]
 
 
-def text(text, headers={}, status=200):
+def text(text, status=200, headers={}):
     default_headers = [('Content-type', 'text/plain; charset=utf-8')]
     return status_message(status), util.dict_to_tuples(headers) if len(headers) else default_headers, [text.encode('utf-8')]
 
@@ -81,7 +82,7 @@ def redirect(url):
     return status(302, {'Location': url})
 
 
-def json(obj, headers={}, status=200):
+def json(obj, status=200, headers={}):
     default_headers = [('Content-type', 'application/json; charset=utf-8')]
     return status_message(status), util.dict_to_tuples(headers) if len(headers) else default_headers, [pkg_json.dumps(obj).encode('utf-8')]
 
@@ -93,6 +94,8 @@ def file(path):
         abspath = os.path.abspath(os.path.join(public_dir, path[1:]))
         if abspath.startswith(rootpath):
             if os.path.isdir(abspath):
+                if not path.endswith('/'):
+                    return redirect(path+'/')
                 abspath = os.path.join(abspath, settings["index"])
             _type, _ = mimetypes.guess_type(abspath)
             if _type:
@@ -127,3 +130,15 @@ def body_to_utf8(body):
 
 def body_to_json(body):
     return pkg_json.loads(body_to_utf8(body))
+
+
+def get_query(environ):
+    try:
+        src = urllib.parse.unquote(environ['QUERY_STRING'])
+        r = {}
+        for e in src.split('&'):
+            s = e.split('=')
+            r[s[0]] = s[1]
+        return r
+    except:
+        return {}
