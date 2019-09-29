@@ -1,5 +1,17 @@
+```c
+int main(){
+    printf("%d",222)
+}
+```
+
+```py
+def main():
+    print('hoge')
+```
+
+```makefile
 ROOTDIR=#'/web/public'
-SOURCEDIR = ./web/public
+SOURCEDIR = .$(ROOTDIR)
 MDS := $(shell find $(SOURCEDIR) -name '*.md')
 HTMLS := $(MDS:%.md=%.html)
 CSS = $(ROOTDIR)/css/github.css
@@ -11,3 +23,4 @@ default: $(HTMLS)
 
 clean:
 	rm $(HTMLS)
+```
