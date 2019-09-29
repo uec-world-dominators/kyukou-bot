@@ -1,6 +1,10 @@
 import os
 import yaml
-from .util import Just
+import json
+from threading import Lock
+isinpackage = not __name__ in ['settings', '__main__']
+if isinpackage:
+    from .util import Just
 
 settings = {}
 env_mark = '__ENV__'
@@ -30,3 +34,35 @@ def resolve_env(d):
                 name = key[len(env_mark):]
                 tmp[name] = os.environ.get(value)
     d.update(**tmp)
+
+
+STORE_FILE = 'storage'
+store_lock = Lock()
+
+
+def load_basic(file):
+    if os.path.exists(file):
+        with store_lock:
+            with open(file, 'rt', encoding='utf-8') as f:
+                try:
+                    return json.load(f)
+                except:
+                    return {}
+    else:
+        return {}
+
+
+def store_basic(file, obj):
+    with store_lock:
+        with open(file, 'wt', encoding='utf-8') as f:
+            json.dump(obj, f)
+
+
+def load(key, default):
+    return load_basic(STORE_FILE).get(key) or default
+
+
+def store(key, value):
+    obj = load_basic(STORE_FILE)
+    obj[key] = value
+    store_basic(STORE_FILE, obj)

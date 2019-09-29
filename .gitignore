@@ -6,4 +6,5 @@ __pycache__/
 private/
 /log.txt
 tokens
+storage
 /node_modules/

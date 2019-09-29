@@ -12,10 +12,12 @@ title: TODO
 * tommy-0000の関数を呼びまくるのは負荷が高いので、通知を発行するだけの関数を作る
 * hashとtimeを見て同じものがなかったら追加する
 ```py
-'users_db.queue': [{
+'queue': [{
         'hash': スクレイピング結果のhash,
         'time': 15000000,
-        'message': ''
+        'message': '',
+        'dest':'twitter',
+        'user_id':';ajgeogiajeorgj'
 }]
 ```
 

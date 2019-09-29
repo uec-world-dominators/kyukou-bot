@@ -1,8 +1,12 @@
 from pprint import pprint
 from pymongo import MongoClient
 import datetime
-from .util import log
-
+isinpackage = not __name__ in ['db', '__main__']
+if isinpackage:
+    from .util import log
+else:
+    def log(module, msg):
+        print(module, msg)
 db = None
 
 

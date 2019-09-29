@@ -30,6 +30,13 @@ def generate_id(n):
     return ''.join([random.choice(id_string) for i in range(n)])
 
 
+def has_all_key(d, *keys):
+    for key in keys:
+        if not key in d:
+            return False
+    return True
+
+
 class Just(json.JSONEncoder):
     """
     # Maybe Monad
@@ -90,6 +97,7 @@ class Just(json.JSONEncoder):
     def __rshift__(self, f):
         if callable(f):
             return Just(f(object.__getattribute__(self, 'a')))
+
 
 class Curry(object):
     """
