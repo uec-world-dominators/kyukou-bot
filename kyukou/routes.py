@@ -18,8 +18,12 @@ from .settings import settings
 from .util import log
 # 上から順に優先
 
+LINE_API_NETWORKS = ['147.92.150.196/32']
+TWITTER_API_NETWORKS = ['199.59.148.0/22', '199.16.156.0/22']
+LOCAL_NETWORKS = ['192.168.0.0/16', '124.147.77.47/32']
+
 # LINE botからイベントがあったときに来る
-@route('post', '/api/v1/line/webhook')
+@route('post', '/api/v1/line/webhook', networks=LINE_API_NETWORKS)
 def line_webhook(environ):
     body = get_body(environ)
     o = body_to_json(body)
@@ -51,7 +55,7 @@ def line_notify(environ):
     return status(400)
 
 # Twitter Get Redirect URL to Allow Connection
-@route('get', '/api/v1/twitter/redirect_url')
+@route('get', '/api/v1/twitter/redirect_url', networks=LOCAL_NETWORKS)
 def line_notify(environ):
     q = get_query(environ)
     if q.get('consumer_key_secret') == settings.twitter.consumer_key_secret()\
@@ -61,13 +65,13 @@ def line_notify(environ):
         return status(400)
 
 # Twitter Webhook
-@route('post', '/api/v1/twitter/webhook')
+@route('post', '/api/v1/twitter/webhook', networks=TWITTER_API_NETWORKS)
 def twitter_webhook(environ):
     twitter_api.parse(get_body_json(environ))
     return status(200)
 
 # Twitter Webhook CRC
-@route('get', '/api/v1/twitter/webhook')
+@route('get', '/api/v1/twitter/webhook', networks=TWITTER_API_NETWORKS)
 def twitter_webhook(environ):
     sha256_hash_digest = hmac.new(settings.twitter.consumer_key_secret().encode(),
                                   msg=get_query(environ)['crc_token'].encode(),
@@ -78,7 +82,7 @@ def twitter_webhook(environ):
     return json(response)
 
 # Settings for Bot Account
-@route('get', '/api/v1/twitter/callback')
+@route('get', '/api/v1/twitter/callback', networks=LOCAL_NETWORKS)
 def twitter_callback(environ):
     q = get_query(environ)
     access_tokens = twitter_api.get_access_token(q['oauth_token'], q['oauth_verifier'])
@@ -176,6 +180,11 @@ def email(environ):
     return status(200)
 
 
-@route(re.compile('.*'), '/')
-def fallback(environ):
+@route('get', '/')
+def getfile(environ):
     return file(environ["PATH_INFO"])
+
+
+@route()
+def fallback(environ):
+    return status(418)
