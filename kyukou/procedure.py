@@ -5,7 +5,7 @@ isinpackage = not __name__ in ['procedure', '__main__']
 if isinpackage:
     from .scheduler import add_task
     from .db import get_collection
-
+    from .util import Just
 
 def process(p, n):
     def wrapper(f):
@@ -146,7 +146,7 @@ if isinpackage:
             self.current = get_collection('current_procedure')
 
         def run(self, _id, *args):
-            procedure_id = self.current.find_one({'id': _id}).get('procedure')
+            procedure_id = Just(self.current.find_one({'id': _id})).procedure()
             if procedure_id and self.procedures[procedure_id].get_progress(_id) != -1:
                 self.procedures[procedure_id].run(_id, *args)
                 return True

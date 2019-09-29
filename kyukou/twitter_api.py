@@ -1,6 +1,5 @@
 import os
 from operator import getitem
-from . import util
 from pprint import pprint
 import hmac
 import hashlib
@@ -12,8 +11,9 @@ import requests
 import urllib
 from bson.objectid import ObjectId
 from urllib.parse import urlencode, quote, quote_plus, parse_qs, unquote
-from . import twitter
 if __name__ != '__main__':
+    from . import util
+    from . import twitter
     from .settings import settings
     from . import util
     from .util import Just
@@ -142,11 +142,7 @@ def get_real_user_id(user_id):
 
 
 def get_twitter_user_id(real_user_id):
-    data = Just(users_db.find_one({"_id": ObjectId(real_user_id)}))
-    if data() and 'twitter' in data.connections():
-        return data.connections.twitter.user_id()
-    else:
-        raise RuntimeError
+    return Just(users_db.find_one({"_id": ObjectId(real_user_id)})).connections.twitter.id()
 
 
 def parse(o):

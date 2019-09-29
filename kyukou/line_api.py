@@ -176,7 +176,7 @@ def get_profile(user_id):
 
 
 def get_real_user_id(user_id):
-    return str(users_db.find_one({"connections.line.user_id": user_id})["_id"])
+    return Just(users_db.find_one({"connections.line.user_id": user_id}))._id[lambda e:None if e == None else str(e)]()
 
 
 def get_line_user_id(real_user_id):
