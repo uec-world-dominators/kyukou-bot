@@ -1,4 +1,4 @@
-from . import perse_share
+from . import parse_share
 import base64
 import json
 import hmac
@@ -15,6 +15,7 @@ from . import line_notify_api
 from . import twitter_api
 from . import util
 from .settings import settings
+from .util import log
 # 上から順に優先
 
 # LINE botからイベントがあったときに来る
@@ -121,21 +122,30 @@ def validate_upload_token(environ):
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
-    if True or realid and token and certificate.validate_token('csv_upload', realid, token):
+    cert = certificate.validate_token('csv_upload', realid, token)
+    if True or realid and token and cert:
         try:
             csv = get_body(environ).decode('cp932')
-            data = perse_share.perse_csv(csv)
-        except:
+            data = parse_share.parse_csv(csv)
+        except Exception as e:
+            log(__name__, e)
             return status(406)
         if data:
-            perse_share.register(realid, data)
-            line_user_id = line_api.get_line_user_id(realid)
-            line_api.push(line_user_id, [
-                'おめでとうございます！CSVファイルがアップロードされました！',
-                '休講情報を配信するためにLINE Notifyの連携をお願いします。これが最後のステップです',
-                line_notify_api.get_redirect_link(realid)
-            ])
-            return text(f'validated. user={line_user_id}')
+            parse_share.register(realid, data)
+            if cert.get('referrer') == 'line':
+                line_user_id = line_api.get_line_user_id(realid)
+                line_api.push(line_user_id, [
+                    'おめでとうございます！CSVファイルがアップロードされました！',
+                    '休講情報を配信するためにLINE Notifyの連携をお願いします。これが最後のステップです',
+                    line_notify_api.get_redirect_link(realid)
+                ])
+                return status(200)
+            elif cert.get('referrer') == 'twitter':
+                twitter_user_id = twitter_api.get_twitter_user_id(realid)
+                if twitter_user_id:
+                    twitter_api.send(twitter_user_id, 'おめでとうございます！CSVファイルがアップロードされました！')
+                return status(200)
+            return status(403)
         else:
             return status(406)
     else:

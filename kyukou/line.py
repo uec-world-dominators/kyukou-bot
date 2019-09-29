@@ -44,7 +44,7 @@ else:
 @process(csv_procedure, 0)
 def reply_csv_upload_link(user_id, msg_text):
     real_user_id = line_api.get_real_user_id(user_id)
-    token = certificate.generate_token(real_user_id, 'csv_upload')
+    token = certificate.generate_token(real_user_id, 'csv_upload',{'referrer':'line'})
     link = f'{settings.url_prefix()}/c/uploadcsv/?token={token}&realid={real_user_id}'
     line_api.reply(user_id, [link, 'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'])
     csv_procedure.set_progress(user_id, 0)
