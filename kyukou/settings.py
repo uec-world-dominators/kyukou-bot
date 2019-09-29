@@ -2,12 +2,14 @@ import os
 import yaml
 import json
 from threading import Lock
+settings = {}
+env_mark = '__ENV__'
+
 isinpackage = not __name__ in ['settings', '__main__']
 if isinpackage:
     from .util import Just
-
-settings = {}
-env_mark = '__ENV__'
+else:
+    from util import Just
 
 
 def load_settings(relative_path):
@@ -66,3 +68,7 @@ def store(key, value):
     obj = load_basic(STORE_FILE)
     obj[key] = value
     store_basic(STORE_FILE, obj)
+
+
+if not isinpackage:
+    load_settings('config.yml')

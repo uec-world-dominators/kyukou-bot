@@ -2,13 +2,12 @@ import time
 isinpackage = not __name__ in ['publish', '__main__']
 if isinpackage:
     from .db import get_collection
-    from .settings import store, load
+    from .settings import store, load, settings
     from .util import has_all_key
 else:
-    from db import get_collection, init
-    from settings import store, load
+    from db import get_collection
+    from settings import store, load, settings
     from util import has_all_key
-    init('mongodb://localhost:8070/')
 
 queue = get_collection('queue')
 
@@ -32,17 +31,17 @@ def try_add_notification(data={
 
 def delete_old():
     '''
-    過ぎた&通知済みの通知をキューから削除する
+    講義時間を過ぎた&通知済みの通知をキューから削除する
     '''
     queue.delete_many({'end': {'$lt': time.time()}, 'finish': True})
 
 
 def publish_all():
     '''
-    通知を実行する。今よりも古いものを持ってきて
+    通知を実行する。今よりも通知時間が古いものを持ってきて
     '''
     last_publish = load('last_publish', 0)
-    now = 1000  # time.time()
+    now = time.time()+0  # 安全のために少し早めに通知したいときはここを変える
     for data in queue.find({
             'time': {'$lte': last_publish},
             'finish': False
@@ -55,6 +54,9 @@ def publish_all():
 
 
 def publish_one(data):
+    '''
+    通知を一つ処理する
+    '''
     dest = data['dest']
     if dest == 'line':
         pass
