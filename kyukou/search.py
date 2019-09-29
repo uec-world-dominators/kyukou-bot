@@ -1,6 +1,7 @@
 #%%
 # from .db import Db
 import datetime
+from pprint import pprint
 import pandas as pd
 
 #%%
@@ -213,82 +214,78 @@ def notify_func(line_user_id, notifies, msg_texts=[]):
     for notify in notifies:
         print(f'type: {notify["type"]}, offset:{notify["offset"]}')
     print("")
-    # print(f'Notify for "{line_user_id}"',msg_texts)
+
 
 #%%
-for user in users_list:
-    user_lectures = user["lectures"]
-    msg_texts = []
-    for canceled_lecture in sorted(lectures_list, key=lambda x: x["date"]):
-        for user_lecture in user_lectures:
-            # 受講科目の時限と休講科目の時限の積集合
-            periods = set(user_lecture["periods"]) & set(canceled_lecture["periods"])
-            # 休講科目からdatetimeオブジェクトを作成
-            date = datetime.date.fromtimestamp(canceled_lecture["date"])
-            # 休講科目のdatetimeオブジェクトから曜日を作る
-            dayofweek = date.weekday()
-            # 受講科目と休講科目の曜日の判定
-            dayofweek = user_lecture["dayofweek"] == dayofweek
-            # 受講科目と休講科目の教員の判定
-            teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")
-            teachers_list = []
-            for teacher in teachers:
-                if " " in teacher:
-                    tmp = teacher.split(" ")
-                    tmp2 = "(" + tmp[1][0] + ")"
-                    teacher = tmp[0] + tmp2
-                teachers_list.append(teacher)
-            teachers = set(teachers_list) & set(canceled_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")) or False
-            if periods and dayofweek and teachers:
-                # ○月○日に変更
-                msg_texts_date = date.strftime('%m月%d日'.encode('unicode-escape').decode()).encode().decode("unicode-escape")
-                # 曜日を取り出す
-                msg_texts_weekday = weekday[date.weekday()][0]
-                # periods(積集合)を「・」でくっつける
-                msg_texts_periods = "・".join((map(str, periods)))
-                # 科目名
-                msg_texts_subject = canceled_lecture["subject"]
-                # 教員名
-                msg_texts_teachers = user_lecture["teachers"]
-                # 備考
-                msg_texts_remark = canceled_lecture["remark"] or "無し"
-                # notifyのリスト
-                notify_list = user["notifies"]
-                # notifyのリストから辞書を取り出す
-                for notify_dict in notify_list:
-                    if notify_dict["type"] == "day":
-                        notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
-                    if notify_dict["type"] == "lecture":
-                        notify_lecture = datetime.datetime.combine(date, datetime.time()) + period[min(periods)] + datetime.timedelta(seconds=notify_dict["offset"])
-                # msg_textsに追加
-                msg_texts.append(
-                    f"""
-【休講情報】
-月日: {msg_texts_date}({msg_texts_weekday})
-時限: {msg_texts_periods}
-科目: {msg_texts_subject}
-教員: {msg_texts_teachers}
-備考: {msg_texts_remark}
-day: {notify_day}
-lecture: {notify_lecture}""")
+def make_dict(scraping_hash, message, end, dest, user_id, time):
+    output_dict = {
+        "hash": scraping_hash,
+        "message": message,
+        "end": end,
+        "dest": dest,
+        "user_id": user_id,
+        "time": time
+    }
+    return output_dict
 
-    notify_func(user["_id"], user["notifies"], msg_texts)
-
-
-
-# #%%
-# import pandas as pd
-# a = pd.read_csv("RSReferCsv.csv", encoding="ANSI", names=[i for i in range(7)], dtype="object")
-# a = a.drop([i for i in range(4)], axis=0)
-# a = a.drop([i for i in range(26, a.index.max()+1)])
-# a.columns = a.iloc[0, :]
-# a.drop(4, axis=0)
-# a
-# index = []
-# a
-# #%%
-# for i in range(1, 8):
-#     index.append("{}限_科目名".format(i))
-#     index.append("{}限_教員名".format(i))
-# time_table = pd.DataFrame(columns=[i for i in range(0, 7)], index=index)
-# time_table
+#%%
+def make_notification_dict():
+    for user in users_list:
+        user_lectures = user["lectures"]
+        for canceled_lecture in sorted(lectures_list, key=lambda x: x["date"]):
+            for user_lecture in user_lectures:
+                # 受講科目の時限と休講科目の時限の積集合
+                periods = set(user_lecture["periods"]) & set(canceled_lecture["periods"])
+                # 休講科目からdatetimeオブジェクトを作成
+                date = datetime.date.fromtimestamp(canceled_lecture["date"])
+                # 休講科目のdatetimeオブジェクトから曜日を作る
+                dayofweek = date.weekday()
+                # 受講科目と休講科目の曜日の判定
+                dayofweek = user_lecture["dayofweek"] == dayofweek
+                # 受講科目と休講科目の教員の判定
+                teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")
+                teachers_list = []
+                for teacher in teachers:
+                    if " " in teacher:
+                        tmp = teacher.split(" ")
+                        tmp2 = "(" + tmp[1][0] + ")"
+                        teacher = tmp[0] + tmp2
+                    teachers_list.append(teacher)
+                teachers = set(teachers_list) & set(canceled_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")) or False
+                if periods and dayofweek and teachers:
+                    # ○月○日に変更
+                    msg_texts_date = date.strftime('%m月%d日'.encode('unicode-escape').decode()).encode().decode("unicode-escape")
+                    # 曜日を取り出す
+                    msg_texts_weekday = weekday[date.weekday()][0]
+                    # periods(積集合)を「・」でくっつける
+                    msg_texts_periods = "・".join((map(str, periods)))
+                    # 科目名
+                    msg_texts_subject = canceled_lecture["subject"]
+                    # 教員名
+                    msg_texts_teachers = user_lecture["teachers"]
+                    # 備考
+                    msg_texts_remark = canceled_lecture["remark"] or "無し"
+                    # notifyのリスト
+                    notify_list = user["notifies"]
+                    scraping_hash = canceled_lecture["hash"]
+                    message = f"""【休講情報】
+    月日: {msg_texts_date}({msg_texts_weekday})
+    時限: {msg_texts_periods}
+    科目: {msg_texts_subject}
+    教員: {msg_texts_teachers}
+    備考: {msg_texts_remark}"""
+                    end = datetime.datetime.timestamp(datetime.datetime.combine(date, datetime.time()) + period[min(periods)])
+                    dest = "ほげ"
+                    user_id = user["_id"]
+                    for notify_dict in notify_list:
+                        if notify_dict["type"] == "day":
+                            notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
+                            time_day = datetime.datetime.timestamp(notify_day)
+                            make_dict(scraping_hash, message, end, dest, user_id,time_day)
+                        if notify_dict["type"] == "lecture":
+                            notify_lecture = datetime.datetime.combine(date, datetime.time()) + period[min(periods)] + datetime.timedelta(seconds=notify_dict["offset"])
+                            time_lecture = datetime.datetime.timestamp(notify_lecture)
+                            make_dict(scraping_hash, message, end, dest, user_id, time_lecture)
+                        if notify_dict["type"] == "scraping":
+                            time_scraping = "スクレイピングした時間"
+                            make_dict(scraping_hash, message, end, dest, user_id, time_scraping)
