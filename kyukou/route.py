@@ -94,6 +94,8 @@ def file(path):
         abspath = os.path.abspath(os.path.join(public_dir, path[1:]))
         if abspath.startswith(rootpath):
             if os.path.isdir(abspath):
+                if not path.endswith('/'):
+                    return redirect(path+'/')
                 abspath = os.path.join(abspath, settings["index"])
             _type, _ = mimetypes.guess_type(abspath)
             if _type:
