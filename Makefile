@@ -3,7 +3,7 @@ ROOTDIR=#/web/public
 SOURCEDIR = ./web/public
 MDS := $(shell find $(SOURCEDIR) -name '*.md')
 HTMLS := $(MDS:%.md=%.html)
-CSS = $(ROOTDIR)/templates/pandoc-md2html-template/template-dark.css
+CSS = $(ROOTDIR)/templates/pandoc-md2html-template/template-light.css
 TEMPLATE= ./web/public/templates/pandoc-md2html-template/template.html
 # Server
 WSGI_LOG=./log/uwsgi.log

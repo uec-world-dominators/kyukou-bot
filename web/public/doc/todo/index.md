@@ -1,5 +1,7 @@
 ---
 title: TODO
+subtitle: ご注文は休講情報ですか？
+author: UEC World Dominators
 ---
 
 # tomy-0000
