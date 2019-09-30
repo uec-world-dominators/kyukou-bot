@@ -60,10 +60,12 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li>sniper-flyの設定で変更があったら全て消して作り直す</li>
 <li>tommy-0000の関数を呼びまくるのは負荷が高いので、通知を発行するだけの関数を作る</li>
 <li><p>hashとtimeを見て同じものがなかったら追加する</p>
-<div class="sourceCode"><pre class="sourceCode py"><code class="sourceCode python"><span class="co">&#39;users_db.queue&#39;</span>: [{
+<div class="sourceCode"><pre class="sourceCode py"><code class="sourceCode python"><span class="co">&#39;queue&#39;</span>: [{
     <span class="st">&#39;hash&#39;</span>: スクレイピング結果のhash,
     <span class="st">&#39;time&#39;</span>: <span class="dv">15000000</span>,
-    <span class="st">&#39;message&#39;</span>: <span class="st">&#39;&#39;</span>
+    <span class="st">&#39;message&#39;</span>: <span class="st">&#39;&#39;</span>,
+    <span class="st">&#39;dest&#39;</span>:<span class="st">&#39;twitter&#39;</span>,
+    <span class="st">&#39;user_id&#39;</span>:<span class="st">&#39;;ajgeogiajeorgj&#39;</span>
 }]</code></pre></div></li>
 </ul>
 <h1 id="yyuusseeii">yyuusseeii</h1>
@@ -73,6 +75,8 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li>年度指定を自動化する（今2019って手打ちしてる）</li>
 <li>スクレイピング結果のhashには年度を入れたほうがいいかも</li>
 </ul>
+<div class="sourceCode"><pre class="sourceCode py"><code class="sourceCode python"><span class="co">&quot;hash&quot;</span>:hashlib.sha256((<span class="bu">str</span>(<span class="dv">2019</span>)<span class="op">+</span>tr.text).encode()).hexdigest()
+<span class="co">#こんなかんじ</span></code></pre></div>
 <h1 id="sniper-fly">sniper-fly</h1>
 <p>TwitterとLINEの設定関連</p>
 <ul>

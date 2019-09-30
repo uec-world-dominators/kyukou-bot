@@ -71,7 +71,7 @@ def parse_query(src):
         return None
 
 
-def post(baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
+def http(method, method_function, baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
     url = f'{baseurl}{"?"if d else ""}{urlencode(d)}'
     raw_params = {
         'oauth_callback': settings.url_prefix()+settings.twitter.callback_path(),
@@ -86,12 +86,20 @@ def post(baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', h
     for k, v in d.items():
         params[k] = v
     raw_key = settings.twitter.consumer_key_secret()+'&'+oauth_token_secret
-    raw_params['oauth_signature'] = generate_signature('POST', baseurl, params, raw_key)
+    raw_params['oauth_signature'] = generate_signature(method, baseurl, params, raw_key)
     default_headers = {
         'Authorization': f'OAuth {urlencode(raw_params).replace("&",",")}'
     }
     default_headers.update(headers)
-    return requests.post(url, headers=default_headers, data=data)
+    return method_function(url, headers=default_headers, data=data)
+
+
+def post(baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
+    return http('POST', requests.post, baseurl, oauth_token, oauth_token_secret, d, nonce, headers, data)
+
+
+def put(baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
+    return http('PUT', requests.put, baseurl, oauth_token, oauth_token_secret, d, nonce, headers, data)
 
 
 def store_tokens(o):
@@ -226,5 +234,3 @@ def subscribe_user(webhook_id, oauth_token, oauth_token_secret):
     }))
     print(res.status_code, res.status_code == 204)
 
-
-tweet('こころぴょんぴょん')

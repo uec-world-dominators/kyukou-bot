@@ -40,5 +40,5 @@ index: index.html
 
 
 __ENV__hash_salt: KYUKOU_HASH_SALT
-logfile: /home/sho/repos/wd-kyukou-bot/log.txt
+logfile: ../log/kyukou.log
 log_level: 1

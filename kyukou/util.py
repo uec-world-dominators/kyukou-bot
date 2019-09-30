@@ -1,3 +1,4 @@
+import os
 import json
 from datetime import datetime
 import random
@@ -12,17 +13,20 @@ def dict_to_tuples(d):
 
 id_string = 'abcdefghijklmnopqrstuvwxyz0123456789'
 log_lock = Lock()
+log_file = None
 
 
 def log(__name__, message, log_level=2):
     from .settings import settings
+    global log_file
+    log_file = log_file or os.path.join(os.path.dirname(__file__), settings.logfile())
     msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
     with log_lock:
         if log_level >= settings.log_level(0):
             sys.stdout.write(msg)
             sys.stdout.write('\n')
             sys.stdout.flush()
-        with open(settings.logfile(), 'at', encoding='utf-8') as f:
+        with open(log_file, 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 
 

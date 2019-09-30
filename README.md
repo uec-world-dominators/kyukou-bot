@@ -2,16 +2,20 @@
 
 ## 依存関係のインストール
 ```sh
-pip install pymongo bs4 requests pyyaml
+sudo apt install pandoc
+pip3 install pymongo bs4 requests pyyaml greenlet
+CFLAGS="-I<parent dir of greenlet installed path>" UWSGI_PROFILE="asyncio" pip3 install uwsgi
 ```
 
 ## 起動
 * Access TokenとChannel Secretは環境変数に設定する
 ```sh
-./run
-# Ctrl+Z to terminate
+make run
 ```
-
+## リロード
+```sh
+make reload
+```
 ## IO
 
 ```

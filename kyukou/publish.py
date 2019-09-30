@@ -1,3 +1,4 @@
+from .scheduler import add_task
 import time
 isinpackage = not __name__ in ['publish', '__main__']
 if isinpackage:
@@ -43,14 +44,18 @@ def publish_all():
     last_publish = load('last_publish', 0)
     now = time.time()+0  # 安全のために少し早めに通知したいときはここを変える
     for data in queue.find({
-            'time': {'$lte': last_publish},
+            # 'time': {'$lte': last_publish},
             'finish': False
     }):
         if publish_one(data):
             queue.update_one({'_id': data['_id']}, {
                 '$set': {'finish': True}
             })
+    delete_old()
     store('last_publish', now)
+
+
+add_task(60, publish_all)
 
 
 def publish_one(data):

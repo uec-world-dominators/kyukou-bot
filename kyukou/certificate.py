@@ -26,6 +26,8 @@ def generate_token(real_user_id, type, options={}, expire_in=3600):
 
 
 def validate_token(type, real_user_id, token, expire=True):
+    if not (type and real_user_id and token):
+        return False
     data = certificate.find_one({"token": token, 'type': type})
     if data:
         if expire:
