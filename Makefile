@@ -37,7 +37,7 @@ runsync: $(HTMLS) mongod FORCE
 	python3 run.py
 
 ab:
-	ab -n 10 http://localhost:$(SERVER_PORT)/
+	ab -n $(if ${n},${n},1) $(if ${c},-c ${c}) http://localhost:$(SERVER_PORT)/
 
 log: FORCE
 	tail -f $(WSGI_LOG)
