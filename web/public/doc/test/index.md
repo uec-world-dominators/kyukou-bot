@@ -1,26 +1,39 @@
+---
+title: ほげほげ
+---
+
+# こんにちは
+## こんにちは
+### こんにちは
+#### こんにちは
+##### こんにちは
+###### こんにちは
+こんにちはです上記ウェブサイ[https://campusweb.office.uec.ac.jp/campusweb/](https://campusweb.office.uec.ac.jp/campusweb/)トにアクセスし、ご自分の履修情報が記載されたCSVファイルをダウンロードしていただきます。上記ウェブサイトにアクセスし、ご自分の履修情報が記載されたCSVファイルをダウンロードしていただきます。上記ウェブサイトにアクセスし、ご自分の履修情報が記載されたCSVファイルをダウンロードしていただきます。
+
+|hoge|hige|
+|:---|:---:|
+|aaaa|bbbb|
+
+***
+
 ```c
+#include <stdio.h>
+
 int main(){
-    printf("%d",222)
+    printf("hage");
 }
 ```
 
-```py
-def main():
-    print('hoge')
-```
+1. hoge
+    1. hoge
+1. hoge
 
-```makefile
-ROOTDIR=#'/web/public'
-SOURCEDIR = .$(ROOTDIR)
-MDS := $(shell find $(SOURCEDIR) -name '*.md')
-HTMLS := $(MDS:%.md=%.html)
-CSS = $(ROOTDIR)/css/github.css
+* hoge
+* hoge
+    * hoge
 
-%.html:%.md
-	pandoc $< -t html5 -c $(CSS) --mathjax -o $@ --highlight-style=tango
+>hogehoge
+>hogehoge
 
-default: $(HTMLS)
 
-clean:
-	rm $(HTMLS)
-```
+

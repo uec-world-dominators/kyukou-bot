@@ -3,7 +3,8 @@ ROOTDIR=#/web/public
 SOURCEDIR = ./web/public
 MDS := $(shell find $(SOURCEDIR) -name '*.md')
 HTMLS := $(MDS:%.md=%.html)
-CSS = $(ROOTDIR)/css/github.css
+CSS = $(ROOTDIR)/templates/pandoc-md2html-template/template.css
+TEMPLATE= ./web/public/templates/pandoc-md2html-template/template.html
 # Server
 WSGI_LOG=./log/uwsgi.log
 RELOAD_TRIGGER=./reload.trigger
@@ -11,13 +12,8 @@ SERVER_PORT=5426
 MONGOD_PORT=8070
 WSGI_FILE=./run_async.py
 
-%.html:%.md
-	pandoc $< -t html5 -c $(CSS) --mathjax -o $@ --highlight-style=tango
-
-TEST=./web/public/templates/pandoc-md2html-template/
-test:	
-	pandoc --data-dir=$(TEST) --template=template.html $(TEST)test.md -o $(TEST)test.html -c ./template.css --highlight-style=tango --mathjax
-
+%.html:%.md FORCE
+	pandoc $< -t $(TEMPLATE) -c $(CSS) --mathjax -o $@ --highlight-style=tango
 
 default: $(HTMLS)
 
