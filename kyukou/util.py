@@ -1,3 +1,5 @@
+import os
+import json
 from datetime import datetime
 import random
 import inspect
@@ -11,17 +13,20 @@ def dict_to_tuples(d):
 
 id_string = 'abcdefghijklmnopqrstuvwxyz0123456789'
 log_lock = Lock()
+log_file = None
 
 
 def log(__name__, message, log_level=2):
     from .settings import settings
+    global log_file
+    log_file = log_file or os.path.join(os.path.dirname(__file__), settings.logfile())
     msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
     with log_lock:
         if log_level >= settings.log_level(0):
             sys.stdout.write(msg)
             sys.stdout.write('\n')
             sys.stdout.flush()
-        with open(settings.logfile(), 'at', encoding='utf-8') as f:
+        with open(log_file, 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 
 
@@ -29,7 +34,14 @@ def generate_id(n):
     return ''.join([random.choice(id_string) for i in range(n)])
 
 
-class Just(object):
+def has_all_key(d, *keys):
+    for key in keys:
+        if not key in d:
+            return False
+    return True
+
+
+class Just(json.JSONEncoder):
     """
     # Maybe Monad
     ## usage
@@ -76,7 +88,11 @@ class Just(object):
 
     def __getitem__(self, f):
         if callable(f):
-            return Just(f(object.__getattribute__(self, 'a')))
+            try:
+                r = f(object.__getattribute__(self, 'a'))
+            except:
+                r = None
+            return Just(r)
         elif isinstance(f, str):
             return object.__getattribute__(self, 'a')[f]  # 既存コードとの互換性のためJustは返さない
         else:

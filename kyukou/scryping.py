@@ -26,11 +26,12 @@ def kyuukou():
         date = datetime.datetime(2019, int(m.group(1)), int(m.group(2)))
         limit={
             "date":date.timestamp(),
-            "teachers":a[4].text.replace("o", ""),
+            "teachers":a[4].text,
             "periods":list(map(int, a[2].text.split('・'))),
             "class":a[0].text,
             "subject":a[3].text,
             "remark":a[5].text.replace(u'\xa0',''),
+
             "hash":hashlib.sha256(tr.text.encode()).hexdigest()
         }
 

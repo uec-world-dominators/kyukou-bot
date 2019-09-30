@@ -5,3 +5,8 @@ __pycache__/
 /*.json
 private/
 /log.txt
+tokens
+storage
+/node_modules/
+*.trigger
+*.log

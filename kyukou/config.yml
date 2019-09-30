@@ -14,6 +14,12 @@ line_notify:
 
 twitter:
   callback_path: /api/v1/twitter/callback
+  webhook_path: /api/v1/twitter/webhook
+  __ENV__consumer_key: KYUKOU_TWITTER_CONSUMER_KEY
+  __ENV__consumer_key_secret: KYUKOU_TWITTER_CONSUMER_KEY_SECRET
+  __ENV__access_token: KYUKOU_TWITTER_ACCESS_TOKEN
+  __ENV__access_token_secret: KYUKOU_TWITTER_ACCESS_TOKEN_SECRET
+  account_activity_api_env: kyukou
 
 email:
   __ENV__password: KYUKOU_LINE_CHANNEL_SECRET
@@ -23,11 +29,16 @@ email:
   
 google:
   __ENV__google_client_secret: KYUKOU_GOOGLE_CLIENT_SECRET
+  client_id: 723530674332-g9bq3lq6e921pip895vk6mgg91fhui4l.apps.googleusercontent.com
+  scope: 'email profile openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events'
+  access_type: offline
+  prompt: consent # select_account
+  response_type: code
 
 public_dir: ./web/public
 index: index.html
 
 
 __ENV__hash_salt: KYUKOU_HASH_SALT
-logfile: /home/sho/repos/wd-kyukou-bot/log.txt
+logfile: ../log/kyukou.log
 log_level: 1

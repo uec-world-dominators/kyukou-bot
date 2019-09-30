@@ -1,8 +1,12 @@
 from pprint import pprint
 from pymongo import MongoClient
 import datetime
-from .util import log
-
+isinpackage = not __name__ in ['db', '__main__']
+if isinpackage:
+    from .util import log
+else:
+    def log(module, msg):
+        print(module, msg)
 db = None
 
 
@@ -19,6 +23,10 @@ def init(url):
 
 def get_collection(name):
     return db[name]
+
+if not isinpackage:
+    from settings import settings
+    init(settings.mongo_url())
 
 
 __all__ = ["init", "get_collection"]
