@@ -36,6 +36,10 @@ runsync: $(HTMLS) mongod FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	python3 run.py
 
+stop:
+	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
+	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
+
 ab:
 	ab -n $(if ${n},${n},1) $(if ${c},-c ${c}) http://localhost:$(SERVER_PORT)/
 
