@@ -120,14 +120,14 @@ def validate_upload_token(environ):
     if realid and token and certificate.validate_token('csv_upload', realid, token, expire=False):
         return status(200)
     else:
-        return status(403)
+        return status(401)
 
 
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
     cert = certificate.validate_token('csv_upload', realid, token)
-    if True or realid and token and cert:
+    if realid and token and cert:
         try:
             csv = get_body(environ).decode('cp932')
             data = parse_share.parse_csv(csv)
@@ -149,11 +149,11 @@ def upload_csv(environ):
                 if twitter_user_id:
                     twitter_api.send(twitter_user_id, 'おめでとうございます！CSVファイルがアップロードされました！')
                 return status(200)
-            return status(403)
+            return status(401)
         else:
             return status(406)
     else:
-        return status(403)
+        return status(401)
 
 
 @route('get', '/oauth/google/redirect_link')

@@ -30,18 +30,18 @@ reload: FORCE
 mongod:
 	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
 	mkdir -p db
-	mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
+	nohup mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
 
 run: $(HTMLS) reload mongod FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
-	uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L
+	nohup uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L &
 
 runsync: $(HTMLS) mongod FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	python3 run.py
 
 ab:
-	ab -n 1 http://localhost:$(SERVER_PORT)/
+	ab -n 10 http://localhost:$(SERVER_PORT)/
 
 log: FORCE
 	tail -f $(WSGI_LOG)
