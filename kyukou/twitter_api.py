@@ -20,10 +20,9 @@ if __name__ != '__main__':
     from .db import get_collection
     from .import certificate
     users_db = get_collection('users')
-    TOKENS_FILE = 'kyukou/tokens'
 else:
     import util
-    TOKENS_FILE = 'tokens'
+TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens')
 
 
 def generate_signature(method, raw_url, raw_params, raw_key):
@@ -233,4 +232,3 @@ def subscribe_user(webhook_id, oauth_token, oauth_token_secret):
         'webhook_id': webhook_id
     }))
     print(res.status_code, res.status_code == 204)
-
