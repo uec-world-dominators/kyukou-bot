@@ -12,6 +12,7 @@ db.init(settings.mongo_url())
 
 from .server import run_server
 from .routes import *
+from .route import Router
 from . import scryping
 
 sys.stdout.flush()
@@ -21,4 +22,4 @@ scheduler.init(tick_interval_sec=1)
 
 from . import search
 
-__all__ = ['run_server']
+__all__ = ['run_server','Router','log']

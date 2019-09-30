@@ -28,7 +28,7 @@ class Route():
             "method": environ['REQUEST_METHOD'],
             "path": environ['PATH_INFO']
         }
-        return (not self.networks_len or self._is_in_networks(environ['HTTP_X_REAL_IP']))\
+        return (not self.networks_len or not 'HTTP_X_REAL_IP' in environ or self._is_in_networks(environ['HTTP_X_REAL_IP']))\
             and (not self.method or self._match_regex_or('method', args, lambda key: args[key].lower() == self.__dict__[key]))\
             and (not self.path or self._match_regex_or('path', args, lambda key: args[key].lower().startswith(self.__dict__[key])))
 

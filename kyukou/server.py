@@ -9,18 +9,26 @@ from .route import Router
 import sys
 from .util import log
 from .settings import settings
+from concurrent.futures import ThreadPoolExecutor
 import subprocess
 
 import json
 import time
 
 
-def app(environ, start_response):
+def execute(environ, start_response):
     status, headers, ret = Router.do(environ)
     log(__name__, f'{environ["HTTP_X_REAL_IP"].ljust(15)}  |  {status.ljust(15)}  [{environ["REQUEST_METHOD"].ljust(5)}] {environ["PATH_INFO"]}  ({environ["SERVER_PROTOCOL"]}) {environ["HTTP_X_REQUEST_ID"]}')
     start_response(status, headers)
     sys.stdout.flush()
     return ret
+
+
+pool = ThreadPoolExecutor(1000)
+
+
+def app(environ, start_response):
+    return pool.submit(execute, environ, start_response).result()
 
 
 class NoLoggingWSGIRequestHandler(WSGIRequestHandler):

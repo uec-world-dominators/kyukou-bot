@@ -1,3 +1,0 @@
-./prelaunch
-runserver="python3 run.py"
-eval $runserver
