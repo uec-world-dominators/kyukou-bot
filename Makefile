@@ -14,6 +14,11 @@ WSGI_FILE=./run_async.py
 %.html:%.md
 	pandoc $< -t html5 -c $(CSS) --mathjax -o $@ --highlight-style=tango
 
+TEST=./web/public/templates/pandoc-md2html-template/
+test:	
+	pandoc --data-dir=$(TEST) --template=template.html $(TEST)test.md -o $(TEST)test.html -c ./template.css --highlight-style=tango --mathjax
+
+
 default: $(HTMLS)
 
 clean:
@@ -42,3 +47,4 @@ log: FORCE
 	tail -f $(WSGI_LOG)
 
 FORCE:;
+

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title></title>
+    <style type="text/css">
+        code {
+            white-space: pre;
+        }
+    </style>
+    <style type="text/css">
+        div.sourceCode {
+            overflow-x: auto;
+        }
+
+        table.sourceCode,
+        tr.sourceCode,
+        td.lineNumbers,
+        td.sourceCode {
+            margin: 0;
+            padding: 0;
+            vertical-align: baseline;
+            border: none;
+        }
+
+        table.sourceCode {
+            width: 100%;
+            line-height: 100%;
+            background-color: #f8f8f8;
+        }
+
+        td.lineNumbers {
+            text-align: right;
+            padding-right: 4px;
+            padding-left: 4px;
+            color: #aaaaaa;
+            border-right: 1px solid #aaaaaa;
+        }
+
+        td.sourceCode {
+            padding-left: 5px;
+        }
+
+        pre,
+        code {
+            background-color: #f8f8f8;
+        }
+
+        code>span.kw {
+            color: #204a87;
+            font-weight: bold;
+        }
+
+        /* Keyword */
+        code>span.dt {
+            color: #204a87;
+        }
+
+        /* DataType */
+        code>span.dv {
+            color: #0000cf;
+        }
+
+        /* DecVal */
+        code>span.bn {
+            color: #0000cf;
+        }
+
+        /* BaseN */
+        code>span.fl {
+            color: #0000cf;
+        }
+
+        /* Float */
+        code>span.ch {
+            color: #4e9a06;
+        }
+
+        /* Char */
+        code>span.st {
+            color: #4e9a06;
+        }
+
+        /* String */
+        code>span.co {
+            color: #8f5902;
+            font-style: italic;
+        }
+
+        /* Comment */
+        code>span.ot {
+            color: #8f5902;
+        }
+
+        /* Other */
+        code>span.al {
+            color: #ef2929;
+        }
+
+        /* Alert */
+        code>span.fu {
+            color: #000000;
+        }
+
+        /* Function */
+        code>span.er {
+            color: #a40000;
+            font-weight: bold;
+        }
+
+        /* Error */
+        code>span.wa {
+            color: #8f5902;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Warning */
+        code>span.cn {
+            color: #000000;
+        }
+
+        /* Constant */
+        code>span.sc {
+            color: #000000;
+        }
+
+        /* SpecialChar */
+        code>span.vs {
+            color: #4e9a06;
+        }
+
+        /* VerbatimString */
+        code>span.ss {
+            color: #4e9a06;
+        }
+
+        /* SpecialString */
+        code>span.im {}
+
+        /* Import */
+        code>span.va {
+            color: #000000;
+        }
+
+        /* Variable */
+        code>span.cf {
+            color: #204a87;
+            font-weight: bold;
+        }
+
+        /* ControlFlow */
+        code>span.op {
+            color: #ce5c00;
+            font-weight: bold;
+        }
+
+        /* Operator */
+        code>span.pp {
+            color: #8f5902;
+            font-style: italic;
+        }
+
+        /* Preprocessor */
+        code>span.ex {}
+
+        /* Extension */
+        code>span.at {
+            color: #c4a000;
+        }
+
+        /* Attribute */
+        code>span.do {
+            color: #8f5902;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Documentation */
+        code>span.an {
+            color: #8f5902;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Annotation */
+        code>span.cv {
+            color: #8f5902;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* CommentVar */
+        code>span.in {
+            color: #8f5902;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Information */
+    </style>
+    <link rel="stylesheet" href="templates/pandoc-md2html-template/template.css">
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML-full"
+        type="text/javascript"></script>
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+    <div class="header">
+        <div class="title">
+            ご注文は休講情報ですか？
+        </div>
+    </div>
+    <div class="container">
+
+        <h1 id="pencil-block-elements">:pencil: Block Elements</h1>
+        <h2 id="headers-見出し">Headers 見出し</h2>
+        <p>先頭に<code>#</code>をレベルの数だけ記述します。</p>
+        <pre><code># 見出し1
+## 見出し2
+### 見出し3
+#### 見出し4
+##### 見出し5
+###### 見出し6</code></pre>
+        <h3 id="見出し3">見出し3</h3>
+        <h4 id="見出し4">見出し4</h4>
+        <h5 id="見出し5">見出し5</h5>
+        <h6 id="見出し6">見出し6</h6>
+        <h2 id="block-段落">Block 段落</h2>
+        <p>空白行を挟むことで段落となります。aaaa</p>
+        <pre><code>段落1
+(空行)
+段落2</code></pre>
+        <p>段落1</p>
+        <p>段落2</p>
+        <h2 id="br-改行">Br 改行</h2>
+        <p>改行の前に半角スペース` `を2つ記述します。 <strong><em>この挙動は、オプションで変更可能です</em></strong></p>
+        <pre><code>hoge
+fuga(スペース2つ)
+piyo</code></pre>
+        <p>hoge fuga piyo</p>
+        <h2 id="blockquotes-引用">Blockquotes 引用</h2>
+        <p>先頭に<code>&gt;</code>を記述します。ネストは<code>&gt;</code>を多重に記述します。</p>
+        <pre><code>&gt; 引用
+&gt; 引用
+&gt;&gt; 多重引用</code></pre>
+        <blockquote>
+            <p>引用 引用 &gt; 多重引用</p>
+        </blockquote>
+        <h2 id="code-コード">Code コード</h2>
+        <p><code>`バッククオート`</code> 3つ、あるいはチルダ<code>~</code>３つで囲みます。</p>
+        <pre><code>print &#39;hoge&#39;</code></pre>
+        <h3 id="シンタックスハイライトとファイル名">シンタックスハイライトとファイル名</h3>
+        <ul>
+            <li><a href="https://highlightjs.org/static/demo/">highlight.js Demo</a> の common カテゴリ内の言語に対応しています</li>
+        </ul>
+        <pre><code>```javascript:mersenne-twister.js
+function MersenneTwister(seed) {
+  if (arguments.length == 0) {
+    seed = new Date().getTime();
+  }
+
+  this._mt = new Array(624);
+  this.setSeed(seed);
+}
+```</code></pre>
+        <div class="sourceCode">
+            <pre class="sourceCode javascript:mersenne-twister.js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">MersenneTwister</span>(seed) <span class="op">{</span>
+  <span class="cf">if</span> (<span class="va">arguments</span>.<span class="at">length</span> <span class="op">==</span> <span class="dv">0</span>) <span class="op">{</span>
+    seed <span class="op">=</span> <span class="kw">new</span> <span class="at">Date</span>().<span class="at">getTime</span>()<span class="op">;</span>
+  <span class="op">}</span>
+
+  <span class="kw">this</span>.<span class="at">_mt</span> <span class="op">=</span> <span class="kw">new</span> <span class="at">Array</span>(<span class="dv">624</span>)<span class="op">;</span>
+  <span class="kw">this</span>.<span class="at">setSeed</span>(seed)<span class="op">;</span>
+<span class="op">}</span></code></pre>
+        </div>
+        <h3 id="インラインコード">インラインコード</h3>
+        <p><code>`バッククオート`</code> で単語を囲むとインラインコードになります。</p>
+        <pre><code>これは `インラインコード`です。</code></pre>
+        <p>これは <code>インラインコード</code>です。</p>
+        <h2 id="pre-整形済みテキスト">pre 整形済みテキスト</h2>
+        <p>半角スペース4個もしくはタブで、コードブロックをpre表示できます</p>
+        <pre><code>    class Hoge
+        def hoge
+            print &#39;hoge&#39;
+        end
+    end</code></pre>
+        <pre><code>class Hoge
+    def hoge
+        print &#39;hoge&#39;
+    end
+end</code></pre>
+        <h2 id="hr-水平線">Hr 水平線</h2>
+        <p>アンダースコア<code>_</code> 、アスタリスク<code>*</code>を3つ以上連続して記述します。</p>
+        <pre><code>***
+___
+---</code></pre>
+        <hr />
+        <hr />
+        <hr />
+        <h1 id="pencil-typography">:pencil: Typography</h1>
+        <h2 id="強調">強調</h2>
+        <h3 id="em">em</h3>
+        <p>アスタリスク<code>*</code>もしくはアンダースコア<code>_</code>1個で文字列を囲みます。</p>
+        <pre><code>これは *イタリック* です
+これは _イタリック_ です</code></pre>
+        <p>これは <em>イタリック</em> です これは <em>イタリック</em> です</p>
+        <h3 id="strong">strong</h3>
+        <p>アスタリスク<code>*</code>もしくはアンダースコア<code>_</code>2個で文字列を囲みます。</p>
+        <pre><code>これは **ボールド** です
+これは __ボールド__ です</code></pre>
+        <p>これは <strong>ボールド</strong> です これは <strong>ボールド</strong> です</p>
+        <h3 id="em-strong">em + strong</h3>
+        <p>アスタリスク<code>*</code>もしくはアンダースコア<code>_</code>3個で文字列を囲みます。</p>
+        <pre><code>これは ***イタリック＆ボールド*** です
+これは ___イタリック＆ボールド___ です</code></pre>
+        <p>これは <strong><em>イタリック＆ボールド</em></strong> です これは <strong><em>イタリック＆ボールド</em></strong> です</p>
+        <h1 id="pencil-images">:pencil: Images</h1>
+        <p><code>![Alt文字列](URL)</code> で<code>&lt;img&gt;</code>タグを挿入できます。</p>
+        <div class="sourceCode">
+            <pre
+                class="sourceCode markdown"><code class="sourceCode markdown"><span class="al">![Minion](https://octodex.github.com/images/minion.png)</span>
+<span class="al">![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg &quot;The Stormtroopocat&quot;)</span></code></pre>
+        </div>
+        <p><img src="https://octodex.github.com/images/minion.png" alt="Minion" /> <img
+                src="https://octodex.github.com/images/stormtroopocat.jpg" title="The Stormtroopocat"
+                alt="Stormtroopocat" /></p>
+        <p>画像の大きさなどの指定をする場合はimgタグを使用します。</p>
+        <div class="sourceCode">
+            <pre
+                class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;img</span><span class="ot"> src=</span><span class="st">&quot;https://octodex.github.com/images/dojocat.jpg&quot;</span><span class="ot"> width=</span><span class="st">&quot;200px&quot;</span><span class="kw">&gt;</span></code></pre>
+        </div>
+        <p><img src="https://octodex.github.com/images/dojocat.jpg" width="200px"></p>
+        <h1 id="pencil-link">:pencil: Link</h1>
+        <h2 id="markdown-標準">Markdown 標準</h2>
+        <p><code>[表示テキスト](URL)</code>でリンクに変換されます。</p>
+        <pre><code>[Google](https://www.google.co.jp/)</code></pre>
+        <p><a href="https://www.google.co.jp/">Google</a></p>
+        <h2 id="crowi-互換">Crowi 互換</h2>
+        <pre><code>[/Sandbox]
+&amp;lt;/user/admin1&gt;</code></pre>
+        <p>[/Sandbox] </user/admin1> </p> <h2 id="pukiwiki-like-linker">Pukiwiki like linker</h2>
+            <p>(available by <a
+                    href="https://github.com/weseek/growi-plugin-pukiwiki-like-linker">weseek/growi-plugin-pukiwiki-like-linker</a>
+                )</p>
+            <p>最も柔軟な Linker です。 記述中のページを基点とした相対リンクと、表示テキストに対するリンクを同時に実現できます。</p>
+            <pre><code>[[./Bootstrap3]]
+Bootstrap3のExampleは[[こちら&gt;./Bootstrap3]]</code></pre>
+            <p>[[../user]] Bootstrap3のExampleは[[こちら&gt;./Bootstrap3]]</p>
+            <h1 id="pencil-lists">:pencil: Lists</h1>
+            <h2 id="ul-箇条書きリスト">Ul 箇条書きリスト</h2>
+            <p>ハイフン<code>-</code>、プラス<code>+</code>、アスタリスク<code>*</code>のいずれかを先頭に記述します。 ネストはタブで表現します。</p>
+            <pre><code>- リスト1
+    - リスト1_1
+        - リスト1_1_1
+        - リスト1_1_2
+    - リスト1_2
+- リスト2
+- リスト3</code></pre>
+            <ul>
+                <li>リスト1
+                    <ul>
+                        <li>リスト1_1
+                            <ul>
+                                <li>リスト1_1_1</li>
+                                <li>リスト1_1_2</li>
+                            </ul>
+                        </li>
+                        <li>リスト1_2</li>
+                    </ul>
+                </li>
+                <li>リスト2</li>
+                <li>リスト3</li>
+            </ul>
+            <h2 id="ol-番号付きリスト">Ol 番号付きリスト</h2>
+            <p><code>番号.</code>を先頭に記述します。ネストはタブで表現します。 番号は自動的に採番されるため、すべての行を1.と記述するのがお勧めです。</p>
+            <pre><code>1. 番号付きリスト1
+    1. 番号付きリスト1-1
+    1. 番号付きリスト1-2
+1. 番号付きリスト2
+1. 番号付きリスト3</code></pre>
+            <ol type="1">
+                <li>番号付きリスト1
+                    <ol type="1">
+                        <li>番号付きリスト1-1</li>
+                        <li>番号付きリスト1-2</li>
+                    </ol>
+                </li>
+                <li>番号付きリスト2</li>
+                <li>番号付きリスト3</li>
+            </ol>
+            <h2 id="タスクリスト">タスクリスト</h2>
+            <pre><code>- [ ] タスク 1
+    - [x] タスク 1.1
+    - [ ] タスク 1.2
+- [x] タスク2</code></pre>
+            <ul>
+                <li>[ ] タスク 1
+                    <ul>
+                        <li>[x] タスク 1.1</li>
+                        <li>[ ] タスク 1.2</li>
+                    </ul>
+                </li>
+                <li>[x] タスク2</li>
+            </ul>
+            <h1 id="pencil-table">:pencil: Table</h1>
+            <h2 id="markdown-標準-1">Markdown 標準</h2>
+            <div class="sourceCode">
+                <pre class="sourceCode markdown"><code class="sourceCode markdown">| Left align | Right align | Center align |
+|:-----------|------------:|:------------:|
+| This       | This        | This         |
+| column     | column      | column       |
+| will       | will        | will         |
+| be         | be          | be           |
+| left       | right       | center       |
+| aligned    | aligned     | aligned      |
+
+OR
+
+Left align | Right align | Center align
+:--|--:|:-:
+This       | This        | This
+column     | column      | column
+will       | will        | will
+be         | be          | be
+left       | right       | center
+aligned    | aligned     | aligned</code></pre>
+            </div>
+            <table>
+                <thead>
+                    <tr class="header">
+                        <th style="text-align: left;">Left align</th>
+                        <th style="text-align: right;">Right align</th>
+                        <th style="text-align: center;">Center align</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="odd">
+                        <td style="text-align: left;">This</td>
+                        <td style="text-align: right;">This</td>
+                        <td style="text-align: center;">This</td>
+                    </tr>
+                    <tr class="even">
+                        <td style="text-align: left;">column</td>
+                        <td style="text-align: right;">column</td>
+                        <td style="text-align: center;">column</td>
+                    </tr>
+                    <tr class="odd">
+                        <td style="text-align: left;">will</td>
+                        <td style="text-align: right;">will</td>
+                        <td style="text-align: center;">will</td>
+                    </tr>
+                    <tr class="even">
+                        <td style="text-align: left;">be</td>
+                        <td style="text-align: right;">be</td>
+                        <td style="text-align: center;">be</td>
+                    </tr>
+                    <tr class="odd">
+                        <td style="text-align: left;">left</td>
+                        <td style="text-align: right;">right</td>
+                        <td style="text-align: center;">center</td>
+                    </tr>
+                    <tr class="even">
+                        <td style="text-align: left;">aligned</td>
+                        <td style="text-align: right;">aligned</td>
+                        <td style="text-align: center;">aligned</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 id="tsv-crowi-plus-独自記法">TSV (crowi-plus 独自記法)</h2>
+            <pre><code>::: tsv
+Content Cell    Content Cell
+Content Cell    Content Cell
+:::</code></pre>
+            <p>::: tsv Content Cell Content Cell Content Cell Content Cell :::</p>
+            <h2 id="tsv-ヘッダ付き-crowi-plus-独自記法">TSV ヘッダ付き (crowi-plus 独自記法)</h2>
+            <pre><code>::: tsv-h
+First Header    Second Header
+Content Cell    Content Cell
+Content Cell    Content Cell
+:::</code></pre>
+            <p>::: tsv-h First Header Second Header Content Cell Content Cell Content Cell Content Cell :::</p>
+            <h2 id="csv-crowi-plus-独自記法">CSV (crowi-plus 独自記法)</h2>
+            <pre><code>::: csv
+Content Cell,Content Cell
+Content Cell,Content Cell
+:::</code></pre>
+            <p>::: csv Content Cell,Content Cell Content Cell,Content Cell :::</p>
+            <h2 id="csv-ヘッダ付き-crowi-plus-独自記法">CSV ヘッダ付き (crowi-plus 独自記法)</h2>
+            <pre><code>::: csv-h
+First Header,Second Header
+Content Cell,Content Cell
+Content Cell,Content Cell
+:::</code></pre>
+            <!-- Reset MathJax -->
+            <div class="clearfix">
+
+            </div>
+            <h1 id="pencil-uml-diagrams">:pencil: UML Diagrams</h1>
+            <p>See <a href="http://plantuml.com/">PlantUML</a>.</p>
+            <h2 id="シーケンス図">シーケンス図</h2>
+            <p><span class="citation" data-cites="startuml">@startuml</span> skinparam sequenceArrowThickness 2
+                skinparam roundcorner 20 skinparam maxmessagesize 60 skinparam sequenceParticipant underline</p>
+            <p>actor User participant &quot;First Class&quot; as A participant &quot;Second Class&quot; as B participant
+                &quot;Last Class&quot; as C</p>
+            <p>User -&gt; A: DoWork activate A</p>
+            <p>A -&gt; B: Create Request activate B</p>
+            <p>B -&gt; C: DoWork activate C C --&gt; B: WorkDone destroy C</p>
+            <p>B --&gt; A: Request Created deactivate B</p>
+            <p>A --&gt; User: Done deactivate A</p>
+            <p><span class="citation" data-cites="enduml">@enduml</span></p>
+            <!-- Reset PlantUML -->
+            <div class="clearfix">
+
+            </div>
+            <h2 id="クラス図">クラス図</h2>
+            <p><span class="citation" data-cites="startuml">@startuml</span></p>
+            <p>class BaseClass</p>
+            <p>namespace net.dummy #DDDDDD { .BaseClass &lt;|-- Person Meeting o-- Person</p>
+            <pre><code>.BaseClass &lt;|- Meeting</code></pre>
+            <p>}</p>
+            <p>namespace net.foo { net.dummy.Person &lt;|- Person .BaseClass &lt;|-- Person</p>
+            <p>net.dummy.Meeting o-- Person }</p>
+            <p>BaseClass &lt;|-- net.unused.Person</p>
+            <p><span class="citation" data-cites="enduml">@enduml</span></p>
+            <!-- Reset PlantUML -->
+            <div class="clearfix">
+
+            </div>
+            <h2 id="コンポーネント図">コンポーネント図</h2>
+            <p><span class="citation" data-cites="startuml">@startuml</span></p>
+            <p>package &quot;Some Group&quot; { HTTP - [First Component][Another Component] }</p>
+            <p>node &quot;Other Groups&quot; { FTP - [Second Component][First Component] --&gt; FTP }</p>
+            <p>cloud { [Example 1] }</p>
+            <p>database &quot;MySql&quot; { folder &quot;This is my folder&quot; { [Folder 3] } frame &quot;Foo&quot; {
+                [Frame 4] } }</p>
+            <p>[Another Component] --&gt; [Example 1][Example 1] --&gt; [Folder 3][Folder 3] --&gt; [Frame 4]</p>
+            <p><span class="citation" data-cites="enduml">@enduml</span></p>
+            <!-- Reset PlantUML -->
+            <div class="clearfix">
+
+            </div>
+            <h2 id="ステート図">ステート図</h2>
+            <p><span class="citation" data-cites="startuml">@startuml</span> scale 600 width</p>
+            <p>[*] -&gt; State1 State1 --&gt; State2 : Succeeded State1 --&gt; [*] : Aborted State2 --&gt; State3 :
+                Succeeded State2 --&gt; [*] : Aborted state State3 { state &quot;Accumulate Enough DataState Name&quot;
+                as long1 long1 : Just a test [*] --&gt; long1 long1 --&gt; long1 : New Data long1 --&gt; ProcessData :
+                Enough Data } State3 --&gt; State3 : Failed State3 --&gt; [*] : Succeeded / Save Result State3 --&gt;
+                [*] : Aborted</p>
+            <p><span class="citation" data-cites="enduml">@enduml</span></p>
+            <!-- Reset PlantUML -->
+            <div class="clearfix">
+
+            </div>
+            <h1 id="pencil-blockdiag">:pencil: blockdiag</h1>
+            <p>See <a href="http://blockdiag.com/">blockdiag</a>.</p>
+            <h2 id="blockdiag">blockdiag</h2>
+            <!-- Resize blockdiag -->
+            <div style="max-width: 600px">
+                <p>::: blockdiag blockdiag { A -&gt; B -&gt; C -&gt; D; A -&gt; E -&gt; F -&gt; G; } :::</p>
+            </div>
+            <h2 id="seqdiag">seqdiag</h2>
+            <!-- Resize blockdiag -->
+            <div style="max-width: 600px">
+                <p>::: seqdiag seqdiag { browser -&gt; webserver [label = &quot;GET /index.html&quot;]; browser &lt;--
+                    webserver; browser -&gt; webserver [label = &quot;POST /blog/comment&quot;]; webserver -&gt;
+                    database [label = &quot;INSERT comment&quot;]; webserver &lt;-- database; browser &lt;-- webserver;
+                    } :::</p>
+            </div>
+            <h2 id="actdiag">actdiag</h2>
+            <!-- Resize blockdiag -->
+            <div style="max-width: 600px">
+                <p>::: actdiag actdiag { write -&gt; convert -&gt; image</p>
+                <p>lane user { label = &quot;User&quot; write [label = &quot;Writing reST&quot;]; image [label =
+                    &quot;Get diagram IMAGE&quot;]; } lane actdiag { convert [label = &quot;Convert reST to
+                    Image&quot;]; } } :::</p>
+            </div>
+            <h2 id="nwdiag">nwdiag</h2>
+            <!-- Resize blockdiag -->
+            <div style="max-width: 600px">
+                <p>::: nwdiag nwdiag { network dmz { address = &quot;210.x.x.x/24&quot;</p>
+                <pre><code>  web01 [address = &quot;210.x.x.1&quot;];
+  web02 [address = &quot;210.x.x.2&quot;];</code></pre>
+                <p>} network internal { address = &quot;172.x.x.x/24&quot;;</p>
+                <pre><code>  web01 [address = &quot;172.x.x.1&quot;];
+  web02 [address = &quot;172.x.x.2&quot;];
+  db01;
+  db02;</code></pre>
+                <p>} } :::</p>
+            </div>
+            <h2 id="rackdiag">rackdiag</h2>
+            <!-- Resize blockdiag -->
+            <div style="max-width: 600px">
+                <p>::: rackdiag rackdiag { // define height of rack 8U;</p>
+                <p>// define rack items 1: UPS [2U]; 3: DB Server 4: Web Server 5: Web Server 6: Web Server 7: Load
+                    Balancer 8: L3 Switch } :::</p>
+            </div>
+            <h2 id="packetdiag">packetdiag</h2>
+            <!-- Resize blockdiag -->
+            <div style="max-width: 600px">
+                <p>::: packetdiag packetdiag { colwidth = 32 node_height = 72</p>
+                <p>0-15: Source Port 16-31: Destination Port 32-63: Sequence Number 64-95: Acknowledgment Number 96-99:
+                    Data Offset 100-105: Reserved 106: URG [rotate = 270] 107: ACK [rotate = 270] 108: PSH [rotate =
+                    270] 109: RST [rotate = 270] 110: SYN [rotate = 270] 111: FIN [rotate = 270] 112-127: Window
+                    128-143: Checksum 144-159: Urgent Pointer 160-191: (Options and Padding) 192-223: data [colheight =
+                    3] } :::</p>
+            </div>
+            <section class="footnotes">
+                <hr />
+                <ol>
+                    <li id="fn1">
+                        <p>1つめの脚注への参照です。<a href="#fnref1">↩</a></p>
+                    </li>
+                    <li id="fn2">
+                        <p>インラインで記述できる脚注です<a href="#fnref2">↩</a></p>
+                    </li>
+                    <li id="fn3">
+                        <p>脚注を複数ブロックで書く例です。</p>
+                        <p>後続の段落はインデントされて、前の脚注に属します。<a href="#fnref3">↩</a></p>
+                    </li>
+                </ol>
+            </section>
+
+    </div>
+</body>
+
+</html>
