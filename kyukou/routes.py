@@ -51,7 +51,7 @@ def line_notify(environ):
         tokens = line_notify_api.code_to_access_token(q['code'])
         if tokens:
             line_notify_api.append(data['realid'], tokens)
-            return file('/')
+            return redirect('/')
     return status(400)
 
 # Twitter Get Redirect URL to Allow Connection
