@@ -210,7 +210,6 @@ def send(user_id, msg_text):
         }
     }
     tokens = load_tokens()
-    print(data, tokens)
     res = post(url, tokens['oauth_token'], tokens['oauth_token_secret'], headers={
         'content-type': 'application/json'
     }, data=json.dumps(data))

@@ -102,7 +102,7 @@ def twitter_callback(environ):
 @route('get', '/api/v1/line/email')
 def line_email_validation(environ):
     q = get_query(environ)
-    data = certificate.validate_token('line_email', q['realid'], q['token'])
+    data = certificate.validate_token('line_email', q.get('realid'), q.get('token'))
     if data:
         email_api.append({
             'email_addr': data['email_addr'],
