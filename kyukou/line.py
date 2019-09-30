@@ -12,6 +12,7 @@ import codecs
 from . import email_api
 from .settings import settings
 from .procedure import Procedure, ProcedureSelector, process, ProcedureDB
+from datetime import datetime
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 users_db = get_collection('users')
@@ -75,10 +76,11 @@ def please_enter_time(user_id, msg_text):
 
 @process(time_procedure, 2)
 def validate_time(user_id, msg_text):
-    if re.match("\d*:\d*", msg_text):
+    try:
+        time_data = datetime.strptime(msg_text, '%H:%M')
         line_api.reply(user_id, ['通知時間を登録しました。']
         time_procedure.set_progress(user_id, 2)
-    else:
+    except:
         line_api.reply(user_id, ['数値の形式が間違っています。もう一度入力してください。'])
         time_procedure.set_progress(user_id, 1)
 
