@@ -3,6 +3,7 @@ import re
 import time
 import sys
 import codecs
+from datetime import datetime
 isinpackage = not __name__ in ['line', '__main__']
 
 if isinpackage:
