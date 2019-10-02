@@ -1,8 +1,14 @@
-from . import scheduler
-from .db import get_collection
 import time
 from bson.objectid import ObjectId
-from . import util
+isinpackage = not __name__ in ['certificate', '__main__']
+if isinpackage:
+    from . import scheduler
+    from .db import get_collection
+    from . import util
+else:
+    import scheduler
+    from db import get_collection
+    import util
 
 certificate = get_collection('certificate')
 
@@ -20,6 +26,8 @@ def generate_token(real_user_id, type, options={}, expire_in=3600):
 
 
 def validate_token(type, real_user_id, token, expire=True):
+    if not (type and real_user_id and token):
+        return False
     data = certificate.find_one({"token": token, 'type': type})
     if data:
         if expire:

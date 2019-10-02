@@ -114,4 +114,15 @@ def parse_csv(row_data):
         day_count += 1
     return result_list
 
-# print(parse_csv(row_data))
+# print(perse_csv(row_data))
+
+
+from .db import get_collection
+from bson.objectid import ObjectId
+users_db=get_collection('users')
+def register(realid,data):
+    users_db.update_one({'_id':ObjectId(realid)},{
+        '$set':{
+            'lectures':data
+        }
+    })

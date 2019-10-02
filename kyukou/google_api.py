@@ -2,25 +2,33 @@ from datetime import datetime
 import time
 import json
 import base64
-from .settings import settings
 import requests
-from . import util
-from .util import Just
-from .db import get_collection
-import urllib
-from .import certificate
 from bson.objectid import ObjectId
+import urllib
+isinpackage = not __name__ in ['google_api', '__main__']
+if isinpackage:
+    from .settings import settings
+    from . import util
+    from .util import Just
+    from .db import get_collection
+    from .import certificate
+else:
+    from settings import settings
+    import util
+    from util import Just
+    from db import get_collection
+    import certificate
 
 
 users_db = get_collection('users')
 
 
-client_id = '723530674332-g9bq3lq6e921pip895vk6mgg91fhui4l.apps.googleusercontent.com'
+client_id = settings.google.client_id()
 redirect_uri = f'{settings.url_prefix()}/oauth/google/redirect'
-scope = r'email%20profile%20openid%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/calendar.events'
-access_type = 'offline'
-prompt = 'consent'  # 'select_account'
-response_type = 'code'
+scope = urllib.parse.quote(settings.google.scope(), safe='')
+access_type = settings.google.access_type()
+prompt = settings.google.prompt()
+response_type = settings.google.code()
 
 
 def get_certs_keys(kid):
@@ -150,4 +158,3 @@ def add_event(real_user_id, start, end, options={
         'authorization': f'Bearer {get_access_token(get_google_user_id(real_user_id))}'
     })
     return res.status_code == 200
-    
