@@ -1,4 +1,3 @@
-from .scheduler import add_task
 import time
 isinpackage = not __name__ in ['publish', '__main__']
 if isinpackage:
@@ -53,9 +52,6 @@ def publish_all():
             })
     delete_old()
     store('last_publish', now)
-
-
-add_task(60, publish_all)
 
 
 def publish_one(data):
