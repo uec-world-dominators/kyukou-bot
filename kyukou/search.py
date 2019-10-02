@@ -1,5 +1,4 @@
 # %%
-from .scheduler import add_task
 from .db import get_collection
 import datetime
 from pprint import pprint
@@ -297,6 +296,3 @@ def make_notification_dict():
                         if notify_dict["type"] == "scraping":
                             time_scraping = "スクレイピングした時間"
                             make_dict(scraping_hash, message, end, dest, user_id, time_scraping)
-
-
-add_task(60, make_notification_dict)

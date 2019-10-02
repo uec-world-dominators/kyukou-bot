@@ -18,7 +18,12 @@ from . import scryping
 sys.stdout.flush()
 
 from . import scheduler
+from . import publish
+from . import search
 scheduler.init(tick_interval_sec=1)
+scheduler.add_task(3600, scryping.run)
+scheduler.add_task(60, search.make_notification_dict)
+scheduler.add_task(60, publish.publish_all)
 
 from . import search
 
