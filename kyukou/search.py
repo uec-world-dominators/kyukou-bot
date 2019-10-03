@@ -1,7 +1,9 @@
 # %%
+from .publish import try_add_notification
 from .db import get_collection
 import datetime
 from pprint import pprint
+from .util import log
 
 # %%
 
@@ -214,8 +216,10 @@ def notify_func(line_user_id, notifies, msg_texts=[]):
         print(f'type: {notify["type"]}, offset:{notify["offset"]}')
     print("")
 
-from .publish import try_add_notification
+
 # %%
+
+
 def make_dict(scraping_hash, message, end, dest, user_id, time):
     output_dict = {
         "hash": scraping_hash,
@@ -250,7 +254,8 @@ def make_notification_dict():
                 # 受講科目と休講科目の曜日の判定
                 dayofweek = user_lecture["dayofweek"] == dayofweek
                 # 受講科目と休講科目の教員の判定
-                teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").split("・")
+                import re
+                teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").replace(" ", "・").split("・")
                 teachers_list = []
                 for teacher in teachers:
                     if " " in teacher:
@@ -271,7 +276,7 @@ def make_notification_dict():
                     # 教員名
                     msg_texts_teachers = user_lecture["teachers"]
                     # 備考
-                    msg_texts_remark = canceled_lecture["remark"] or "無し"
+                    msg_texts_remark = canceled_lecture.get("remark") or "無し"
                     # notifyのリスト
                     notify_list = user["notifies"]
                     scraping_hash = canceled_lecture["hash"]
@@ -282,8 +287,8 @@ def make_notification_dict():
     教員: {msg_texts_teachers}
     備考: {msg_texts_remark}"""
                     end = datetime.datetime.timestamp(datetime.datetime.combine(date, datetime.time()) + period[min(periods)])
-                    dest = "ほげ"
-                    user_id = user["_id"]
+                    dest = "line"
+                    user_id = str(user["_id"])
                     for notify_dict in notify_list:
                         if notify_dict["type"] == "day":
                             notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])

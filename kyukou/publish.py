@@ -3,7 +3,7 @@ isinpackage = not __name__ in ['publish', '__main__']
 if isinpackage:
     from .db import get_collection
     from .settings import store, load, settings
-    from .util import has_all_key
+    from .util import has_all_key,log
 else:
     from db import get_collection
     from settings import store, load, settings
@@ -60,7 +60,8 @@ def publish_one(data):
     '''
     dest = data['dest']
     if dest == 'line':
-        pass
+        from .line_notify_api import send
+        send(data.get('user_id'),data.get('message'))
     elif dest == 'twitter':
         pass
     print('PUBLISH', data['message'])

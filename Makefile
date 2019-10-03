@@ -28,11 +28,11 @@ mongod:
 	mkdir -p db
 	nohup mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
 
-run: $(HTMLS) reload mongod FORCE
+run: reload mongod FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	nohup uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L &
 
-runsync: $(HTMLS) mongod FORCE
+runsync: mongod FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	python3 run.py
 
