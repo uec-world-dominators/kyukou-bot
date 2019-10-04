@@ -234,6 +234,8 @@ def make_dict(scraping_hash, message, end, dest, user_id, time):
 
 # %%
 
+# lectures.timeにスクレイピングした時間が入ってる
+# notifies.destも読み取る
 
 def make_notification_dict():
     users_list = get_collection('users').find({})
@@ -254,7 +256,6 @@ def make_notification_dict():
                 # 受講科目と休講科目の曜日の判定
                 dayofweek = user_lecture["dayofweek"] == dayofweek
                 # 受講科目と休講科目の教員の判定
-                import re
                 teachers = user_lecture["teachers"].replace("○", "").replace("（", "(").replace("）", ")").replace(" ", "・").split("・")
                 teachers_list = []
                 for teacher in teachers:
