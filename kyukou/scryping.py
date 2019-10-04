@@ -65,6 +65,7 @@ def kyuukou():
         month, day = int(m.group(1)), int(m.group(2))
         date = datetime(getyear(month, day), month, day)
         limit = {
+            "time": time.time(),
             "date": date.timestamp(),
             "teachers": a[4].text,
             "periods": list(map(int, a[2].text.split('・'))),
@@ -98,4 +99,3 @@ def compare(new, old_collection):
 def run():
     compare(kyuukou(), get_collection('lectures'))
     get_collection('lectures').insert_many(testdata())
-
