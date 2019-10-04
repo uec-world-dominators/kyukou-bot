@@ -1,5 +1,13 @@
+
+<div class="sns-buttons">
+    <a class="sns-button line" href="https://line.me/R/ti/p/%40683vbgwr" target="_blank">
+        <i class="fab fa-line"></i><span>LINE@</span>
+    </a>
+</div>
+
 # LINEボット
-?> LINEボットはAPIのレート制限により、休講情報の配信をLINE Notifyで行っております。ただしLINE Notifyは受信専用ですので、設定時には「ご注文は休講情報ですか？」のアカウント宛にメッセージをお送りください。
+
+?> LINEボットはAPIのレート制限により、**休講情報の配信をLINE Notifyで**行っております。ただしLINE Notifyは受信専用ですので、設定時には「ご注文は休講情報ですか？」のアカウント宛にメッセージをお送りください。
 
 # LINE Bot コマンド一覧
 トークで次のコマンドを入力するといろいろな設定が行なえます。
