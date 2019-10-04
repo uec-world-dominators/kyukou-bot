@@ -48,3 +48,4 @@ log: FORCE
 
 FORCE:;
 
+# find  web/public/ -type d -exec chmod go+x {} \;

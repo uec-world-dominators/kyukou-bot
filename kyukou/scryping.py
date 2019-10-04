@@ -72,9 +72,8 @@ def kyuukou():
             "class": a[0].text,
             "subject": a[3].text,
             "remark": a[5].text.replace(u'\xa0', ''),
-            "hash": hashlib.sha256((str(date.timestamp())+tr.text).encode()).hexdigest()
+            "hash": hashlib.sha256((tr.text).encode()).hexdigest()
         }
-
         limits.append(limit)
     return limits
 
