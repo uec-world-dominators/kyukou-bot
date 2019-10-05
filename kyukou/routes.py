@@ -18,7 +18,7 @@ from .settings import settings
 from .util import log
 # 上から順に優先
 
-LINE_API_NETWORKS = ['147.92.150.196/32']
+LINE_API_NETWORKS = ['147.92.150.0/24']
 TWITTER_API_NETWORKS = ['199.59.148.0/22', '199.16.156.0/22']
 LOCAL_NETWORKS = ['192.168.0.0/16', '124.147.77.47/32']
 
@@ -51,8 +51,10 @@ def line_notify(environ):
         tokens = line_notify_api.code_to_access_token(q['code'])
         if tokens:
             line_notify_api.append(data['realid'], tokens)
+            line_notify_api.send(data['realid'], '連携が完了しました！')
+            line_notify_api.send(data['realid'], 'こちらで休講情報の配信をいたします')
             return redirect('/')
-    return status(400)
+    return redirect('/#/expired')
 
 # Twitter Get Redirect URL to Allow Connection
 @route('get', '/api/v1/twitter/redirect_url', networks=LOCAL_NETWORKS)

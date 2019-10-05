@@ -12,13 +12,15 @@ if isinpackage:
     from .util import Just
     from .db import get_collection
     from .import certificate
+    from . import line_api
 else:
     import util
     import certificate
     from settings import settings
     from util import Just
     from db import get_collection
-    
+    import line_api
+
 users_db = get_collection('users')
 
 
@@ -64,6 +66,10 @@ def get_access_token(realid):
     return Just(users_db.find_one({'_id': ObjectId(realid)})).connections.line_notify.access_token()
 
 
+def has_account(realid):
+    return not not get_access_token(realid)
+
+
 def send(realid, message):
     '''
     # `send()`
@@ -78,3 +84,4 @@ def send(realid, message):
             'time': time.time()
         }}
     })
+    return res.status_code == 200

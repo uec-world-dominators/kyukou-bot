@@ -23,6 +23,7 @@ else:
 if hasattr(sys.stdout, 'detach'):
     sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
+
 def follow(user_id):
     print(f'followed by {user_id}')
     line_api.reply(user_id, [
@@ -108,6 +109,15 @@ def validate_time(user_id, msg_text):
         time_procedure.set_progress(user_id, 1)
 
 
+line_notify_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'notify', 'notify')
+
+
+@process(line_notify_procedure, 0)
+def get_line_notify_link(user_id, msg_text):
+    line_api.reply(user_id, [line_notify_api.get_redirect_link(line_api.get_real_user_id(user_id)), 'このリンクからLINE Notifyの連携を行ってください！'])
+    line_notify_procedure.set_progress(user_id, 0)
+
+
 def message(user_id, msg_text):
     msg = msg_text.strip().lower()
     if msg == 'end':
@@ -120,9 +130,9 @@ def message(user_id, msg_text):
 
 
 if isinpackage:
-    ps = ProcedureSelectorDB(email_procedure, csv_procedure, time_procedure)
+    ps = ProcedureSelectorDB(email_procedure, csv_procedure, time_procedure, line_notify_procedure)
 else:
-    ps = ProcedureSelector(email_procedure, csv_procedure, time_procedure)
+    ps = ProcedureSelector(email_procedure, csv_procedure, time_procedure, line_notify_procedure)
     # ここでデバッグ
     ps.run('me', 'time')
     ps.run('me', '0')

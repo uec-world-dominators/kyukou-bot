@@ -1,10 +1,14 @@
 import time
 isinpackage = not __name__ in ['publish', '__main__']
 if isinpackage:
+    from . import line_notify_api
+    from . import twitter_api
     from .db import get_collection
     from .settings import store, load, settings
-    from .util import has_all_key,log
+    from .util import has_all_key, log
 else:
+    import line_notify_api
+    import twitter_api
     from db import get_collection
     from settings import store, load, settings
     from util import has_all_key
@@ -41,7 +45,7 @@ def publish_all():
     通知を実行する。今よりも通知時間が古いものを持ってきて
     '''
     last_publish = load('last_publish', 0)
-    now = time.time()+0  # 安全のために少し早めに通知したいときはここを変える
+    now = time.time()+60
     for data in queue.find({
             # 'time': {'$lte': last_publish},
             'finish': False
@@ -57,12 +61,14 @@ def publish_all():
 def publish_one(data):
     '''
     通知を一つ処理する
+    通知に成功したらTrueを返す
     '''
     dest = data['dest']
+    realid = data.get('user_id')
     if dest == 'line':
-        from .line_notify_api import send
-        send(data.get('user_id'),data.get('message'))
+        return line_notify_api.has_account(realid) and line_notify_api.send(realid, data.get('message'))
     elif dest == 'twitter':
-        pass
-    print('PUBLISH', data['message'])
-    return True
+        twitter_id = twitter_api.get_twitter_user_id(realid)
+        return twitter_id and twitter_api.send(twitter_id, data.get('message'))
+    else:
+        return False

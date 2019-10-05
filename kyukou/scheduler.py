@@ -1,6 +1,11 @@
-from uwsgidecorators import postfork, thread
+import sys
 import time
 from threading import Thread, Lock
+try:
+    from uwsgidecorators import postfork, thread
+    isinuwsgi = True
+except:
+    isinuwsgi = False
 
 tasks = []
 tasks_lock = Lock()
@@ -32,18 +37,21 @@ def check_tasks():
     tasks_lock.release()
 
 
-@postfork
-@thread
+# @postfork
+# @thread
 def time_ticker(tick_interval_sec=1):
     while True:
         check_tasks()
         time.sleep(tick_interval_sec)
 
 
+# if isinuwsgi:
+#     time_ticker = postfork(thread(time_ticker))
+
+
 def init(tick_interval_sec=1):
-    pass
-    # t = Thread(target=time_ticker, kwargs={"tick_interval_sec": tick_interval_sec})
-    # t.start()
+    t = Thread(target=time_ticker, kwargs={"tick_interval_sec": tick_interval_sec})
+    t.start()
 
 
 isinpackage = not __name__ in ['scheduler', '__main__']
@@ -52,7 +60,8 @@ if not isinpackage:
     import subprocess
     from wsgiref.simple_server import make_server
     add_task(1, lambda: print('hoge'))
-    init(0.1)
+    if isinuwsgi:
+        init(0.1)
     time.sleep(4)
     try:
         subprocess.check_call(['bash', '-c', f'kill -9 `lsof -t -i:8888`'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

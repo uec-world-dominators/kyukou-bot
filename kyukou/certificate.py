@@ -63,5 +63,3 @@ def validate_state(state, type, expire=True):
         certificate.delete_one(d)
     return data
 
-
-scheduler.add_task(60, delete_expired)
