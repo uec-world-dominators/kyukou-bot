@@ -7,6 +7,7 @@ CSS = $(ROOTDIR)/templates/pandoc-md2html-template/template-light.css
 TEMPLATE= ./web/public/templates/pandoc-md2html-template/template.html
 # Server
 WSGI_LOG=./log/uwsgi.log
+APP_LOG=./log/kyukou.log
 RELOAD_TRIGGER=./reload.trigger
 SERVER_PORT=5426
 MONGOD_PORT=8070
@@ -28,11 +29,11 @@ mongod:
 	mkdir -p db
 	nohup mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
 
-run: reload mongod FORCE
+runasync: reload FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	nohup uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L &
 
-runsync: mongod FORCE
+run: FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	nohup python3 run.py &
 
@@ -44,7 +45,7 @@ ab:
 	ab -n $(if ${n},${n},1) $(if ${c},-c ${c}) http://localhost:$(SERVER_PORT)/
 
 log: FORCE
-	tail -f $(WSGI_LOG)
+	tail -f $(APP_LOG)
 
 FORCE:;
 

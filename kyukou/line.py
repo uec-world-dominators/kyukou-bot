@@ -68,7 +68,7 @@ def validate_email(user_id, msg_text):
     if re.match('.*@.*', msg_text):
         real_user_id = line_api.get_real_user_id(user_id)
         link = f'{settings.url_prefix()}/api/v1/line/email/?token={certificate.generate_token(real_user_id, "line_email",{"email_addr":msg_text})}&realid={real_user_id}'
-        email_api.send_mails([email_api.make_message(msg_text, '【私の休講情報】メールアドレスの確認', '<h1>メールアドレスを検証するために以下のリンクをクリックしてください。</h1><p>このメールに心当たりが無い場合はリンクをクリックしないでください。</p>'+link)])
+        email_api.send_mails([email_api.make_message(msg_text, '【ご注文は休講情報ですか？】メールアドレスの確認', '<h1>メールアドレスを検証するために以下のリンクをクリックしてください。</h1><p>このメールに心当たりが無い場合はリンクをクリックしないでください。</p>'+link)])
         line_api.reply(user_id, [f'入力されたメールアドレスを検証するために、{msg_text}にメールを送信しました。ご確認ください。'])
         email_procedure.set_progress(user_id, 1)
     else:

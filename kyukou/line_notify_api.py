@@ -80,7 +80,7 @@ def send(realid, message):
     }, params={"message":  message})
     users_db.update_one({'_id': ObjectId(realid)}, {
         '$push': {'connections.line_notify.history': {
-            'message': message,
+            'message': '\n'+message,
             'time': time.time()
         }}
     })
