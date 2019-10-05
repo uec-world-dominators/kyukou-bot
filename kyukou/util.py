@@ -7,6 +7,8 @@ from threading import Lock
 import sys
 import traceback
 
+dayofweek = '月火水木金土日'
+
 
 def ignore_error(fn_args_list=[]):
     def _ignore_error():

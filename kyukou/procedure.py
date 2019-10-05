@@ -7,6 +7,7 @@ if isinpackage:
     from .db import get_collection
     from .util import Just
 
+
 def process(p, n):
     def wrapper(f):
         p.processes.append({
@@ -139,7 +140,14 @@ if isinpackage:
             self.collection.delete_one({'id': _id, 'procedure_id': self.procedure_id})
 
     class ProcedureSelectorDB():
+        selectors = []
+        @staticmethod
+        def clear_all():
+            for s in ProcedureSelectorDB.selectors:
+                s.clear()
+
         def __init__(self, *procedures):
+            ProcedureSelectorDB.selectors.append(self)
             self.procedures = {}
             for procedure in procedures:
                 self.procedures[procedure.procedure_id] = procedure
@@ -153,7 +161,7 @@ if isinpackage:
             for k, procedure in self.procedures.items():
                 if procedure.check(_id, *args):
                     procedure.run(_id, *args)
-                    self.current.update({'id': _id}, {'procedure': k, 'id': _id}, True)
+                    self.current.update({'id': _id}, {'procedure': k, 'id': _id, 'expired_at': time.time()+3600}, True)
                     return True
             return None
 
@@ -163,6 +171,7 @@ if isinpackage:
                 procedure.end(_id)
 
         def clear(self):
+            self.current.delete_many({'expired_at': {'$lt': time.time()}})
             for procedure in self.procedures.values():
                 if hasattr(procedure, 'clear'):
                     procedure.clear()

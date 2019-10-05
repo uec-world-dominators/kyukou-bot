@@ -38,6 +38,9 @@ google:
 public_dir: ./web/public
 index: index.html
 
+default_notify:
+  type: day
+  offset: -97200
 
 __ENV__hash_salt: KYUKOU_HASH_SALT
 logfile: ../log/kyukou.log

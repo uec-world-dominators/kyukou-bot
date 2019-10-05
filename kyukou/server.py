@@ -51,6 +51,6 @@ def run_server():
         pass
     finally:
         time.sleep(1)
-    with make_server('', port, app, ThreadingWsgiServer, handler_class=NoLoggingWSGIRequestHandler) as httpd:
+    with make_server('localhost', port, app, ThreadingWsgiServer, handler_class=NoLoggingWSGIRequestHandler) as httpd:
         log(__name__, f'Listen on port: {port}')
         httpd.serve_forever()

@@ -3,6 +3,8 @@ import datetime
 from pprint import pprint
 isinpackage = not __name__ in ['search', '__main__']
 if isinpackage:
+    from .settings import settings
+    from .user_data import default_notify_dest
     from .publish import try_add_notification
     from .db import get_collection
     from .util import log, ldn, strip_brackets, remove_them
@@ -64,6 +66,9 @@ def subject_similarity(x, y):
 
 
 def make_notification_dict():
+    '''
+    deprecated
+    '''
     users_list = get_collection('users').find({})
     lectures_list = list(get_collection('lectures').find({}))
 
@@ -98,7 +103,9 @@ def make_notification_dict():
                     # 備考
                     msg_texts_remark = canceled_lecture.get("remark") or "なし"
                     # notifyのリスト
-                    notify_list = user["notifies"]
+                    user_id = str(user["_id"])
+                    notify_list = user.get('notifies', [default_notify_dest(user_id)])
+
                     scraping_hash = canceled_lecture["hash"]
                     message = f"""
 【休講情報】
@@ -108,9 +115,8 @@ def make_notification_dict():
 教員: {msg_texts_teachers}
 備考: {msg_texts_remark}"""
                     end = datetime.datetime.timestamp(datetime.datetime.combine(date, datetime.time()) + period[min(periods)])
-                    user_id = str(user["_id"])
                     for notify_dict in notify_list:
-                        dest = notify_dict.get('dest') or 'line'
+                        dest = notify_dict.get('dest') or default_notify_dest(user_id)
                         if notify_dict["type"] == "day":
                             notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
                             time_day = datetime.datetime.timestamp(notify_day)
@@ -143,8 +149,9 @@ def make_notification_dict2(user, user_lecture, canceled_lecture):
     msg_texts_teachers = canceled_lecture["teachers"]
     # 備考
     msg_texts_remark = canceled_lecture.get("remark") or "なし"
+    user_id = str(user["_id"])
     # notifyのリスト
-    notify_list = user["notifies"]
+    notify_list = user.get('notifies', [settings.default_notify()])
     scraping_hash = canceled_lecture["hash"]
     message = f"""
 【休講情報】
@@ -154,9 +161,10 @@ def make_notification_dict2(user, user_lecture, canceled_lecture):
 教員: {msg_texts_teachers}
 備考: {msg_texts_remark}"""
     end = datetime.datetime.timestamp(datetime.datetime.combine(date, datetime.time()) + period[min(periods)])
-    user_id = str(user["_id"])
     for notify_dict in notify_list:
-        dest = notify_dict.get('dest') or 'line'
+        dest = notify_dict.get('dest') or default_notify_dest(user_id)
+        if not dest:
+            continue
         if notify_dict["type"] == "day":
             notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
             time_day = datetime.datetime.timestamp(notify_day)

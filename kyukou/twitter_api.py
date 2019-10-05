@@ -27,6 +27,8 @@ else:
 TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens')
 
 # https://docs.python.org/ja/3/library/urllib.parse.html#urllib.parse.urlencode
+
+
 def generate_signature(method, raw_url, raw_params, raw_key):
     param_string = quote(urlencode(sorted(raw_params.items(), key=lambda e: e[0]), quote_via=quote, safe=''), safe='')
     url = quote(raw_url, safe='')
@@ -111,23 +113,26 @@ def get_redirect_url():
 
 
 def register(user_id, data, realid=None):
-    if realid:
+    data['follow_time'] = time.time()
+    if realid:  # 連携追加
         users_db.update_one({'_id': ObjectId(realid)}, {
             '$set': {
                 'connections.twitter': data
-            }
+            },
+            'notifies': [settings.default_notify()]
         })
-    elif users_db.find_one({'connections.twitter.id': user_id}):
+    elif users_db.find_one({'connections.twitter.id': user_id}):  # ツイッターデータ上書き
         users_db.update_one({'connections.twitter.id': user_id}, {
             '$set': {
                 'connections.twitter': data
             }
         })
-    else:
+    else:  # 新規登録
         users_db.insert_one({
             'connections': {
                 'twitter': data
             },
+            'notifies': [settings.default_notify()]
         })
 
 

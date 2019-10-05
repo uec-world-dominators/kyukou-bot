@@ -34,7 +34,7 @@ run: reload mongod FORCE
 
 runsync: mongod FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
-	python3 run.py
+	nohup python3 run.py &
 
 stop:
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
