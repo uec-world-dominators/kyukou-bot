@@ -6,4 +6,5 @@
     * [LINEボット](line-functions.md)
     * [Twitterボット](twitter-functions.md)
 * [休講情報一覧](lectures.md)
+* [利用規約](tos.md)
 * [プライバシーポリシー](privacy-policy.md)
