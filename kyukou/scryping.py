@@ -5,10 +5,14 @@ from pprint import pprint
 import re
 import hashlib
 import time
-from .db import get_collection
-from .util import log, getyear
-from . import twitter_api
-from .search import lectures_class_num
+isinpackage = not __name__ in ['line_notify_api', '__main__']
+if isinpackage:
+    from .db import get_collection
+    from .util import log, getyear
+    from . import twitter_api
+    from .search import lectures_class_num
+else:
+    from util import getyear
 
 
 def testdata():
@@ -43,9 +47,8 @@ def testdata():
 
 
 def kyuukou():
-
     req = requests.get('http://kyoumu.office.uec.ac.jp/kyuukou/kyuukou.html')
-    req.encoding = 'shift_jis'
+    req.encoding = 'cp932'
     html = req.text
 
     doc = BeautifulSoup(html, 'html.parser')
@@ -121,3 +124,8 @@ def run():
     syllabus = list(get_collection('syllabus').find({}))
     compare(append_class_num(kyuukou(), syllabus), get_collection('lectures'))
     get_collection('lectures').insert_many(append_class_num(testdata(), syllabus))
+
+
+if not isinpackage:
+    from pprint import pprint
+    pprint(kyuukou()[0])
