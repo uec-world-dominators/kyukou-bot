@@ -52,7 +52,9 @@ def validate_input(user_id, msg_text):
 @process(time_procedure, 2)
 def validate_num(user_id, msg_text):
     if msg_text == '1':
-        if notify.add_notify(twitter_api.get_real_user_id(user_id), {'type': 'scraping', 'offset': 0, 'dest': 'twitter'}):
+        realid=twitter_api.get_real_user_id(user_id)
+        if notify.add_notify(realid, {'type': 'scraping', 'offset': 0, 'dest': 'twitter'}):
+            publish.remove_queue(realid)
             twitter_api.sends(user_id, ['登録完了です。休講情報を見つけたらすぐ通知します。'])
         else:
             twitter_api.sends(user_id, ['通知が最大数10に達したか、すでに同じものがあるため追加できません'])
@@ -84,7 +86,9 @@ def validate_time(user_id, msg_text):
     try:
         dayoffset = time_procedure.get_info(user_id).get('day', 0)
         time_data = datetime.strptime(msg_text, '%H:%M')
-        if notify.add_notify(twitter_api.get_real_user_id(user_id), {'type': 'day', 'offset': notify.day_hour_minute_to_day_offset(dayoffset, time_data.hour, time_data.minute), 'dest': 'twitter'}):
+        realid=twitter_api.get_real_user_id(user_id)
+        if notify.add_notify(realid, {'type': 'day', 'offset': notify.day_hour_minute_to_day_offset(dayoffset, time_data.hour, time_data.minute), 'dest': 'twitter'}):
+            publish.remove_queue(realid)
             twitter_api.sends(user_id, ['通知時間を登録しました。'])
         else:
             twitter_api.sends(user_id, ['通知が最大数10に達したか、すでに同じものがあるため追加できません'])

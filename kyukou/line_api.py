@@ -10,11 +10,11 @@ if isinpackage:
     from . import line
     from .settings import settings
     from .db import get_collection
-    from .util import Just, Curry
+    from .util import Just, Curry,log
 else:
     from settings import settings
     from db import get_collection
-    from util import Just, Curry
+    from util import Just, Curry,log
     import line
 
 users_db = get_collection('users')
@@ -70,6 +70,8 @@ def parse(o):
         event = Just(event)
         _type = event.type()
         _user_id = event.source.userId()
+        if _user_id=='Udeadbeefdeadbeefdeadbeefdeadbeef':# LINE Developersの導通確認
+            return
         if _type == 'follow':
             _reply_token = event.replyToken()
             register(_user_id, _reply_token)
