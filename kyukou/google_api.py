@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime
+from datetime import datetime, timedelta
 import time
 import json
 import base64
@@ -14,21 +15,21 @@ if isinpackage:
     from .import certificate
 else:
     from settings import settings
-    import util
+    # import util
     from util import Just
     from db import get_collection
-    import certificate
+    # import certificate
 
 
 users_db = get_collection('users')
 
 
 client_id = settings.google.client_id()
-redirect_uri = f'{settings.url_prefix()}/oauth/google/redirect'
+redirect_uri = f'{settings.url_prefix()}/api/v1/oauth/google/redirect'
 scope = urllib.parse.quote(settings.google.scope(), safe='')
 access_type = settings.google.access_type()
 prompt = settings.google.prompt()
-response_type = settings.google.code()
+response_type = settings.google.response_type()
 
 
 def get_certs_keys(kid):
@@ -117,12 +118,12 @@ def verify_access_token(access_token):
 def get_access_token(google_user_id):
     data = Just(users_db.find_one({'connections.google.sub': google_user_id}))
     access_token = data.connections.google.access_token()
-    refresh_token = data.connections.google.refresh_token()
-    assert refresh_token
+    _refresh_token = data.connections.google.refresh_token()
+    assert _refresh_token
     if access_token and verify_access_token(access_token):
         return access_token
     else:
-        return Just(refresh_token(refresh_token)).access_token()
+        return Just(refresh_token(_refresh_token)).access_token()
 
 
 def get_real_user_id(user_id):
@@ -131,7 +132,7 @@ def get_real_user_id(user_id):
 
 def get_google_user_id(real_user_id):
     data = Just(users_db.find_one({"_id": ObjectId(real_user_id)}))
-    if data() and 'line' in data.connections():
+    if data() and ('line' in data.connections()):
         return data.connections.google.sub()
     else:
         raise RuntimeError
@@ -157,4 +158,7 @@ def add_event(real_user_id, start, end, options={
         'content-type': 'application/json',
         'authorization': f'Bearer {get_access_token(get_google_user_id(real_user_id))}'
     })
-    return res.status_code == 200
+    r = res.status_code == 200
+    if not r:
+        print(res.text)
+    return r

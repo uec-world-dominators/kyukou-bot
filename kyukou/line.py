@@ -118,6 +118,12 @@ def get_line_notify_link(user_id, msg_text):
     line_notify_procedure.set_progress(user_id, 0)
 
 
+google_oauth_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'google','google')
+@process(google_oauth_procedure, 0)
+def redirect_to_google_auth(user_id, msg_text):
+    line_api.reply(user_id, [google_api.get_redirect_link(line_api.get_real_user_id(user_id))])
+
+
 def message(user_id, msg_text):
     msg = msg_text.strip().lower()
     if msg == 'end':
@@ -130,7 +136,7 @@ def message(user_id, msg_text):
 
 
 if isinpackage:
-    ps = ProcedureSelectorDB(email_procedure, csv_procedure, time_procedure, line_notify_procedure)
+    ps = ProcedureSelectorDB(email_procedure, csv_procedure, time_procedure, line_notify_procedure,google_oauth_procedure)
 else:
     ps = ProcedureSelector(email_procedure, csv_procedure, time_procedure, line_notify_procedure)
     # ここでデバッグ

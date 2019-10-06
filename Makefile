@@ -27,7 +27,8 @@ reload: FORCE
 mongod:
 	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
 	mkdir -p db
-	nohup mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
+	# mongod --auth --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT)
+	nohup mongod --auth --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
 
 runasync: reload FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
@@ -35,6 +36,7 @@ runasync: reload FORCE
 
 run: FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
+	#python3 run.py
 	nohup python3 run.py &
 
 stop:
