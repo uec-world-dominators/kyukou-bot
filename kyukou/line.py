@@ -32,14 +32,19 @@ if hasattr(sys.stdout, 'detach'):
 
 def follow(user_id):
     print(f'followed by {user_id}')
+    real_user_id = line_api.get_real_user_id(user_id)
+    token = certificate.generate_token(real_user_id, 'csv_upload', {'referrer': 'line'})
+    link = f'{settings.url_prefix()}/c/uploadcsv/?token={token}&realid={real_user_id}'
     line_api.reply(user_id, [
         'こんにちは！！\n休講ボットにようこそ。',
-        'あなたに合わせた休講情報をお届けするには履修情報の登録が必要です。「csv」とメッセージを送ってアップロードリンクを取得してください。',
+        'あなたに合わせた休講情報をお届けするには履修情報の登録が必要です。',
+        link, 
+        'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。以前取得したリンクは無効化されます。'
     ])
 
 
 def unfollow(user_id):
-    print(f'unfollowed by {user_id}')
+    log(__name__,f'unfollowed by {user_id}')
 
 
 csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv', 'csv')
@@ -75,11 +80,13 @@ def validate_input(user_id, msg_text):
         line_api.reply(user_id, ['入力が間違っています。もう一度入力してください。'])
         time_procedure.set_progress(user_id, 0)
 
-
+from . import publish
 @process(time_procedure, 2)
 def validate_num(user_id, msg_text):
     if msg_text == '1':
-        if notify.add_notify(line_api.get_real_user_id(user_id), {'type': 'scraping', 'offset': 0, 'dest': 'line'}):
+        realid=line_api.get_real_user_id(user_id)
+        if notify.add_notify(realid, {'type': 'scraping', 'offset': 0, 'dest': 'line'}):
+            publish.remove_queue(realid)
             line_api.reply(user_id, ['登録完了です。休講情報を見つけたらすぐ通知します。'])
         else:
             line_api.reply(user_id, ['通知が最大数10に達したか、すでに同じものがあるため追加できません'])
@@ -111,7 +118,9 @@ def validate_time(user_id, msg_text):
     try:
         dayoffset = time_procedure.get_info(user_id).get('day', 0)
         time_data = datetime.strptime(msg_text, '%H:%M')
-        if notify.add_notify(line_api.get_real_user_id(user_id), {'type': 'day', 'offset': notify.day_hour_minute_to_day_offset(dayoffset, time_data.hour, time_data.minute), 'dest': 'line'}):
+        realid=line_api.get_real_user_id(user_id)
+        if notify.add_notify(realid, {'type': 'day', 'offset': notify.day_hour_minute_to_day_offset(dayoffset, time_data.hour, time_data.minute), 'dest': 'line'}):
+            publish.remove_queue(realid)
             line_api.reply(user_id, ['通知時間を登録しました。'])
         else:
             line_api.reply(user_id, ['通知が最大数10に達したか、すでに同じものがあるため追加できません'])
@@ -226,4 +235,3 @@ def message(user_id, msg_text):
     if ps.run(user_id, msg):
         return
     line_api.reply(user_id, [msg_text])
-    line_notify_api.send(line_api.get_real_user_id(user_id), msg_text)

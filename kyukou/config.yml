@@ -1,8 +1,8 @@
-url_prefix: https://dev.shosato.jp
-mongo_url: 'mongodb://{username}:{password}@localhost:8070/'
-mongod:
-  username: kyukou
-  __ENV__password: KYUKOU_MONGOD_PASSWORD
+url_prefix: https://kyukou.shosato.jp
+mongo_url: 'mongodb://localhost:8070/'
+#mongod:
+#  username: kyukou
+#  __ENV__password: KYUKOU_MONGOD_PASSWORD
 
 port: 5426
 

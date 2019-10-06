@@ -12,7 +12,11 @@ if isinpackage:
     from . import twitter_api
     from .search import lectures_class_num
 else:
-    from util import getyear
+    from db import get_collection
+    from util import log, getyear
+    import twitter_api
+    from search import lectures_class_num
+    from util import log,getyear
 
 
 def testdata():
@@ -127,5 +131,4 @@ def run():
 
 
 if not isinpackage:
-    from pprint import pprint
-    pprint(kyuukou()[0])
+    run()

@@ -166,14 +166,13 @@ def make_notification_dict2(user, user_lecture, canceled_lecture):
         if not dest:
             continue
         if notify_dict["type"] == "day":
-            notify_day = datetime.datetime.combine(date, datetime.time()) + datetime.timedelta(seconds=notify_dict["offset"])
-            time_day = datetime.datetime.timestamp(notify_day)
-            make_dict(scraping_hash, message, end, dest, user_id, time_day)
-        if notify_dict["type"] == "lecture":
+            time_day=datetime.datetime(date.year,date.month,date.day)+datetime.timedelta(seconds=notify_dict['offset'])
+            make_dict(scraping_hash, message, end, dest, user_id, time_day.timestamp())
+        elif notify_dict["type"] == "lecture":
             notify_lecture = datetime.datetime.combine(date, datetime.time()) + period[min(periods)] + datetime.timedelta(seconds=notify_dict["offset"])
             time_lecture = datetime.datetime.timestamp(notify_lecture)
             make_dict(scraping_hash, message, end, dest, user_id, time_lecture)
-        if notify_dict["type"] == "scraping":
+        elif notify_dict["type"] == "scraping":
             notify_scraping = datetime.datetime.fromtimestamp(canceled_lecture['time'])+datetime.timedelta(seconds=notify_dict["offset"])
             time_scraping = notify_scraping.timestamp()
             make_dict(scraping_hash, message, end, dest, user_id, time_scraping)

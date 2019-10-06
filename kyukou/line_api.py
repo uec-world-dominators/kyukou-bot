@@ -117,8 +117,6 @@ def reply(user_id, msg_texts):
                     'messages': msg_texts
                 }}
             })
-        from .util import log
-        log(__name__, res.text)
         return res.status_code
     else:
         raise RuntimeError

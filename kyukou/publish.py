@@ -1,4 +1,6 @@
 import time
+from bson.objectid import ObjectId
+
 isinpackage = not __name__ in ['publish', '__main__']
 if isinpackage:
     from . import line_notify_api
@@ -47,7 +49,7 @@ def publish_all():
     last_publish = load('last_publish', 0)
     now = time.time()+60
     for data in queue.find({
-            # 'time': {'$lte': last_publish},
+            'time': {'$lte': last_publish},
             'finish': False
     }):
         if publish_one(data):
@@ -72,3 +74,6 @@ def publish_one(data):
         return twitter_id and twitter_api.send(twitter_id, data.get('message'))
     else:
         return False
+
+def remove_queue(realid):
+    queue.delete_many({'user_id':realid,'time':{'$gt':time.time()}})

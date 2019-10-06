@@ -24,6 +24,7 @@ if 1:
     from . import procedure
     scheduler.init(0.1)
     scheduler.add_task(3600, ignore_error([(scryping.run,), (info.create_md,)]))
+    # scheduler.add_task(3600, ignore_error([(info.create_md,)]))
     scheduler.add_task(60, search.search_lectures)
     scheduler.add_task(5, publish.publish_all)
     scheduler.add_task(60, certificate.delete_expired)

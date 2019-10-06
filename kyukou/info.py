@@ -17,7 +17,7 @@ def create_md():
     lectures = get_collection('lectures')
     syllabus = get_collection('syllabus')
     for lecture in lectures.find({}):
-        class_num = lecture.get("class_num", "不明")
+        class_num = lecture.get("class_num")
         syllabus_link = util.Just(syllabus.find_one({"class_num": class_num})).url()
         subject = lecture.get('subject')
         date = datetime.fromtimestamp(lecture.get("date"))

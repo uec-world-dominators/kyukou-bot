@@ -27,7 +27,7 @@ reload: FORCE
 mongod:
 	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
 	mkdir -p db
-	nohup mongod --auth --dbpath `pwd`/db --bind_ip localhost --port $(MONGOD_PORT) >/dev/null &
+	nohup mongod --dbpath `pwd`/db --bind_ip localhost --port $(MONGOD_PORT) >/dev/null &
 
 runasync: reload FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
