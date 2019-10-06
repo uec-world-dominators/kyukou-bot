@@ -114,6 +114,8 @@ def get_redirect_url():
 
 def register(user_id, data, realid=None):
     data['follow_time'] = time.time()
+    default_notify = settings.default_notify()
+    default_notify.update({'dest': 'twitter'})
     if realid:  # 連携追加
         users_db.update_one({'_id': ObjectId(realid)}, {
             '$set': {
@@ -183,6 +185,11 @@ def parse(o):
         return
 
     print(o)
+
+
+def sends(user_id, msg_texts):
+    for msg_text in msg_texts:
+        send(user_id, msg_text)
 
 
 def send(user_id, msg_text):

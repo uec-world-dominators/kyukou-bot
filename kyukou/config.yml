@@ -42,6 +42,7 @@ google:
 public_dir: ./web/public
 index: index.html
 
+admin_email_addr: kyukou@shosato.jp
 
 default_notify:
   type: day

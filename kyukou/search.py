@@ -104,7 +104,7 @@ def make_notification_dict():
                     msg_texts_remark = canceled_lecture.get("remark") or "なし"
                     # notifyのリスト
                     user_id = str(user["_id"])
-                    notify_list = user.get('notifies', [default_notify_dest(user_id)])
+                    notify_list = user.get('notifies', [])
 
                     scraping_hash = canceled_lecture["hash"]
                     message = f"""

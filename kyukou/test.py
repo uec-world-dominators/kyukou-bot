@@ -1,3 +1,8 @@
-from datetime import datetime
+h = 21
+m = 0
+d = -2
 
-print(datetime.now())
+
+import datetime
+
+datetime.time(hour=h,minute=m)

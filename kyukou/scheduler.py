@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import sys
 import time
 from threading import Thread, Lock
@@ -75,4 +76,7 @@ if not isinpackage:
         httpd.serve_forever()
 
 
-__all__ = ["init", "add_task"]
+pool = ThreadPoolExecutor(1000)
+
+
+__all__ = ["init", "add_task", "pool"]

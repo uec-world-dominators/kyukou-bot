@@ -209,3 +209,5 @@ def remove_them(x, array='1234'):
         if not c in array:
             result += c
     return result
+
+trans = str.maketrans({chr(0xFF01 + i): chr(0x21 + i) for i in range(94)})

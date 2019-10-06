@@ -33,6 +33,8 @@ def validate(environ, body):
 
 def register(_user_id, _reply_token, realid=None):
     profile = get_profile(_user_id)
+    default_notify = settings.default_notify()
+    default_notify.update({'dest': 'line'})
     data = {
         "user_id": _user_id,
         "reply_token": _reply_token,
@@ -46,7 +48,7 @@ def register(_user_id, _reply_token, realid=None):
             '$set': {
                 'connections.line': data
             },
-            'notifies': [settings.default_notify()]
+            'notifies': [default_notify]
         })
     elif users_db.find_one({'connections.line.user_id': _user_id}):  # データ上書き(再フォロー)
         users_db.update_one({'connections.line.user_id': _user_id}, {
@@ -59,7 +61,7 @@ def register(_user_id, _reply_token, realid=None):
             "connections": {
                 "line": data,
             },
-            "notifies": [settings.default_notify()]
+            "notifies": [default_notify]
         })
 
 
@@ -115,6 +117,8 @@ def reply(user_id, msg_texts):
                     'messages': msg_texts
                 }}
             })
+        from .util import log
+        log(__name__, res.text)
         return res.status_code
     else:
         raise RuntimeError
