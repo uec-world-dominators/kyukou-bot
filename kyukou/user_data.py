@@ -20,7 +20,7 @@ def default_notify_dest(realid):
 
 
 def format_course(lecture):
-    return f"[{dayofweek[lecture.get('dayofweek',-1)]} {', '.join(lecture.get('periods'))}] {lecture.get('subject','-')}"
+    return f"[{dayofweek[lecture.get('dayofweek',-1)]} {', '.join(map(str,lecture.get('periods')))}] {lecture.get('subject','-')}"
 
 
 def list_of_courses(realid):
