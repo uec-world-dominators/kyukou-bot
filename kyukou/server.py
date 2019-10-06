@@ -7,7 +7,7 @@ import json
 from .route import Router
 
 import sys
-from .util import log
+from .util import log, ignore_error
 from .settings import settings
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
@@ -17,11 +17,14 @@ import time
 
 
 def execute(environ, start_response):
-    status, headers, ret = Router.do(environ)
-    log(__name__, f'{environ["HTTP_X_REAL_IP"].ljust(15)}  |  {status.ljust(15)}  [{environ["REQUEST_METHOD"].ljust(5)}] {environ["PATH_INFO"]}  ({environ["SERVER_PROTOCOL"]}) {environ["HTTP_X_REQUEST_ID"]}')
-    start_response(status, headers)
-    sys.stdout.flush()
-    return ret
+    try:
+        status, headers, ret = Router.do(environ)
+        log(__name__, f'{environ["HTTP_X_REAL_IP"].ljust(15)}  |  {status.ljust(15)}  [{environ["REQUEST_METHOD"].ljust(5)}] {environ["PATH_INFO"]}  ({environ["SERVER_PROTOCOL"]}) {environ["HTTP_X_REQUEST_ID"]}')
+        start_response(status, headers)
+        sys.stdout.flush()
+        return ret
+    except:
+        return []
 
 
 pool = ThreadPoolExecutor(1000)
@@ -48,6 +51,6 @@ def run_server():
         pass
     finally:
         time.sleep(1)
-    with make_server('', port, app, ThreadingWsgiServer, handler_class=NoLoggingWSGIRequestHandler) as httpd:
+    with make_server('localhost', port, app, ThreadingWsgiServer, handler_class=NoLoggingWSGIRequestHandler) as httpd:
         log(__name__, f'Listen on port: {port}')
         httpd.serve_forever()

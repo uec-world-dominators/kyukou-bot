@@ -1,0 +1,39 @@
+
+
+## 電気通信大学の「個別配信型」休講情報Botです
+個人の履修科目に合わせて休講情報をお届けします。
+
+## 1. LINEBotとTwitterBotを登録
+
+<div class="sns-buttons">
+    <a class="sns-button line" href="https://line.me/R/ti/p/%40683vbgwr" target="_blank">
+        <i class="fab fa-line"></i><span>LINE@</span>
+    </a>
+    <a class="sns-button twitter" href="https://twitter.com/ueckyukou" target="_blank">
+        <i class="fab fa-twitter"></i><span>Follow</span>
+    </a>
+</div>
+
+!> Twitterはダイレクトメッセージで配信を行います
+
+!> LINEはLINE Notifyで配信を行います
+
+## 2. 履修情報を登録
+
+ボットに`csv`とメッセージを送り、履修情報CSVのアップロード用リンクを取得します。詳細は[「こちら」](/how-to-upload-csv)をご覧ください。
+
+?> CSVファイルからの講義情報以外の**個人情報の収集は一切行いません**が、心配な場合には学籍番号や名前を削除することもできます。その場合は**行数を変えないで**削除してください。
+
+## 3. 完了です！
+デフォルトでは休講になった講義日の２日前の夜９時に配信しております。この設定は「`time`」とボットに送信することにより変更可能です。
+
+## 詳細な設定が必要な場合
+[LINEボット詳細設定](/line-functions)または[Twitterボット詳細設定](/twitter-functions)に詳細な設定方法があります
+
+## Googleカレンダー連携(開発中)
+Googleで認証することで、Googleカレンダーに休講情報のイベントを追加することもできます。
+
+## お問い合わせ
+不明な手順や機能の追加・改善に関するお問い合わせも歓迎いたします。ただし、各ボットにお問い合わせいただいても返信することができません。こちらのメールアドレスにお送りください。
+
+[kyukou@shosato.jp](mailto://kyukou@shosato.jp)

@@ -1,22 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="pandoc">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>ご注文は休講情報ですか？</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="/css/github.css">
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
+    <meta charset="UTF-8">
+    <title>ご注文は休講情報ですか？</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <style>
+        .sns-button {
+            color: white !important;
+            font-size: large;
+            width: 200px;
+            height: 60px;
+            text-align: center;
+            display: inline-flex;
+            border-radius: 5px;
+            vertical-align: middle;
+            margin: 5px;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            user-select: none;
+        }
+
+        .sns-buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        .sns-button>i {
+            font-size: xx-large;
+            margin-right: 10px;
+        }
+
+        .line {
+            background: #00c300;
+        }
+
+        .twitter {
+            background: #1da1f2;
+        }
+    </style>
 </head>
+
 <body>
-<header>
-<h1 class="title">ご注文は休講情報ですか？</h1>
-</header>
-<p>電気通信大学の休講情報LINEBotです。個人の履修科目に合わせて休講情報をお届けします。</p>
-<p>下のQRコードからLINEBotを友だち追加してください。</p>
-<p>また、Googleで認証することで、Googleカレンダーに休講情報のイベントを追加することもできます。</p>
+    <div id="app"></div>
+    <script>
+        window.$docsify = {
+            search: 'auto',
+            coverpage: true,
+            loadSidebar: true,
+            name: 'ご注文は休講情報ですか？',
+            repo: '',
+            subMaxLevel: 2,
+            auto2top: true,
+            executeScript: true,
+        }
+    </script>
+    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+    <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
+    <script src="//unpkg.com/docsify-copy-code"></script>
+    <script src="//unpkg.com/docsify/lib/plugins/external-script.min.js"></script>
+    <script src="//unpkg.com/prismjs/components/prism-python.min.js"></script>
+    <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
+    <script src="//unpkg.com/prismjs/components/prism-json.min.js"></script>
+    <!-- <script src="//unpkg.com/docsify/lib/plugins/zoom-image.min.js"></script> -->
 </body>
+
 </html>

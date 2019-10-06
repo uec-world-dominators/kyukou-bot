@@ -38,7 +38,7 @@ def resolve_env(d):
     d.update(**tmp)
 
 
-STORE_FILE = 'storage'
+STORE_FILE = os.path.join(os.path.dirname(__file__), 'storage')
 store_lock = Lock()
 
 

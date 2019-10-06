@@ -38,3 +38,4 @@ def direct_message(user_id, msg_text):
 def follow(user_id):
     print(f'Followed by {user_id}')
     twitter_api.send(user_id, 'フォローありがとうございます！！！')
+    twitter_api.send(user_id, f'「csv」とメッセージを送信して、履修情報のアップロード用リンクを取得してください！ \n参考：{settings.url_prefix()}/#/how-to-upload-csv')

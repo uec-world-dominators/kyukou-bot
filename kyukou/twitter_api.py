@@ -11,7 +11,8 @@ import requests
 import urllib
 from bson.objectid import ObjectId
 from urllib.parse import urlencode, quote, quote_plus, parse_qs, unquote
-if __name__ != '__main__':
+isinpackage = not __name__ in ['twitter_api', '__main__']
+if isinpackage:
     from . import util
     from . import twitter
     from .settings import settings
@@ -20,34 +21,21 @@ if __name__ != '__main__':
     from .db import get_collection
     from .import certificate
     users_db = get_collection('users')
-    TOKENS_FILE = 'kyukou/tokens'
 else:
     import util
-    TOKENS_FILE = 'tokens'
+    from settings import settings
+TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens')
+
+# https://docs.python.org/ja/3/library/urllib.parse.html#urllib.parse.urlencode
 
 
 def generate_signature(method, raw_url, raw_params, raw_key):
-    param_string = quote(urlencode(sorted(raw_params.items(), key=lambda e: e[0])), safe='')
+    param_string = quote(urlencode(sorted(raw_params.items(), key=lambda e: e[0]), quote_via=quote, safe=''), safe='')
     url = quote(raw_url, safe='')
     signature_base_string = '&'.join([method, url, param_string]).encode()
     signing_key = raw_key.encode()
     digest = hmac.new(signing_key, signature_base_string, hashlib.sha1).digest()
     return base64.b64encode(digest)
-
-
-def tweet_basic(msg, oauth_token, oauth_token_secret):
-    url = f'https://api.twitter.com/1.1/statuses/update.json'
-    res = post(url, oauth_token, oauth_token_secret, {
-        'status': msg
-    })
-    if res.status_code != 200:
-        print('tweet', res.status_code, res.text)
-    return res
-
-
-def tweet(msg):
-    tokens = load_tokens()
-    return tweet_basic(msg, tokens['oauth_token'], tokens['oauth_token_secret'])
 
 
 def get_access_token(oauth_token, oauth_verifier):
@@ -72,7 +60,7 @@ def parse_query(src):
 
 
 def http(method, method_function, baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
-    url = f'{baseurl}{"?"if d else ""}{urlencode(d)}'
+    url = f'{baseurl}{"?"if d else ""}{urlencode(d,quote_via=quote)}'
     raw_params = {
         'oauth_callback': settings.url_prefix()+settings.twitter.callback_path(),
         "oauth_consumer_key": settings.twitter.consumer_key(),
@@ -88,7 +76,7 @@ def http(method, method_function, baseurl, oauth_token, oauth_token_secret, d={}
     raw_key = settings.twitter.consumer_key_secret()+'&'+oauth_token_secret
     raw_params['oauth_signature'] = generate_signature(method, baseurl, params, raw_key)
     default_headers = {
-        'Authorization': f'OAuth {urlencode(raw_params).replace("&",",")}'
+        'Authorization': f'OAuth {urlencode(raw_params,quote_via=quote).replace("&",",")}'
     }
     default_headers.update(headers)
     return method_function(url, headers=default_headers, data=data)
@@ -125,23 +113,26 @@ def get_redirect_url():
 
 
 def register(user_id, data, realid=None):
-    if realid:
+    data['follow_time'] = time.time()
+    if realid:  # 連携追加
         users_db.update_one({'_id': ObjectId(realid)}, {
             '$set': {
                 'connections.twitter': data
-            }
+            },
+            'notifies': [settings.default_notify()]
         })
-    elif users_db.find_one({'connections.twitter.id': user_id}):
+    elif users_db.find_one({'connections.twitter.id': user_id}):  # ツイッターデータ上書き
         users_db.update_one({'connections.twitter.id': user_id}, {
             '$set': {
                 'connections.twitter': data
             }
         })
-    else:
+    else:  # 新規登録
         users_db.insert_one({
             'connections': {
                 'twitter': data
             },
+            'notifies': [settings.default_notify()]
         })
 
 
@@ -213,9 +204,23 @@ def send(user_id, msg_text):
     res = post(url, tokens['oauth_token'], tokens['oauth_token_secret'], headers={
         'content-type': 'application/json'
     }, data=json.dumps(data))
+    return res.status_code == 200
+
+
+def tweet_basic(msg, oauth_token, oauth_token_secret):
+    url = f'https://api.twitter.com/1.1/statuses/update.json'
+    res = post(url, oauth_token, oauth_token_secret, {
+        'status': msg
+    })
+
     if res.status_code != 200:
-        print('send', res.status_code, res.text)
+        print('////////////////tweet', res.status_code, res.text)
     return res
+
+
+def tweet(msg):
+    tokens = load_tokens()
+    return tweet_basic(msg, tokens['oauth_token'], tokens['oauth_token_secret'])
 
 
 def validate_webhook():
@@ -233,4 +238,3 @@ def subscribe_user(webhook_id, oauth_token, oauth_token_secret):
         'webhook_id': webhook_id
     }))
     print(res.status_code, res.status_code == 204)
-

@@ -3,16 +3,18 @@ ROOTDIR=#/web/public
 SOURCEDIR = ./web/public
 MDS := $(shell find $(SOURCEDIR) -name '*.md')
 HTMLS := $(MDS:%.md=%.html)
-CSS = $(ROOTDIR)/css/github.css
+CSS = $(ROOTDIR)/templates/pandoc-md2html-template/template-light.css
+TEMPLATE= ./web/public/templates/pandoc-md2html-template/template.html
 # Server
 WSGI_LOG=./log/uwsgi.log
+APP_LOG=./log/kyukou.log
 RELOAD_TRIGGER=./reload.trigger
 SERVER_PORT=5426
 MONGOD_PORT=8070
 WSGI_FILE=./run_async.py
 
-%.html:%.md
-	pandoc $< -t html5 -c $(CSS) --mathjax -o $@ --highlight-style=tango
+%.html:%.md FORCE
+	pandoc $< --template=$(TEMPLATE) -c $(CSS) --mathjax -o $@ --highlight-style=tango
 
 default: $(HTMLS)
 
@@ -25,20 +27,28 @@ reload: FORCE
 mongod:
 	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
 	mkdir -p db
-	mongod --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
+	# mongod --auth --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT)
+	nohup mongod --auth --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
 
-run: $(HTMLS) reload mongod FORCE
+runasync: reload FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
-	uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L
+	nohup uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L &
 
-runsync: $(HTMLS) mongod FORCE
+run: FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
-	python3 run.py
+	#python3 run.py
+	nohup python3 run.py &
+
+stop:
+	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
+	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
 
 ab:
-	ab -n 1 http://localhost:$(SERVER_PORT)/
+	ab -n $(if ${n},${n},1) $(if ${c},-c ${c}) http://localhost:$(SERVER_PORT)/
 
 log: FORCE
-	tail -f $(WSGI_LOG)
+	tail -f $(APP_LOG)
 
 FORCE:;
+
+# find  web/public/ -type d -exec chmod go+x {} \;

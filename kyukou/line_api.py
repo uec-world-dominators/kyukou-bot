@@ -31,21 +31,36 @@ def validate(environ, body):
         return False
 
 
-def register(_user_id, _reply_token):
+def register(_user_id, _reply_token, realid=None):
     profile = get_profile(_user_id)
-    users_db.insert_one({
-        "connections": {
-            "line": {
-                "user_id": _user_id,
-                "reply_token": _reply_token,
-                "follow_time": time.time(),
-                "display_name": profile["displayName"],
-                "picture_url": profile["pictureUrl"],
-                "status_message": profile.get('statusMessage')
+    data = {
+        "user_id": _user_id,
+        "reply_token": _reply_token,
+        "follow_time": time.time(),
+        "display_name": profile["displayName"],
+        "picture_url": profile["pictureUrl"],
+        "status_message": profile.get('statusMessage')
+    }
+    if realid:  # 連携追加
+        users_db.update_one({'_id': ObjectId(realid)}, {
+            '$set': {
+                'connections.line': data
             },
-            "length": 1
-        }
-    })
+            'notifies': [settings.default_notify()]
+        })
+    elif users_db.find_one({'connections.line.user_id': _user_id}):  # データ上書き(再フォロー)
+        users_db.update_one({'connections.line.user_id': _user_id}, {
+            '$set': {
+                'connections.line': data
+            }
+        })
+    else:  # 新規登録
+        users_db.insert_one({
+            "connections": {
+                "line": data,
+            },
+            "notifies": [settings.default_notify()]
+        })
 
 
 def parse(o):
@@ -58,11 +73,6 @@ def parse(o):
             register(_user_id, _reply_token)
             line.follow(_user_id)
         elif _type == 'unfollow':
-            users_db.update_one({"connections.line.user_id": _user_id}, {
-                "$unset": {"connections.line": None},
-                "$inc": {"connections.length": -1}
-            })
-            # users_db.delete_many({"connections.length": 0})
             line.unfollow(_user_id)
         elif _type == 'message':
             _msg_type = event.message.type()
@@ -191,4 +201,3 @@ def get_line_user_id(real_user_id):
         return data.connections.line.user_id()
     else:
         raise RuntimeError
-

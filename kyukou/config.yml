@@ -1,5 +1,9 @@
 url_prefix: https://dev.shosato.jp
-mongo_url: 'mongodb://localhost:8070/'
+mongo_url: 'mongodb://{username}:{password}@localhost:8070/'
+mongod:
+  username: kyukou
+  __ENV__password: KYUKOU_MONGOD_PASSWORD
+
 port: 5426
 
 line:
@@ -30,7 +34,7 @@ email:
 google:
   __ENV__google_client_secret: KYUKOU_GOOGLE_CLIENT_SECRET
   client_id: 723530674332-g9bq3lq6e921pip895vk6mgg91fhui4l.apps.googleusercontent.com
-  scope: 'email profile openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events'
+  scope: 'email profile openid https://www.googleapis.com/auth/calendar.events'
   access_type: offline
   prompt: consent # select_account
   response_type: code
@@ -38,6 +42,10 @@ google:
 public_dir: ./web/public
 index: index.html
 
+
+default_notify:
+  type: day
+  offset: -97200
 
 __ENV__hash_salt: KYUKOU_HASH_SALT
 logfile: ../log/kyukou.log

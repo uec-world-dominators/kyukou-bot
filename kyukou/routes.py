@@ -18,7 +18,7 @@ from .settings import settings
 from .util import log
 # 上から順に優先
 
-LINE_API_NETWORKS = ['147.92.150.196/32']
+LINE_API_NETWORKS = ['0.0.0.0/0']
 TWITTER_API_NETWORKS = ['199.59.148.0/22', '199.16.156.0/22']
 LOCAL_NETWORKS = ['192.168.0.0/16', '124.147.77.47/32']
 
@@ -51,8 +51,10 @@ def line_notify(environ):
         tokens = line_notify_api.code_to_access_token(q['code'])
         if tokens:
             line_notify_api.append(data['realid'], tokens)
-            return file('/')
-    return status(400)
+            line_notify_api.send(data['realid'], '連携が完了しました！')
+            line_notify_api.send(data['realid'], 'こちらで休講情報の配信をいたします')
+            return redirect('/')
+    return redirect('/#/expired')
 
 # Twitter Get Redirect URL to Allow Connection
 @route('get', '/api/v1/twitter/redirect_url', networks=LOCAL_NETWORKS)
@@ -120,14 +122,14 @@ def validate_upload_token(environ):
     if realid and token and certificate.validate_token('csv_upload', realid, token, expire=False):
         return status(200)
     else:
-        return status(403)
+        return status(401)
 
 
 @route('post', '/api/v1/upload')
 def upload_csv(environ):
     realid, token = environ.get("HTTP_X_KYUKOU_REALID"), environ.get("HTTP_X_KYUKOU_TOKEN")
     cert = certificate.validate_token('csv_upload', realid, token)
-    if True or realid and token and cert:
+    if realid and token and cert:
         try:
             csv = get_body(environ).decode('cp932')
             data = parse_share.parse_csv(csv)
@@ -149,28 +151,33 @@ def upload_csv(environ):
                 if twitter_user_id:
                     twitter_api.send(twitter_user_id, 'おめでとうございます！CSVファイルがアップロードされました！')
                 return status(200)
-            return status(403)
+            return status(401)
         else:
             return status(406)
     else:
-        return status(403)
+        return status(401)
 
 
-@route('get', '/oauth/google/redirect_link')
+@route('get', '/api/v1/oauth/google/redirect_link')
 def google_oauth_start_auth(environ):
     return redirect(google_api.get_redirect_link())
 
 
-@route('get', '/oauth/google/redirect')
+@route('get', '/api/v1/oauth/google/redirect')
 def google_oauth_redirect(environ):
     q = get_query(environ)
     data = certificate.validate_state(q['state'], 'google_oauth')
     if data:
+        line_api.push(line_api.get_line_user_id(data['realid']), ['Thank you for your registration!', '[Notification]\nMath class was cancelled!!'])
         profile, tokens = google_api.code_to_refresh_token(q['code'])
         google_api.register(profile, tokens, data['realid'])
-        return status(200)
+        import datetime
+        start = datetime.datetime(2019, 10, 7, 13, 0, 0)
+        end = start+datetime.timedelta(minutes=90)
+        google_api.add_event(data['realid'], start.isoformat(), end.isoformat(), {'summary': 'Math class was cancelled!'})
+        return redirect('/#/registerd')
     else:
-        return status(400)
+        return redirect('/#/expired')
 
 
 @route('post', '/api/v1/email/register')
@@ -180,11 +187,11 @@ def email(environ):
     return status(200)
 
 
-@route('get', '/')
-def getfile(environ):
-    return file(environ["PATH_INFO"])
+# @route('get', '/')
+# def getfile(environ):
+#     return file(environ["PATH_INFO"])
 
 
 @route()
 def fallback(environ):
-    return status(418)
+    return redirect('/')

@@ -5,6 +5,32 @@ import random
 import inspect
 from threading import Lock
 import sys
+import traceback
+
+dayofweek = '月火水木金土日'
+
+
+def ignore_error(fn_args_list=[]):
+    def _ignore_error():
+        for fn, *args in fn_args_list:
+            try:
+                fn(*args)
+            except:
+                log(__name__, traceback.format_exc())
+    return _ignore_error
+
+
+def mdnum(month, day):
+    return month*100+day
+
+
+def getyear(month, day):
+    now = datetime.now()
+    mdnum_now = mdnum(now.month, now.day)
+    if 401 <= mdnum_now <= 1231:
+        return (not mdnum_now <= mdnum(month, day) <= 1231) + now.year
+    elif 101 <= mdnum_now <= 331:
+        return (not 101 <= mdnum(month, day)) + now.year
 
 
 def dict_to_tuples(d):
@@ -135,4 +161,51 @@ class Curry(object):
             return self.f(*self.argv, *args)
 
 
-__all__ = ["dict_to_tuples", "generate_id", "Just", "Curry"]
+def ld(x, y):
+    lx, ly = len(x), len(y)
+    if lx < ly:
+        return ld(y, x)
+    if ly == 0:
+        return lx
+    p = range(len(y)+1)
+    for i, cx in enumerate(x):
+        c = [i+1]
+        for j, cy in enumerate(y):
+            c.append(min(p[j+1]+1, c[j]+1, p[j]+(cx != cy)))
+        p = c
+    return p[-1]
+
+
+def ldn(s1, s2):
+    return 1-ld(s1, s2)/max(len(s1), len(s2))
+
+
+def find_index(array, e, default=-1):
+    if not e:
+        return default
+    for i, c in enumerate(array):
+        if c == e:
+            return i
+    return default
+
+
+def strip_brackets(x):
+    result = ''
+    nest = 0
+    begin, end = '([{（「【［〈《', '}])）」】］〉》'
+    for c in x:
+        if find_index(begin, c) > -1:
+            nest += 1
+        elif find_index(end, c) > -1:
+            nest -= 1
+        elif not nest:
+            result += c
+    return result
+
+
+def remove_them(x, array='1234'):
+    result = ''
+    for c in x:
+        if not c in array:
+            result += c
+    return result
