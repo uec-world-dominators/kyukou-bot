@@ -17,7 +17,7 @@ if isinpackage:
     from . import twitter
     from .settings import settings
     from . import util
-    from .util import Just
+    from .util import Just,log
     from .db import get_collection
     from .import certificate
     users_db = get_collection('users')
@@ -79,7 +79,10 @@ def http(method, method_function, baseurl, oauth_token, oauth_token_secret, d={}
         'Authorization': f'OAuth {urlencode(raw_params,quote_via=quote).replace("&",",")}'
     }
     default_headers.update(headers)
-    return method_function(url, headers=default_headers, data=data)
+    res= method_function(url, headers=default_headers, data=data)
+    if res.status_code!=200:
+        log(__name__,res.text)
+    return res
 
 
 def post(baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
@@ -202,7 +205,7 @@ def send(user_id, msg_text):
                     'recipient_id': user_id,
                 },
                 'message_data': {
-                    'text': msg_text,
+                    'text': f'{msg_text} [{util.generate_id(2)}]',
                 }
             }
         }
@@ -221,7 +224,7 @@ def tweet_basic(msg, oauth_token, oauth_token_secret):
     })
 
     if res.status_code != 200:
-        print('////////////////tweet', res.status_code, res.text)
+        log(__name__, res.text)
     return res
 
 

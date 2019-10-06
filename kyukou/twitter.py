@@ -1,6 +1,6 @@
 from . import scheduler
 from .util import log
-import datetime
+from datetime import datetime
 import traceback
 import re
 from . import notify
@@ -13,7 +13,7 @@ from .util import Just
 from . import email_api
 from .settings import settings
 from .procedure import *
-
+from . import publish
 csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv', 'twitter_csv')
 
 
@@ -31,25 +31,15 @@ time_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'time', 'twit
 
 
 @process(time_procedure, 0)
-def add_notice(user_id, msg_text):
-    twitter_api.sends(user_id, ['通知時間を追加しますか？追加する場合は"y"、終了する場合は"end"と入力してください。'])
+def validate_input(user_id, msg_text):
+    twitter_api.sends(user_id, ['通知の形式を選択し、対応する「数字」を入力してください。\n'
+                                + '【 1 】休講情報を見つけたら即時通知する\n'
+                                + '【 2 】休講日の何日前、何時間前など、通知時間を細かく設定する\n'
+                                + '尚、この通知設定は複数追加できます。'])
     time_procedure.set_progress(user_id, 0)
 
 
 @process(time_procedure, 1)
-def validate_input(user_id, msg_text):
-    if msg_text == 'y':
-        twitter_api.sends(user_id, ['通知の形式を選択し、対応する「数字」を入力してください。\n'
-                                    + '【 1 】休講情報を見つけたら即時通知する\n'
-                                    + '【 2 】休講日の何日前、何時間前など、通知時間を細かく設定する\n'
-                                    + '尚、この通知設定は複数追加できます。'])
-        time_procedure.set_progress(user_id, 1)
-    else:
-        twitter_api.sends(user_id, ['入力が間違っています。もう一度入力してください。'])
-        time_procedure.set_progress(user_id, 0)
-
-
-@process(time_procedure, 2)
 def validate_num(user_id, msg_text):
     if msg_text == '1':
         realid=twitter_api.get_real_user_id(user_id)
@@ -58,16 +48,16 @@ def validate_num(user_id, msg_text):
             twitter_api.sends(user_id, ['登録完了です。休講情報を見つけたらすぐ通知します。'])
         else:
             twitter_api.sends(user_id, ['通知が最大数10に達したか、すでに同じものがあるため追加できません'])
-        time_procedure.set_progress(user_id, 4)
+        time_procedure.set_progress(user_id, 3)
     elif msg_text == '2':
-        twitter_api.sends(user_id, ['休講の何日前に通知しますか？\n当日の場合は"0"、前日の場合は"1"、2日前の場合は"2"...のように入力してください。'])
-        time_procedure.set_progress(user_id, 2)
+        twitter_api.sends(user_id, ['休講の何日前に通知しますか？\n当日の場合は【 0 】"、前日の場合は【 1 】、2日前の場合は【 2 】...のように入力してください。'])
+        time_procedure.set_progress(user_id, 1)
     else:
         twitter_api.sends(user_id, ['数値の形式が間違っています。もう一度入力してください。'])
-        time_procedure.set_progress(user_id, 1)
+        time_procedure.set_progress(user_id, 0)
 
 
-@process(time_procedure, 3)
+@process(time_procedure, 2)
 def please_enter_time(user_id, msg_text):
     m = re.match(r'^(\d{1,2})$', msg_text)
     if m:
@@ -75,13 +65,13 @@ def please_enter_time(user_id, msg_text):
         if 0 <= d <= 30:
             time_procedure.set_info(user_id, 'day', d)
             twitter_api.sends(user_id, ['その日の何時に通知しますか？\n"6:30"、"23:00"のように"時:分"となるよう24時間表記で送信してください。'])
-            time_procedure.set_progress(user_id, 3)
+            time_procedure.set_progress(user_id, 2)
             return
     twitter_api.sends(user_id, ['数値の形式が間違っています。もう一度入力してください。'])
-    time_procedure.set_progress(user_id, 2)
+    time_procedure.set_progress(user_id, 1)
 
 
-@process(time_procedure, 4)
+@process(time_procedure, 3)
 def validate_time(user_id, msg_text):
     try:
         dayoffset = time_procedure.get_info(user_id).get('day', 0)
@@ -92,14 +82,14 @@ def validate_time(user_id, msg_text):
             twitter_api.sends(user_id, ['通知時間を登録しました。'])
         else:
             twitter_api.sends(user_id, ['通知が最大数10に達したか、すでに同じものがあるため追加できません'])
-        time_procedure.set_progress(user_id, 4)
+        time_procedure.set_progress(user_id, 3)
     except ValueError:
         twitter_api.sends(user_id, ['数値の形式が間違っています。もう一度入力してください'])
-        time_procedure.set_progress(user_id, 3)
+        time_procedure.set_progress(user_id, 2)
     except:
         log(__name__, traceback.format_exc())
         twitter_api.sends(user_id, ['不明なエラーが発生しました。申し訳ありませんが、最初からやり直してください。'])
-        time_procedure.set_progress(user_id, 4)
+        time_procedure.set_progress(user_id, 2)
 
 
 google_oauth_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'google', 'twitter_google')
@@ -134,17 +124,21 @@ def delete_status(user_id, msg_text):
         twitter_api.sends(user_id, ['通知は設定されていません'])
         delete_procedure.set_progress(user_id, 1)
 
-
+import re
 @process(delete_procedure, 1)
 def delete_notify(user_id, msg_text):
     try:
-        notify.delete_notify(twitter_api.get_real_user_id(user_id), int(msg_text))
-        twitter_api.sends(user_id, ['削除しました'])
-        delete_procedure.set_progress(user_id, 1)
+        realid=twitter_api.get_real_user_id(user_id)
+        if 1<= int(msg_text) <=len(notify.get_notifies(realid)):
+            notify.delete_notify(realid, int(msg_text))
+            twitter_api.sends(user_id, ['削除しました'])
+            delete_procedure.set_progress(user_id, 1)
+        else:
+            twitter_api.sends(user_id, ['正しく入力してください'])
+            delete_procedure.set_progress(user_id, 0)
     except:
         twitter_api.sends(user_id, ['正しく入力してください'])
         delete_procedure.set_progress(user_id, 0)
-    # ここに登録情報を表示するもろもろ
 
 
 request_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'request', 'twitter_request')
