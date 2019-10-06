@@ -1,3 +1,6 @@
+from bson.objectid import ObjectId
+from . import user_data
+from . import publish
 from .util import log
 import traceback
 from . import util
@@ -38,13 +41,13 @@ def follow(user_id):
     line_api.reply(user_id, [
         'こんにちは！！\n休講ボットにようこそ。',
         'あなたに合わせた休講情報をお届けするには履修情報の登録が必要です。',
-        link, 
+        link,
         'このリンクからCSVファイルをアップロードしてください。リンクの有効期限は1時間です。'
     ])
 
 
 def unfollow(user_id):
-    log(__name__,f'unfollowed by {user_id}')
+    log(__name__, f'unfollowed by {user_id}')
 
 
 csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv', 'csv')
@@ -65,16 +68,16 @@ time_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'time', 'time
 @process(time_procedure, 0)
 def validate_input(user_id, msg_text):
     line_api.reply(user_id, ['通知の形式を選択し、対応する「数字」を入力してください。\n'
-                                + '【 1 】休講情報を見つけたら即時通知する\n'
-                                + '【 2 】休講日の何日前、何時間前など、通知時間を細かく設定する\n'
-                                + '尚、この通知設定は複数追加できます。'])
+                             + '【 1 】休講情報を見つけたら即時通知する\n'
+                             + '【 2 】休講日の何日前、何時間前など、通知時間を細かく設定する\n'
+                             + '尚、この通知設定は複数追加できます。'])
     time_procedure.set_progress(user_id, 0)
 
-from . import publish
+
 @process(time_procedure, 1)
 def validate_num(user_id, msg_text):
     if msg_text == '1':
-        realid=line_api.get_real_user_id(user_id)
+        realid = line_api.get_real_user_id(user_id)
         if notify.add_notify(realid, {'type': 'scraping', 'offset': 0, 'dest': 'line'}):
             publish.remove_queue(realid)
             line_api.reply(user_id, ['登録完了です。休講情報を見つけたらすぐ通知します。'])
@@ -108,7 +111,7 @@ def validate_time(user_id, msg_text):
     try:
         dayoffset = time_procedure.get_info(user_id).get('day', 0)
         time_data = datetime.strptime(msg_text, '%H:%M')
-        realid=line_api.get_real_user_id(user_id)
+        realid = line_api.get_real_user_id(user_id)
         if notify.add_notify(realid, {'type': 'day', 'offset': notify.day_hour_minute_to_day_offset(dayoffset, time_data.hour, time_data.minute), 'dest': 'line'}):
             publish.remove_queue(realid)
             line_api.reply(user_id, ['通知時間を登録しました。'])
@@ -165,12 +168,12 @@ def delete_status(user_id, msg_text):
         line_api.reply(user_id, ['通知は設定されていません'])
         delete_procedure.set_progress(user_id, 1)
 
-import re
+
 @process(delete_procedure, 1)
 def delete_notify(user_id, msg_text):
     try:
-        realid=line_api.get_real_user_id(user_id)
-        if 1<= int(msg_text) <=len(notify.get_notifies(realid)):
+        realid = line_api.get_real_user_id(user_id)
+        if 1 <= int(msg_text) <= len(notify.get_notifies(realid)):
             notify.delete_notify(realid, int(msg_text))
             line_api.reply(user_id, ['削除しました'])
             delete_procedure.set_progress(user_id, 1)
@@ -193,7 +196,9 @@ def get_request(user_id, msg_text):
 
 @process(request_procedure, 1)
 def send_request(user_id, msg_text):
-    msg = email_api.make_message(settings.admin_email_addr(), '【ご注文は休講情報ですか？】ユーザーからの問い合わせ', f'<h1>REAL_USER_ID={line_api.get_real_user_id(user_id)}, REF=LINE</h1><p>{msg_text}</p>')
+    realid = line_api.get_real_user_id(user_id)
+    data = users_db.find_one({'_id': ObjectId(realid)}) or {}
+    msg = email_api.make_message(settings.admin_email_addr(), '【ご注文は休講情報ですか？】ユーザーからの問い合わせ', f'<h1>REAL_USER_ID={realid}, REF=LINE</h1><p>{msg_text}</p><p>{json.dumps(data)}</p>')
     scheduler.pool.submit(email_api.send_mails, [msg])
     line_api.reply(user_id, ['ご協力ありがとうございました。'])
     request_procedure.set_progress(user_id, 1)
@@ -218,7 +223,26 @@ def display_help(user_id, msg_text):
     help_procedure.set_progress(user_id, 0)
 
 
-ps = ProcedureSelectorDB(csv_procedure, time_procedure, line_notify_procedure, status_procedure, delete_procedure, help_procedure, request_procedure)
+cources_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'cources' or msg_text == 'cource', 'cources')
+
+
+@process(cources_procedure, 0)
+def get_request(user_id, msg_text):
+    realid = line_api.get_real_user_id(user_id)
+    line_api.reply(user_id, ['登録されている履修科目の一覧です', user_data.list_of_courses(realid)])
+    cources_procedure.set_progress(user_id, 0)
+
+
+ps = ProcedureSelectorDB(
+    csv_procedure,
+    time_procedure,
+    line_notify_procedure,
+    status_procedure,
+    delete_procedure,
+    help_procedure,
+    request_procedure,
+    cources_procedure
+)
 
 
 def message(user_id, msg_text):
