@@ -172,28 +172,22 @@ def parse(o):
         register(user_id, event.source())
         twitter.follow(user_id)
         return
-    # dm indicate typing event
-    event = data.direct_message_indicate_typing_events[lambda l:l[0]]
-    if event():
-        user_id = event.message_create.sender_id()
-        if not get_real_user_id(user_id):
-            register(user_id, data.users[user_id])
-            twitter.follow(user_id)
-        return
-    # tweet delete event
-    event = data.tweet_delete_events[lambda l:l[0]]
-    if event():
-        return
-    # favorite event
-    event = data.favorite_events[lambda l:l[0]]
-    if event():
-        return
-    # tweet create event
-    event = data.tweet_create_events[lambda l:l[0]]
-    if event():
-        return
-
-    print(o)
+    # # dm indicate typing event
+    # event = data.direct_message_indicate_typing_events[lambda l:l[0]]
+    # if event():
+    #     return
+    # # tweet delete event
+    # event = data.tweet_delete_events[lambda l:l[0]]
+    # if event():
+    #     return
+    # # favorite event
+    # event = data.favorite_events[lambda l:l[0]]
+    # if event():
+    #     return
+    # # tweet create event
+    # event = data.tweet_create_events[lambda l:l[0]]
+    # if event():
+    #     return
 
 
 def sends(user_id, msg_texts):
