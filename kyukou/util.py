@@ -12,6 +12,10 @@ isinpackage = not __name__ in ['util', '__main__']
 
 dayofweek = '月火水木金土日'
 
+import functools
+def times_char(s: str, candidates: str, times: int) -> str:
+    return functools.reduce(lambda i, c: i+c*(not c in candidates or times), s, '')
+
 
 def ignore_error(fn_args_list=[]):
     def _ignore_error():

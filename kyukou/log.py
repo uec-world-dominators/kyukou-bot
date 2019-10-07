@@ -12,6 +12,7 @@ else:
 log_lock = Lock()
 log_file = None
 
+LOG_LEVEL=['TRACE','DEBUG','INFO','WARN','ERROR','FATAL']
 
 def log(__name__, message, log_level=2):
     '''
@@ -32,7 +33,7 @@ def log(__name__, message, log_level=2):
             sys.stdout.write('\n')
             sys.stdout.flush()
         if settings.log.slack() and log_level >= settings.log.slack.log_level_gt():
-            log_with_slack(msg)
+            log_with_slack(f'[{LOG_LEVEL[log_level]}]\n{msg}')
         with open(log_file, 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 

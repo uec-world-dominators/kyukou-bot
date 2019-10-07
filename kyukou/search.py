@@ -8,12 +8,12 @@ if isinpackage:
     from .publish import try_add_notification
     from .db import get_collection
     from .log import log
-    from .util import ldn, strip_brackets, remove_them
+    from .util import ldn, strip_brackets, remove_them,times_char
 else:
     # from publish import try_add_notification
     from db import get_collection
     from log import log
-    from util import ldn, strip_brackets, remove_them
+    from util import ldn, strip_brackets, remove_them,times_char
 
 weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
 period = {1: datetime.timedelta(hours=9), 2: datetime.timedelta(hours=10, minutes=40), 3: datetime.timedelta(hours=13),
@@ -59,7 +59,7 @@ def subject_similarity(x, y):
         x = strip_brackets(x)
         x = x.lower()
         x = re.sub(r'(・|○|　)', ' ', x)
-        x = remove_them(x, '1234一二三四１２３４ⅠⅡⅢⅣabcdａｂｃｄ')
+        x = times_char(x,'1234一二三四ⅠⅡⅢⅣabcd',4) # 数字記号の価値をN倍にする
         x = x.strip()
         x = x.replace('  ', ' ')
         return x
