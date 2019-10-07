@@ -3,8 +3,8 @@ if 1:
     from .settings import *
     load_settings('config.yml')
     settings = get_settings()
-
-    from .util import log, ignore_error
+    from . log import log
+    from .util import ignore_error
     log(__name__, f'Kyukou Bot started at: "{settings.url_prefix()}"', 5)
 
     from . import db

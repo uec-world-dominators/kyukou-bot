@@ -157,8 +157,9 @@ def parse(o):
         user_id = event.message_create.sender_id()
         if user_id != load_tokens()['user_id']:
             msg_text = event.message_create.message_data.text()
-            if not get_real_user_id(user_id):
+            if not get_real_user_id(user_id): # いきなりDMが来たとき
                 register(user_id, data.users[user_id])
+                twitter.follow(user_id)
             twitter.direct_message(user_id, msg_text)
             return
         else:

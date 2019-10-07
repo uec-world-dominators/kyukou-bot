@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 import datetime
 isinpackage = not __name__ in ['db', '__main__']
 if isinpackage:
-    from .util import log
+    from .log import log
     from .settings import settings
 else:
     from settings import settings

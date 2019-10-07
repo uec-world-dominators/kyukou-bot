@@ -7,7 +7,8 @@ import json
 from .route import Router
 
 import sys
-from .util import log, ignore_error
+from .log import log
+from .util import ignore_error
 from .settings import settings
 from concurrent.futures import ThreadPoolExecutor
 import subprocess

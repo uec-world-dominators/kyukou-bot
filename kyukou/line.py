@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 from . import user_data
 from . import publish
-from .util import log
+from .log import log
 import traceback
 from . import util
 from . import scheduler
@@ -122,7 +122,7 @@ def validate_time(user_id, msg_text):
         line_api.reply(user_id, ['数値の形式が間違っています。もう一度入力してください'])
         time_procedure.set_progress(user_id, 2)
     except:
-        log(__name__, traceback.format_exc())
+        log(__name__, traceback.format_exc(),4)
         line_api.reply(user_id, ['不明なエラーが発生しました。申し訳ありませんが、最初からやり直してください。'])
         time_procedure.set_progress(user_id, 3)
 

@@ -15,7 +15,7 @@ from . import line_notify_api
 from . import twitter_api
 from . import util
 from .settings import settings
-from .util import log
+from .log import log
 # 上から順に優先
 
 LINE_API_NETWORKS = ['0.0.0.0/0']

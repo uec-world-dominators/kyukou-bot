@@ -1,5 +1,5 @@
 from . import scheduler
-from .util import log
+from .log import log
 from datetime import datetime
 import traceback
 import re
@@ -87,7 +87,7 @@ def validate_time(user_id, msg_text):
         twitter_api.sends(user_id, ['数値の形式が間違っています。もう一度入力してください'])
         time_procedure.set_progress(user_id, 2)
     except:
-        log(__name__, traceback.format_exc())
+        log(__name__, traceback.format_exc(),4)
         twitter_api.sends(user_id, ['不明なエラーが発生しました。申し訳ありませんが、最初からやり直してください。'])
         time_procedure.set_progress(user_id, 2)
 

@@ -8,15 +8,18 @@ import time
 isinpackage = not __name__ in ['line_notify_api', '__main__']
 if isinpackage:
     from .db import get_collection
-    from .util import log, getyear
+    from .log import log
+    from .util import getyear
     from . import twitter_api
     from .search import lectures_class_num
 else:
     from db import get_collection
-    from util import log, getyear
+    from log import log
+    from util import getyear
     import twitter_api
     from search import lectures_class_num
-    from util import log,getyear
+    from log import log
+    from util import getyear
 
 
 def testdata():

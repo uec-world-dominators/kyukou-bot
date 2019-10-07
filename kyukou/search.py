@@ -7,11 +7,13 @@ if isinpackage:
     from .user_data import default_notify_dest
     from .publish import try_add_notification
     from .db import get_collection
-    from .util import log, ldn, strip_brackets, remove_them
+    from .log import log
+    from .util import ldn, strip_brackets, remove_them
 else:
     # from publish import try_add_notification
     from db import get_collection
-    from util import log, ldn, strip_brackets, remove_them
+    from log import log
+    from util import ldn, strip_brackets, remove_them
 
 weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
 period = {1: datetime.timedelta(hours=9), 2: datetime.timedelta(hours=10, minutes=40), 3: datetime.timedelta(hours=13),
