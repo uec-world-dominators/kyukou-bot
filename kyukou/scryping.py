@@ -86,11 +86,11 @@ def format_lecture(data, prefix='【休講情報】'):
     date = datetime.fromtimestamp(data['date'])
     return f"""{prefix}
 日付: {date.month}月{date.day}日({weekday[date.weekday()][0]})
-時限: {'・'.join(map(str,data.get('periods',['なし'])))}
-対象: {data.get('class','なし')}
-科目: {data.get('subject','なし')}
-教員: {data.get('teachers','なし')}
-備考: {data.get('remark','なし')}"""
+時限: {'・'.join(map(str,data.get('periods') or ['なし']))}
+対象: {data.get('class') or 'なし'}
+科目: {data.get('subject') or 'なし'}
+教員: {data.get('teachers') or 'なし'}
+備考: {data.get('remark') or 'なし'}"""
 
 
 def compare(new, old_collection):

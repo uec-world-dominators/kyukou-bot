@@ -9,6 +9,7 @@ if isinpackage:
     from .db import get_collection
     from .log import log
     from .util import ldn, strip_brackets, remove_them
+    from . import util
 else:
     # from publish import try_add_notification
     from db import get_collection
@@ -44,6 +45,7 @@ def make_dict(scraping_hash, message, end, dest, user_id, time):
 
 def teachers_similarity(x, y):
     def normarize(x):
+        x = x.translate(util.trans)
         x = strip_brackets(x)
         x = x.lower()
         x = re.sub(r'(・|○|　)', ' ', x)
@@ -56,6 +58,7 @@ def teachers_similarity(x, y):
 
 def subject_similarity(x, y):
     def normarize(x):
+        x = x.translate(util.trans)
         x = strip_brackets(x)
         x = x.lower()
         x = re.sub(r'(・|○|　)', ' ', x)
