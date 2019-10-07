@@ -1,4 +1,6 @@
-![logo](_media/logo-250.png)
+<!-- ![logo](_media/logo-250.png) -->
+<img src="_media/logo.png" style="height:30vh;">
+
 <!-- # ご注文は休講情報ですか？ <small>v1.0</small> -->
 > 電気通信大学・「個別配信型」休講情報ボット
 

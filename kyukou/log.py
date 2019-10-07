@@ -48,7 +48,7 @@ LOG_LEVEL = [
 
 
 def log_with_slack(time, module_name, message, log_level):
-    res = requests.post('https://hooks.slack.com/services/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', json={
+    res = requests.post(settings.log.slack.slack_webhook(), json={
         "attachments": [
             {
                 "fallback": f"Log: {LOG_LEVEL[log_level]['text']}",
@@ -62,4 +62,5 @@ def log_with_slack(time, module_name, message, log_level):
         "text": f"```{message}```",
         "mrkdwn": True
     })
+    print(res.text)
     return res.status_code == 200

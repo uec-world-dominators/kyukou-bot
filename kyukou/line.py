@@ -241,7 +241,7 @@ ps = ProcedureSelectorDB(
     delete_procedure,
     help_procedure,
     request_procedure,
-    cources_procedure
+    cources_procedure,
 )
 
 

@@ -177,7 +177,7 @@ def google_oauth_redirect(environ):
         profile, tokens = google_api.code_to_refresh_token(q['code'])
         google_api.register(profile, tokens, data['realid'])
         import datetime
-        start = datetime.datetime(2019, 10, 7, 13, 0, 0)
+        start = datetime.datetime(2019, 10, 9, 13, 0, 0)
         end = start+datetime.timedelta(minutes=90)
         google_api.add_event(data['realid'], start.isoformat(), end.isoformat(), {'summary': 'Math class was cancelled!'})
         return redirect('/#/registerd')
@@ -192,6 +192,11 @@ def email(environ):
     return status(200)
 
 
+# @route('post','/api/v1/slack/webhook')
+# def slack_webhook(environ):
+#     q=get_body_json(environ)
+#     print(q)
+#     return text(q.get('challenge'))
 # @route('get', '/')
 # def getfile(environ):
 #     return file(environ["PATH_INFO"])
