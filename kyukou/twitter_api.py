@@ -30,6 +30,14 @@ TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens')
 # https://docs.python.org/ja/3/library/urllib.parse.html#urllib.parse.urlencode
 
 
+def validate(x_signature: str, body: bytearray) -> bool:
+    if len(x_signature) > 7:
+        h = hmac.new(settings.twitter.consumer_key_secret().encode(), body, hashlib.sha256)
+        return hmac.compare_digest(h.digest(), x_signature[7:].encode())
+    else:
+        return False
+
+
 def generate_signature(method, raw_url, raw_params, raw_key):
     param_string = quote(urlencode(sorted(raw_params.items(), key=lambda e: e[0]), quote_via=quote, safe=''), safe='')
     url = quote(raw_url, safe='')
@@ -80,9 +88,9 @@ def http(method, method_function, baseurl, oauth_token, oauth_token_secret, d={}
         'Authorization': f'OAuth {urlencode(raw_params,quote_via=quote).replace("&",",")}'
     }
     default_headers.update(headers)
-    res= method_function(url, headers=default_headers, data=data)
-    if res.status_code!=200:
-        log(__name__,res.text)
+    res = method_function(url, headers=default_headers, data=data)
+    if res.status_code != 200:
+        log(__name__, res.text)
     return res
 
 
@@ -158,7 +166,7 @@ def parse(o):
         user_id = event.message_create.sender_id()
         if user_id != load_tokens()['user_id']:
             msg_text = event.message_create.message_data.text()
-            if not get_real_user_id(user_id): # いきなりDMが来たとき
+            if not get_real_user_id(user_id):  # いきなりDMが来たとき
                 register(user_id, data.users[user_id])
                 twitter.follow(user_id)
             twitter.direct_message(user_id, msg_text)
