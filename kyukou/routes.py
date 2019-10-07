@@ -70,8 +70,9 @@ def line_notify(environ):
 @route('post', '/api/v1/twitter/webhook')
 def twitter_webhook(environ):
     x_signature = environ.get('HTTP_X_TWITTER_WEBHOOKS_SIGNATURE')
-    if x_signature and twitter_api.validate(x_signature, get_body(environ)):
-        twitter_api.parse(get_body_json(environ))
+    body=get_body(environ)
+    if x_signature and twitter_api.validate(x_signature, body):
+        twitter_api.parse(body_to_json(body))
         return status(200)
     else:
         return status(400)

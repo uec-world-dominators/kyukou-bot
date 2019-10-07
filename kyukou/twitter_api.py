@@ -33,7 +33,7 @@ TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens')
 def validate(x_signature: str, body: bytearray) -> bool:
     if len(x_signature) > 7:
         h = hmac.new(settings.twitter.consumer_key_secret().encode(), body, hashlib.sha256)
-        return hmac.compare_digest(h.digest(), x_signature[7:].encode())
+        return hmac.compare_digest(h.digest(), base64.b64decode(x_signature[7:]))
     else:
         return False
 
