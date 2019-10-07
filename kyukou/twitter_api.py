@@ -174,6 +174,10 @@ def parse(o):
     # dm indicate typing event
     event = data.direct_message_indicate_typing_events[lambda l:l[0]]
     if event():
+        user_id = event.message_create.sender_id()
+        if not get_real_user_id(user_id):
+            register(user_id, data.users[user_id])
+            twitter.follow(user_id)
         return
     # tweet delete event
     event = data.tweet_delete_events[lambda l:l[0]]
