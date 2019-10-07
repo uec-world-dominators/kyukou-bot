@@ -67,10 +67,14 @@ def line_notify(environ):
         return status(400)
 
 # Twitter Webhook
-@route('post', '/api/v1/twitter/webhook', networks=TWITTER_API_NETWORKS)
+@route('post', '/api/v1/twitter/webhook')
 def twitter_webhook(environ):
-    twitter_api.parse(get_body_json(environ))
-    return status(200)
+    x_signature = environ.get('HTTP_X_TWITTER_WEBHOOKS_SIGNATURE')
+    if x_signature and twitter_api.validate(x_signature, get_body(environ)):
+        twitter_api.parse(get_body_json(environ))
+        return status(200)
+    else:
+        return status(400)
 
 # Twitter Webhook CRC
 @route('get', '/api/v1/twitter/webhook', networks=TWITTER_API_NETWORKS)
