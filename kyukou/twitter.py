@@ -14,6 +14,7 @@ from . import email_api
 from .settings import settings
 from .procedure import *
 from . import publish
+from . import user_data
 csv_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'csv', 'twitter_csv')
 
 
@@ -176,7 +177,25 @@ def display_help(user_id, msg_text):
     help_procedure.set_progress(user_id, 0)
 
 
-ps = ProcedureSelectorDB(csv_procedure, time_procedure, status_procedure, delete_procedure, help_procedure, request_procedure)
+cources_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'cources' or msg_text == 'cource', 'twitter_cources')
+
+@process(cources_procedure, 0)
+def get_request(user_id, msg_text):
+    realid = twitter_api.get_real_user_id(user_id)
+    cources=user_data.list_of_courses(realid)
+    twitter_api.sends(user_id,  ['登録されている履修科目の一覧です', cources] if cources else ['登録されている履修科目はありません','【csv】と入力して履修情報のアップロードリンクを取得してください'])
+    cources_procedure.set_progress(user_id, 0)
+
+ps = ProcedureSelectorDB(
+    csv_procedure,
+    time_procedure,
+    status_procedure,
+    delete_procedure,
+    help_procedure,
+    request_procedure,
+    cources_procedure
+)
+
 
 
 def direct_message(user_id, msg_text):

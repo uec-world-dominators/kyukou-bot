@@ -228,7 +228,8 @@ cources_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'cources' 
 @process(cources_procedure, 0)
 def get_request(user_id, msg_text):
     realid = line_api.get_real_user_id(user_id)
-    line_api.reply(user_id, ['登録されている履修科目の一覧です', user_data.list_of_courses(realid)])
+    cources=user_data.list_of_courses(realid)
+    line_api.reply(user_id,  ['登録されている履修科目の一覧です', cources] if cources else ['登録されている履修科目はありません','【csv】と入力して履修情報のアップロードリンクを取得してください'])
     cources_procedure.set_progress(user_id, 0)
 
 
