@@ -197,8 +197,7 @@ def get_request(user_id, msg_text):
 @process(request_procedure, 1)
 def send_request(user_id, msg_text):
     realid = line_api.get_real_user_id(user_id)
-    data = users_db.find_one({'_id': ObjectId(realid)}) or {}
-    msg = email_api.make_message(settings.admin_email_addr(), '【ご注文は休講情報ですか？】ユーザーからの問い合わせ', f'<h1>REAL_USER_ID={realid}, REF=LINE</h1><p>{msg_text}</p><p>{json.dumps(data)}</p>')
+    msg = email_api.make_message(settings.admin_email_addr(), '【ご注文は休講情報ですか？】ユーザーからの問い合わせ', f'<h1>REAL_USER_ID={realid}, REF=LINE</h1><p>{msg_text}</p><p></p>')
     scheduler.pool.submit(email_api.send_mails, [msg])
     line_api.reply(user_id, ['ご協力ありがとうございました。'])
     request_procedure.set_progress(user_id, 1)
