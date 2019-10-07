@@ -7,7 +7,8 @@ if isinpackage:
     from . import twitter_api
     from .db import get_collection
     from .settings import store, load, settings
-    from .util import has_all_key, log
+    from .util import has_all_key
+    from .log import log
 else:
     import line_notify_api
     import twitter_api

@@ -10,11 +10,13 @@ if isinpackage:
     from . import line
     from .settings import settings
     from .db import get_collection
-    from .util import Just, Curry,log
+    from .util import Just, Curry
+    from .log import log
 else:
     from settings import settings
     from db import get_collection
-    from util import Just, Curry,log
+    from util import Just, Curry
+    from log import log
     import line
 
 users_db = get_collection('users')
