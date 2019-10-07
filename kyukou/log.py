@@ -12,8 +12,6 @@ else:
 log_lock = Lock()
 log_file = None
 
-LOG_LEVEL=['TRACE','DEBUG','INFO','WARN','ERROR','FATAL']
-
 def log(__name__, message, log_level=2):
     '''
     ## log level
@@ -25,21 +23,43 @@ def log(__name__, message, log_level=2):
     0 = TRACE
     '''
     global log_file
+    now=datetime.now()
     log_file = log_file or os.path.join(os.path.dirname(__file__), settings.logfile())
-    msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
+    msg = f'{now}  |  [{__name__.ljust(20)}]  {message}'
     with log_lock:
         if log_level >= settings.log_level(0):
             sys.stdout.write(msg)
             sys.stdout.write('\n')
             sys.stdout.flush()
         if settings.log.slack() and log_level >= settings.log.slack.log_level_gt():
-            log_with_slack(f'[{LOG_LEVEL[log_level]}]\n{msg}')
+            log_with_slack(now,__name__,message,log_level)
         with open(log_file, 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 
 
-def log_with_slack(message):
-    res = requests.post(settings.log.slack.slack_webhook(), json={
-        'text': message
+LOG_LEVEL = [
+    {'text': 'TRACE', 'color': '#607D8B'},
+    {'text': 'DEBUG', 'color': '#3F51B5'},
+    {'text': 'INFO', 'color': '#03A9F4'},
+    {'text': 'WARN', 'color': '#FFC107'},
+    {'text': 'ERROR', 'color': '#F44336'},
+    {'text': 'FATAL', 'color': '#E91E63'}
+]
+
+
+def log_with_slack(time, module_name, message, log_level):
+    res = requests.post('https://hooks.slack.com/services/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', json={
+        "attachments": [
+            {
+                "fallback": f"Log: {LOG_LEVEL[log_level]['text']}",
+                "color": LOG_LEVEL[log_level]['color'],
+                "title": LOG_LEVEL[log_level]['text'],
+                "footer": "ご注文は休講情報ですか？",
+                "text": module_name,
+                "footer_icon": "https://kyukou.shosato.jp/_media/logo-250.png",
+            }
+        ],
+        "text": f"```{message}```",
+        "mrkdwn": True
     })
     return res.status_code == 200

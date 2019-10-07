@@ -212,6 +212,7 @@ def lectures_class_num(lecture, syllabus):
                     (set(s_times) & set(l_times)):
                 print(s.get('class_num'))
                 return s.get('class_num')
+    log(__name__,f'Cannot determine class number: {lecture}',5)
     return None
 
 
