@@ -17,7 +17,8 @@ if isinpackage:
     from . import twitter
     from .settings import settings
     from . import util
-    from .util import Just,log
+    from .util import Just
+    from .log import log
     from .db import get_collection
     from .import certificate
     users_db = get_collection('users')
