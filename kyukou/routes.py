@@ -70,8 +70,9 @@ def line_notify(environ):
 @route('post', '/api/v1/twitter/webhook')
 def twitter_webhook(environ):
     x_signature = environ.get('HTTP_X_TWITTER_WEBHOOKS_SIGNATURE')
-    if x_signature and twitter_api.validate(x_signature, get_body(environ)):
-        twitter_api.parse(get_body_json(environ))
+    body=get_body(environ)
+    if x_signature and twitter_api.validate(x_signature, body):
+        twitter_api.parse(body_to_json(body))
         return status(200)
     else:
         return status(400)
@@ -176,7 +177,7 @@ def google_oauth_redirect(environ):
         profile, tokens = google_api.code_to_refresh_token(q['code'])
         google_api.register(profile, tokens, data['realid'])
         import datetime
-        start = datetime.datetime(2019, 10, 7, 13, 0, 0)
+        start = datetime.datetime(2019, 10, 9, 13, 0, 0)
         end = start+datetime.timedelta(minutes=90)
         google_api.add_event(data['realid'], start.isoformat(), end.isoformat(), {'summary': 'Math class was cancelled!'})
         return redirect('/#/registerd')
@@ -191,6 +192,11 @@ def email(environ):
     return status(200)
 
 
+# @route('post','/api/v1/slack/webhook')
+# def slack_webhook(environ):
+#     q=get_body_json(environ)
+#     print(q)
+#     return text(q.get('challenge'))
 # @route('get', '/')
 # def getfile(environ):
 #     return file(environ["PATH_INFO"])

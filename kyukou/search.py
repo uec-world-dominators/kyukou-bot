@@ -8,13 +8,13 @@ if isinpackage:
     from .publish import try_add_notification
     from .db import get_collection
     from .log import log
-    from .util import ldn, strip_brackets, remove_them
+    from .util import ldn, strip_brackets, remove_them,times_char
     from . import util
 else:
     # from publish import try_add_notification
     from db import get_collection
     from log import log
-    from util import ldn, strip_brackets, remove_them
+    from util import ldn, strip_brackets, remove_them,times_char
 
 weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
 period = {1: datetime.timedelta(hours=9), 2: datetime.timedelta(hours=10, minutes=40), 3: datetime.timedelta(hours=13),
@@ -62,7 +62,7 @@ def subject_similarity(x, y):
         x = strip_brackets(x)
         x = x.lower()
         x = re.sub(r'(・|○|　)', ' ', x)
-        x = remove_them(x, '1234一二三四１２３４ⅠⅡⅢⅣabcdａｂｃｄ')
+        x = times_char(x,'1234一二三四ⅠⅡⅢⅣabcd',4) # 数字記号の価値をN倍にする
         x = x.strip()
         x = x.replace('  ', ' ')
         return x
@@ -213,6 +213,8 @@ def lectures_class_nums(lecture, syllabus):
                     (set(s_times) & set(l_times)):
                 print(s.get('class_num'))
                 result.append(s.get('class_num'))
+    if not result:
+        log(__name__,f'Cannot determine class numbers: {lecture}',5)
     return result
 
 

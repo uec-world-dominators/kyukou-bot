@@ -81,7 +81,7 @@ def kyuukou():
     return limits
 
 
-def format_lecture(data, prefix='【休講情報】'):
+def format_lecture(data, prefix):
     weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
     date = datetime.fromtimestamp(data['date'])
     return f"""{prefix}
@@ -103,7 +103,7 @@ def compare(new, old_collection):
         if not old_collection.find_one({'hash': x['hash']}):
             # 新しい情報
             old_collection.insert_one(x)
-            twitter_api.tweet(format_lecture(x))
+            twitter_api.tweet(format_lecture(x,prefix='【電通大・休講情報】'))
             c_insert += 1
     # oldの今日以降の予定を見ていって、newになければ削除された
     for x in old_collection.find({'date': {'$gt': time.time()}}):
