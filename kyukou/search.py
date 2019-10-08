@@ -197,13 +197,14 @@ def search_lectures():
                 make_notification_dict2(u, ul, lecture)
 
 
-def lectures_class_num(lecture, syllabus):
+def lectures_class_nums(lecture, syllabus):
     '''
     lectureからシラバス番号を求める
     syllabusはリスト
     '''
     l_dayofweek = datetime.datetime.fromtimestamp(lecture.get('date')).weekday()
     l_times = [10*l_dayofweek+p for p in lecture.get('periods')]
+    result=[]
     for s in syllabus:
         if s.get('when', {}).get('type') == 'time':
             s_times = map(lambda t: t['dayofweek']*10+t['period'], s['when'].get('times'))
@@ -211,12 +212,12 @@ def lectures_class_num(lecture, syllabus):
                     subject_similarity(lecture.get('subject', ''), s.get('subject', '')) > .5 and \
                     (set(s_times) & set(l_times)):
                 print(s.get('class_num'))
-                return s.get('class_num')
-    return None
+                result.append(s.get('class_num'))
+    return result
 
 
 if not isinpackage:
     syllabus = list(get_collection('syllabus').find({}))
     lectures = list(get_collection('lectures').find({}))
     for l in lectures:
-        print(lectures_class_num(l, syllabus))
+        print(lectures_class_nums(l, syllabus))

@@ -115,21 +115,21 @@ def compare(new, old_collection):
     log(__name__, f'Scraped: {len(new)} , Insert: {c_insert} , Delete: {c_delete}')
 
 
-def append_class_num(lectures, syllabus):
+def append_class_nums(lectures, syllabus):
     '''
     休講情報にシラバス番号を付加する
     シラバス番号から検索を行うため、曖昧で番号を求められなかった休講情報に対しては手動で探して付加する
     '''
     for lecture in lectures:
-        class_num = lectures_class_num(lecture, syllabus)
-        if class_num and not 'class_num' in lecture:
-            lecture['class_num'] = class_num
+        class_nums = lectures_class_nums(lecture, syllabus)
+        if class_nums and not 'class_nums' in lecture:
+            lecture['class_nums'] = class_nums
     return lectures
 
 
 def run():
     syllabus = list(get_collection('syllabus').find({}))
-    compare(append_class_num(kyuukou(), syllabus), get_collection('lectures'))
+    compare(append_class_nums(kyuukou(), syllabus), get_collection('lectures'))
     # get_collection('lectures').insert_many(append_class_num(testdata(), syllabus))
 
 
