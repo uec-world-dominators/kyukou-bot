@@ -35,7 +35,6 @@ def try_add_notification(data={
     assert has_all_key(data, 'hash', 'time', 'end', 'message', 'dest', 'user_id')
     if data['end']>=time.time() and  not queue.find_one(data):
         # 古いものは受け付けない
-        print(data)
         data.update({'finish': False})
         queue.insert_one(data) # 追加されてない
 
@@ -58,8 +57,6 @@ def publish_all():
     }):
         # print(data)
         if True or publish_one(data):
-            print('set to True')
-            print(data['_id'])
             queue.update_one({'_id': data['_id']}, {
                 '$set': {'finish': True}
             }) # これをすると、try_add_notificationsで追加される
