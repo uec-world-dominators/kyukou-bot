@@ -23,11 +23,10 @@ if 1:
     from . import info
     from . import procedure
     scheduler.init(0.1)
-    scheduler.add_task(3600, ignore_error([(scryping.run,), (info.create_md,)]))
-    # scheduler.add_task(3600, ignore_error([(info.create_md,)]))
-    scheduler.add_task(60, search.search_lectures)
-    scheduler.add_task(5, publish.publish_all)
-    scheduler.add_task(60, certificate.delete_expired)
-    scheduler.add_task(60, procedure.ProcedureSelectorDB.clear_all)
+    # scheduler.add_task(3600, ignore_error([(scryping.run,), (info.create_md,)]))
+    scheduler.add_task(1, search.search_lectures)
+    scheduler.add_task(1, publish.publish_all)
+    # scheduler.add_task(60, certificate.delete_expired)
+    # scheduler.add_task(60, procedure.ProcedureSelectorDB.clear_all)
 
 __all__=['run_server', 'Router', 'log']

@@ -31,8 +31,8 @@ def log(__name__, message, log_level=2):
             sys.stdout.write(msg)
             sys.stdout.write('\n')
             sys.stdout.flush()
-        if settings.log.slack() and log_level >= settings.log.slack.log_level_gt():
-            log_with_slack(now,__name__,message,log_level)
+        # if settings.log.slack() and log_level >= settings.log.slack.log_level_gt():
+            # log_with_slack(now,__name__,message,log_level)
         with open(log_file, 'at', encoding='utf-8') as f:
             f.write(msg+'\n')
 

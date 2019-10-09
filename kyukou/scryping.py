@@ -11,13 +11,13 @@ if isinpackage:
     from .log import log
     from .util import getyear
     from . import twitter_api
-    from .search import lectures_class_num
+    from .search import lectures_class_nums
 else:
     from db import get_collection
     from log import log
     from util import getyear
     import twitter_api
-    from search import lectures_class_num
+    from search import lectures_class_nums
     from log import log
     from util import getyear
 
@@ -103,14 +103,14 @@ def compare(new, old_collection):
         if not old_collection.find_one({'hash': x['hash']}):
             # 新しい情報
             old_collection.insert_one(x)
-            twitter_api.tweet(format_lecture(x,prefix='【電通大・休講情報】'))
+            # twitter_api.tweet(format_lecture(x,prefix='【電通大・休講情報】'))
             c_insert += 1
     # oldの今日以降の予定を見ていって、newになければ削除された
     for x in old_collection.find({'date': {'$gt': time.time()}}):
         if not next(filter(lambda e: e['hash'] == x['hash'], new), None):
             # 消された
             old_collection.delete_one({'hash': x['hash']})
-            twitter_api.tweet(format_lecture(x, prefix='【削除】\nこの休講情報は削除されました'))
+            # twitter_api.tweet(format_lecture(x, prefix='【削除】\nこの休講情報は削除されました'))
             c_delete += 1
     log(__name__, f'Scraped: {len(new)} , Insert: {c_insert} , Delete: {c_delete}')
 
@@ -122,8 +122,7 @@ def append_class_nums(lectures, syllabus):
     '''
     for lecture in lectures:
         class_nums = lectures_class_nums(lecture, syllabus)
-        if class_nums and not 'class_nums' in lecture:
-            lecture['class_nums'] = class_nums
+        lecture['class_nums'] = class_nums
     return lectures
 
 

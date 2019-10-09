@@ -26,6 +26,7 @@ def init(url):
     log(__name__, f'Number of Users   : {len(list(get_collection("users").find({})))}')
     log(__name__, f'Number of Lectures: {len(list(get_collection("lectures").find({})))}')
     log(__name__, f'Number of Syllabus: {len(list(get_collection("syllabus").find({})))}')
+    log(__name__, f'Number of Queue   : {len(list(get_collection("queue").find({})))}')
     log(__name__, '-'*50)
 
 
