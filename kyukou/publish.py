@@ -35,7 +35,6 @@ def try_add_notification(data={
     assert has_all_key(data, 'hash', 'time', 'end', 'message', 'dest', 'user_id')
     if data['end']>=time.time() and  not queue.find_one(data):
         # 古いものは受け付けない
-        # 数値型比較でエラー（==と判定されない）文字列型もだめ？
         print(data)
         data.update({'finish': False})
         queue.insert_one(data) # 追加されてない

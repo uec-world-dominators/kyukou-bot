@@ -143,7 +143,7 @@ def make_notification_dict2(user, user_lecture, canceled_lecture):
     periods = canceled_lecture["periods"]
     date = datetime.date.fromtimestamp(canceled_lecture["date"])
     end = datetime.datetime.timestamp(datetime.datetime.combine(date, datetime.time()) + period[min(periods)])
-    if end<time.time():
+    if end<time.time():# 講義開始時間を過ぎていたら通知しない
         return
     # ○月○日に変更
     msg_texts_date = date.strftime('%m月%d日'.encode('unicode-escape').decode()).encode().decode("unicode-escape")
@@ -195,8 +195,7 @@ def search_lectures():
     for u in users:
         for ul in u.get('lectures', []):
             # TODO: 休講の講義時間が過ぎているものは含めない
-            lecture = c_lectures.find_one({'class_nums': {'$elemMatch':{'$eq':ul.get('class_num')}}})
-            if lecture:
+            for lecture in c_lectures.find({'class_nums': {'$elemMatch':{'$eq':ul.get('class_num')}}}):
                 make_notification_dict2(u, ul, lecture)
 
 
