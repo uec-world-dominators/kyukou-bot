@@ -55,8 +55,7 @@ def publish_all():
             'time': {'$lte': last_publish},
             'finish': False
     }):
-        # print(data)
-        if True or publish_one(data):
+        if publish_one(data):
             queue.update_one({'_id': data['_id']}, {
                 '$set': {'finish': True}
             }) # これをすると、try_add_notificationsで追加される

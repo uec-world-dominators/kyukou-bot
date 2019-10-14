@@ -1,5 +1,6 @@
 import re
-import datetime,time
+import datetime
+import time
 from pprint import pprint
 isinpackage = not __name__ in ['search', '__main__']
 if isinpackage:
@@ -8,17 +9,24 @@ if isinpackage:
     from .publish import try_add_notification
     from .db import get_collection
     from .log import log
-    from .util import ldn, strip_brackets, remove_them,times_char
+    from .util import ldn, strip_brackets, remove_them, times_char
     from . import util
 else:
     # from publish import try_add_notification
     from db import get_collection
     from log import log
-    from util import ldn, strip_brackets, remove_them,times_char
+    from util import ldn, strip_brackets, remove_them, times_char
 
 weekday = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
-period = {1: datetime.timedelta(hours=9), 2: datetime.timedelta(hours=10, minutes=40), 3: datetime.timedelta(hours=13),
-          4: datetime.timedelta(hours=14, minutes=40), 5: datetime.timedelta(hours=16, minutes=15)}
+period = {
+    1: datetime.timedelta(hours=9),
+    2: datetime.timedelta(hours=10, minutes=40),
+    3: datetime.timedelta(hours=13),
+    4: datetime.timedelta(hours=14, minutes=40),
+    5: datetime.timedelta(hours=16, minutes=15),
+    6: datetime.timedelta(hours=17, minutes=50),
+    7: datetime.timedelta(hours=19, minutes=30)
+}
 
 
 def notify_func(line_user_id, notifies, msg_texts=[]):
@@ -62,7 +70,7 @@ def subject_similarity(x, y):
         x = strip_brackets(x)
         x = x.lower()
         x = re.sub(r'(・|○|　)', ' ', x)
-        x = times_char(x,'1234一二三四ⅠⅡⅢⅣabcd',4) # 数字記号の価値をN倍にする
+        x = times_char(x, '1234一二三四ⅠⅡⅢⅣabcd', 10)  # 数字記号の価値をN倍にする
         x = x.strip()
         x = x.replace('  ', ' ')
         return x
@@ -143,7 +151,7 @@ def make_notification_dict2(user, user_lecture, canceled_lecture):
     periods = canceled_lecture["periods"]
     date = datetime.date.fromtimestamp(canceled_lecture["date"])
     end = datetime.datetime.timestamp(datetime.datetime.combine(date, datetime.time()) + period[min(periods)])
-    if end<time.time():# 講義開始時間を過ぎていたら通知しない
+    if end < time.time():  # 講義開始時間を過ぎていたら通知しない
         return
     # ○月○日に変更
     msg_texts_date = date.strftime('%m月%d日'.encode('unicode-escape').decode()).encode().decode("unicode-escape")
@@ -173,7 +181,7 @@ def make_notification_dict2(user, user_lecture, canceled_lecture):
         if not dest:
             continue
         if notify_dict["type"] == "day":
-            time_day=datetime.datetime(date.year,date.month,date.day)+datetime.timedelta(seconds=notify_dict['offset'])
+            time_day = datetime.datetime(date.year, date.month, date.day)+datetime.timedelta(seconds=notify_dict['offset'])
             make_dict(scraping_hash, message, end, dest, user_id, time_day.timestamp())
         elif notify_dict["type"] == "lecture":
             notify_lecture = datetime.datetime.combine(date, datetime.time()) + period[min(periods)] + datetime.timedelta(seconds=notify_dict["offset"])
@@ -195,7 +203,7 @@ def search_lectures():
     for u in users:
         for ul in u.get('lectures', []):
             # TODO: 休講の講義時間が過ぎているものは含めない
-            for lecture in c_lectures.find({'class_nums': {'$elemMatch':{'$eq':ul.get('class_num')}}}):
+            for lecture in c_lectures.find({'class_nums': {'$elemMatch': {'$eq': ul.get('class_num')}}}):
                 make_notification_dict2(u, ul, lecture)
 
 
@@ -206,7 +214,7 @@ def lectures_class_nums(lecture, syllabus):
     '''
     l_dayofweek = datetime.datetime.fromtimestamp(lecture.get('date')).weekday()
     l_times = [10*l_dayofweek+p for p in lecture.get('periods')]
-    result=[]
+    result = []
     for s in syllabus:
         if s.get('when', {}).get('type') == 'time':
             s_times = map(lambda t: t['dayofweek']*10+t['period'], s['when'].get('times'))
@@ -215,7 +223,7 @@ def lectures_class_nums(lecture, syllabus):
                     (set(s_times) & set(l_times)):
                 result.append(s.get('class_num'))
     if not result:
-        log(__name__,f'Cannot determine class numbers: {lecture}',5)
+        log(__name__, f'Cannot determine class numbers: {lecture}', 2)
     return result
 
 

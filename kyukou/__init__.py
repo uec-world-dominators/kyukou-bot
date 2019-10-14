@@ -22,10 +22,10 @@ if 1:
     from . import search
     from . import info
     from . import procedure
-    scheduler.init(10)
+    scheduler.init(1)
     scheduler.add_task(3600, ignore_error([(scryping.run,), (info.create_md,)]))
-    scheduler.add_task(300, search.search_lectures)
-    scheduler.add_task(300, publish.publish_all)
+    scheduler.add_task(5, search.search_lectures)
+    scheduler.add_task(5, publish.publish_all)
     scheduler.add_task(300, certificate.delete_expired)
     scheduler.add_task(300, procedure.ProcedureSelectorDB.clear_all)
 

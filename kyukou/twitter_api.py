@@ -204,6 +204,7 @@ def sends(user_id, msg_texts):
 
 
 def send(user_id, msg_text):
+    log(__name__, user_id)
     url = 'https://api.twitter.com/1.1/direct_messages/events/new.json'
     data = {
         'event': {
