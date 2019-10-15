@@ -109,7 +109,7 @@ def please_enter_time(user_id, msg_text):
 @process(time_procedure, 3)
 def validate_time(user_id, msg_text):
     try:
-        dayoffset = time_procedure.get_info(user_id).get('day', 0)
+        dayoffset = -time_procedure.get_info(user_id).get('day', 0)
         time_data = datetime.strptime(msg_text, '%H:%M')
         realid = line_api.get_real_user_id(user_id)
         if notify.add_notify(realid, {'type': 'day', 'offset': notify.day_hour_minute_to_day_offset(dayoffset, time_data.hour, time_data.minute), 'dest': 'line'}):

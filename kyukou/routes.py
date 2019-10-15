@@ -19,7 +19,7 @@ from .log import log
 # 上から順に優先
 
 LINE_API_NETWORKS = ['0.0.0.0/0']
-TWITTER_API_NETWORKS = ['199.59.148.0/22', '199.16.156.0/22']
+TWITTER_API_NETWORKS = ['0.0.0.0/0','199.59.148.0/22', '199.16.156.0/22']
 LOCAL_NETWORKS = ['192.168.0.0/16', '124.147.77.47/32']
 
 # LINE botからイベントがあったときに来る

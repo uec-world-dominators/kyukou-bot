@@ -1,3 +1,4 @@
+import traceback
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -11,13 +12,13 @@ if isinpackage:
     from .log import log
     from .util import getyear
     from . import twitter_api
-    from .search import lectures_class_num
+    from .search import lectures_class_nums
 else:
     from db import get_collection
     from log import log
     from util import getyear
     import twitter_api
-    from search import lectures_class_num
+    from search import lectures_class_nums
     from log import log
     from util import getyear
 
@@ -63,21 +64,24 @@ def kyuukou():
     limits = []
     c = re.compile(r'(\d+)月(\d+)日\(.\)')
     for tr in doc.select('tr')[1:]:
-        a = tr.select('td')
-        m = c.match(a[1].text)
-        month, day = int(m.group(1)), int(m.group(2))
-        date = datetime(getyear(month, day), month, day)
-        limit = {
-            "time": time.time(),
-            "date": date.timestamp(),
-            "teachers": a[4].text,
-            "periods": list(map(int, a[2].text.split('・'))),
-            "class": a[0].text,
-            "subject": a[3].text,
-            "remark": a[5].text.replace(u'\xa0', ''),
-            "hash": hashlib.sha256((tr.text).encode()).hexdigest()
-        }
-        limits.append(limit)
+        try:
+            a = tr.select('td')
+            m = c.match(a[1].text)
+            month, day = int(m.group(1)), int(m.group(2))
+            date = datetime(getyear(month, day), month, day)
+            limit = {
+                "time": time.time(),
+                "date": date.timestamp(),
+                "teachers": a[4].text,
+                "periods": list(map(int, a[2].text.split('・'))),
+                "class": a[0].text,
+                "subject": a[3].text,
+                "remark": a[5].text.replace(u'\xa0', ''),
+                "hash": hashlib.sha256((tr.text).encode()).hexdigest()
+            }
+            limits.append(limit)
+        except:
+            log(__name__, traceback.format_exc(), 2)
     return limits
 
 
@@ -103,7 +107,7 @@ def compare(new, old_collection):
         if not old_collection.find_one({'hash': x['hash']}):
             # 新しい情報
             old_collection.insert_one(x)
-            twitter_api.tweet(format_lecture(x,prefix='【電通大・休講情報】'))
+            twitter_api.tweet(format_lecture(x, prefix='【電通大・休講情報】'))
             c_insert += 1
     # oldの今日以降の予定を見ていって、newになければ削除された
     for x in old_collection.find({'date': {'$gt': time.time()}}):
@@ -122,8 +126,7 @@ def append_class_nums(lectures, syllabus):
     '''
     for lecture in lectures:
         class_nums = lectures_class_nums(lecture, syllabus)
-        if class_nums and not 'class_nums' in lecture:
-            lecture['class_nums'] = class_nums
+        lecture['class_nums'] = class_nums
     return lectures
 
 

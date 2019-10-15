@@ -10,14 +10,14 @@ if isinpackage:
     from .util import has_all_key
     from .log import log
 else:
-    import line_notify_api
-    import twitter_api
+    # import line_notify_api
+    # import twitter_api
     from db import get_collection
-    from settings import store, load, settings
-    from util import has_all_key
+    # from settings import store, load, settings
+    # from util import has_all_key
 
 queue = get_collection('queue')
-
+# queue.drop()
 
 def try_add_notification(data={
     'hash': '',
@@ -30,11 +30,13 @@ def try_add_notification(data={
     '''
     通知をキューに追加する（存在するかは考慮している）
     '''
+    data['time']=int(data['time'])
+    data['end']=int(data['end'])
     assert has_all_key(data, 'hash', 'time', 'end', 'message', 'dest', 'user_id')
-    if not queue.find_one(data):
+    if data['end']>=time.time() and  not queue.find_one(data):
+        # 古いものは受け付けない
         data.update({'finish': False})
-        queue.insert_one(data)
-
+        queue.insert_one(data) # 追加されてない
 
 def delete_old():
     '''
@@ -56,7 +58,7 @@ def publish_all():
         if publish_one(data):
             queue.update_one({'_id': data['_id']}, {
                 '$set': {'finish': True}
-            })
+            }) # これをすると、try_add_notificationsで追加される
     delete_old()
     store('last_publish', now)
 
