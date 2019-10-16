@@ -1,3 +1,5 @@
+from . import parse_share
+from .import copipe
 from bson.objectid import ObjectId
 from . import user_data
 from . import publish
@@ -212,6 +214,7 @@ def display_help(user_id, msg_text):
                              + f'{settings.url_prefix()}/#/\n\n'
                              + 'コマンドの一覧を表示します。以下のコマンドを送信することで対話的に設定できます。\n'
                              + '【csv】 : 履修登録のCSVファイルのアップロードリンクを取得します。\n'
+                             + '【copipe】 : 履修登録画面の「曜日の行」からコピペして貼り付けても登録できます\n'
                              + '【time】 : 休講の通知時間を設定します。\n'
                              + '【status】 : 設定した休講の通知時間の一覧を表示します。\n'
                              + '【delete】 : 設定した休講の通知時間を削除します。\n'
@@ -237,19 +240,36 @@ copipe_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'copipe', '
 
 
 @process(copipe_procedure, 0)
-def get_request(user_id, msg_text):
+def copipe0(user_id, msg_text):
     realid = line_api.get_real_user_id(user_id)
     line_api.reply(user_id,  ['【このコマンドは試験段階です】', 'コピペして貼り付けてください'])
     copipe_procedure.set_progress(user_id, 0)
 
+
 @process(copipe_procedure, 1)
-def get_request(user_id, msg_text):
+def copipe1(user_id, msg_text):
     realid = line_api.get_real_user_id(user_id)
-    cources = user_data.list_of_courses(realid)
-    # from .import copipe
-    # copipe.
-    line_api.reply(user_id,  ['【このコマンドは試験段階です】', 'コピペして貼り付けてください'])
-    copipe_procedure.set_progress(user_id, 1)
+    data = copipe.load(msg_text)
+    if data:
+        copipe_procedure.set_info(user_id, 'copipe_data', data)
+        line_api.reply(user_id,  [f'登録する講義はこちらでよろしいですか？', user_data.format_courses(data), 'OKなら【 y 】、コピペし直すなら【 n 】を入力してください'])
+        copipe_procedure.set_progress(user_id, 1)
+    else:
+        line_api.reply(user_id, ['正常に読み取れませんでした。もう一度「曜日の行付近から」貼り付けてください'])
+        copipe_procedure.set_progress(user_id, 0)
+
+
+@process(copipe_procedure, 2)
+def copipe2(user_id, msg_text):
+    realid = line_api.get_real_user_id(user_id)
+    if msg_text == 'y':
+        data = copipe_procedure.get_info(user_id).get('copipe_data', [])
+        parse_share.register(realid, data)
+        line_api.reply(user_id, [f'{len(data)}件の講義データを登録しました'])
+        copipe_procedure.set_progress(user_id, 2)
+    else:
+        line_api.reply(user_id, ['もう一度コピペしてください'])
+        copipe_procedure.set_progress(user_id, 0)
 
 
 ps = ProcedureSelectorDB(

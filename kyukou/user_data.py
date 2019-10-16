@@ -22,13 +22,15 @@ def default_notify_dest(realid):
 def format_course(lecture):
     return f"[{dayofweek[lecture.get('dayofweek',-1)]} {', '.join(map(str,lecture.get('periods')))}] {lecture.get('subject','-')}"
 
+def format_courses(lectures):
+    return '\n'.join(map(format_course, lectures))
 
 def list_of_courses(realid):
     '''
     履修科目一覧
     '''
     lectures = Just(users.find_one({'_id': ObjectId(realid)})).lectures([])
-    return '\n'.join(map(format_course, lectures))
+    return format_courses(lectures)
 
 
 def syllabus_links(realid):
