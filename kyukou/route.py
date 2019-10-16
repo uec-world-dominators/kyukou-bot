@@ -6,7 +6,7 @@ import json as pkg_json
 import http.client
 from ipaddress import IPv4Address, IPv4Network
 from functools import reduce
-from .util import log
+from .log import log
 
 if __name__ != '__main__':
     from typing import Pattern
@@ -66,7 +66,7 @@ class Router():
         try:
             return Router.search(environ)(environ)
         except Exception as e:
-            log(__name__, traceback.format_exc())
+            log(__name__, traceback.format_exc(),4)
             return status(500)
 
 

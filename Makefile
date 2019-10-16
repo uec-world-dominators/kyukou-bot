@@ -27,16 +27,15 @@ reload: FORCE
 mongod:
 	-kill -9 `lsof -t -i:$(MONGOD_PORT)` 2>/dev/null
 	mkdir -p db
-	# mongod --auth --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT)
-	nohup mongod --auth --dbpath `pwd`/db --bind_ip 0.0.0.0 --port $(MONGOD_PORT) >/dev/null &
+	nohup mongod --dbpath `pwd`/db --bind_ip localhost --port $(MONGOD_PORT) >/dev/null &
 
 runasync: reload FORCE
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
 	nohup uwsgi --asyncio 100 --http-socket localhost:$(SERVER_PORT) --greenlet --processes 1 --threads 1 --logto $(WSGI_LOG) --wsgi-file $(WSGI_FILE) --touch-reload=$(RELOAD_TRIGGER) -L &
 
 run: FORCE
+	mkdir -p log
 	-kill -9 `lsof -t -i:$(SERVER_PORT)` 2>/dev/null
-	#python3 run.py
 	nohup python3 run.py &
 
 stop:

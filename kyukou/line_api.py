@@ -11,10 +11,12 @@ if isinpackage:
     from .settings import settings
     from .db import get_collection
     from .util import Just, Curry
+    from .log import log
 else:
     from settings import settings
     from db import get_collection
     from util import Just, Curry
+    from log import log
     import line
 
 users_db = get_collection('users')
@@ -33,6 +35,8 @@ def validate(environ, body):
 
 def register(_user_id, _reply_token, realid=None):
     profile = get_profile(_user_id)
+    default_notify = settings.default_notify()
+    default_notify.update({'dest': 'line'})
     data = {
         "user_id": _user_id,
         "reply_token": _reply_token,
@@ -46,7 +50,7 @@ def register(_user_id, _reply_token, realid=None):
             '$set': {
                 'connections.line': data
             },
-            'notifies': [settings.default_notify()]
+            'notifies': [default_notify]
         })
     elif users_db.find_one({'connections.line.user_id': _user_id}):  # データ上書き(再フォロー)
         users_db.update_one({'connections.line.user_id': _user_id}, {
@@ -59,7 +63,7 @@ def register(_user_id, _reply_token, realid=None):
             "connections": {
                 "line": data,
             },
-            "notifies": [settings.default_notify()]
+            "notifies": [default_notify]
         })
 
 
@@ -68,6 +72,8 @@ def parse(o):
         event = Just(event)
         _type = event.type()
         _user_id = event.source.userId()
+        if _user_id=='Udeadbeefdeadbeefdeadbeefdeadbeef':# LINE Developersの導通確認
+            return
         if _type == 'follow':
             _reply_token = event.replyToken()
             register(_user_id, _reply_token)

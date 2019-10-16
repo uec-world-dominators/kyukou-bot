@@ -15,11 +15,11 @@ from . import line_notify_api
 from . import twitter_api
 from . import util
 from .settings import settings
-from .util import log
+from .log import log
 # 上から順に優先
 
 LINE_API_NETWORKS = ['0.0.0.0/0']
-TWITTER_API_NETWORKS = ['199.59.148.0/22', '199.16.156.0/22']
+TWITTER_API_NETWORKS = ['0.0.0.0/0','199.59.148.0/22', '199.16.156.0/22']
 LOCAL_NETWORKS = ['192.168.0.0/16', '124.147.77.47/32']
 
 # LINE botからイベントがあったときに来る
@@ -67,10 +67,15 @@ def line_notify(environ):
         return status(400)
 
 # Twitter Webhook
-@route('post', '/api/v1/twitter/webhook', networks=TWITTER_API_NETWORKS)
+@route('post', '/api/v1/twitter/webhook')
 def twitter_webhook(environ):
-    twitter_api.parse(get_body_json(environ))
-    return status(200)
+    x_signature = environ.get('HTTP_X_TWITTER_WEBHOOKS_SIGNATURE')
+    body=get_body(environ)
+    if x_signature and twitter_api.validate(x_signature, body):
+        twitter_api.parse(body_to_json(body))
+        return status(200)
+    else:
+        return status(400)
 
 # Twitter Webhook CRC
 @route('get', '/api/v1/twitter/webhook', networks=TWITTER_API_NETWORKS)
@@ -172,7 +177,7 @@ def google_oauth_redirect(environ):
         profile, tokens = google_api.code_to_refresh_token(q['code'])
         google_api.register(profile, tokens, data['realid'])
         import datetime
-        start = datetime.datetime(2019, 10, 7, 13, 0, 0)
+        start = datetime.datetime(2019, 10, 9, 13, 0, 0)
         end = start+datetime.timedelta(minutes=90)
         google_api.add_event(data['realid'], start.isoformat(), end.isoformat(), {'summary': 'Math class was cancelled!'})
         return redirect('/#/registerd')
@@ -187,6 +192,11 @@ def email(environ):
     return status(200)
 
 
+# @route('post','/api/v1/slack/webhook')
+# def slack_webhook(environ):
+#     q=get_body_json(environ)
+#     print(q)
+#     return text(q.get('challenge'))
 # @route('get', '/')
 # def getfile(environ):
 #     return file(environ["PATH_INFO"])

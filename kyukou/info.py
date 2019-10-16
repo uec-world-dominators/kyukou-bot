@@ -16,15 +16,15 @@ def create_md():
     md += '|---|---|---|---|---|---|---|\n'
     lectures = get_collection('lectures')
     syllabus = get_collection('syllabus')
-    for lecture in lectures.find({}):
-        class_num = lecture.get("class_num", "不明")
-        syllabus_link = util.Just(syllabus.find_one({"class_num": class_num})).url()
+    for lecture in lectures.find({}).sort('date', -1):
+        class_nums = lecture.get("class_nums", [])
+        syllabus_links = list(map(lambda class_num: util.Just(syllabus.find_one({"class_num": class_num})).url(), class_nums))
         subject = lecture.get('subject')
         date = datetime.fromtimestamp(lecture.get("date"))
         md += '|' + '|'.join([
             f'{date.strftime("%Y/%m/%d")} ({util.dayofweek[date.weekday()]})',
             ", ".join(map(str, lecture.get("periods"))),
-            f'[{class_num}]({syllabus_link})' if syllabus_link else '不明',
+            "・".join(map(lambda args: f"[{args[0]}]({args[1]})", zip(class_nums, syllabus_links))) if len(syllabus_links) else '不明',
             lecture.get("class", "-"),
             subject,
             lecture.get("teachers"),

@@ -18,6 +18,7 @@ if isinpackage:
     from .settings import settings
     from . import util
     from .util import Just
+    from .log import log
     from .db import get_collection
     from .import certificate
     users_db = get_collection('users')
@@ -27,6 +28,14 @@ else:
 TOKENS_FILE = os.path.join(os.path.dirname(__file__), 'tokens')
 
 # https://docs.python.org/ja/3/library/urllib.parse.html#urllib.parse.urlencode
+
+
+def validate(x_signature: str, body: bytearray) -> bool:
+    if len(x_signature) > 7:
+        h = hmac.new(settings.twitter.consumer_key_secret().encode(), body, hashlib.sha256)
+        return hmac.compare_digest(h.digest(), base64.b64decode(x_signature[7:]))
+    else:
+        return False
 
 
 def generate_signature(method, raw_url, raw_params, raw_key):
@@ -79,7 +88,10 @@ def http(method, method_function, baseurl, oauth_token, oauth_token_secret, d={}
         'Authorization': f'OAuth {urlencode(raw_params,quote_via=quote).replace("&",",")}'
     }
     default_headers.update(headers)
-    return method_function(url, headers=default_headers, data=data)
+    res = method_function(url, headers=default_headers, data=data)
+    if res.status_code != 200:
+        log(__name__, res.text)
+    return res
 
 
 def post(baseurl, oauth_token, oauth_token_secret, d={}, nonce='hogehogehoge', headers={}, data=''):
@@ -114,6 +126,8 @@ def get_redirect_url():
 
 def register(user_id, data, realid=None):
     data['follow_time'] = time.time()
+    default_notify = settings.default_notify()
+    default_notify.update({'dest': 'twitter'})
     if realid:  # 連携追加
         users_db.update_one({'_id': ObjectId(realid)}, {
             '$set': {
@@ -152,8 +166,9 @@ def parse(o):
         user_id = event.message_create.sender_id()
         if user_id != load_tokens()['user_id']:
             msg_text = event.message_create.message_data.text()
-            if not get_real_user_id(user_id):
+            if not get_real_user_id(user_id):  # いきなりDMが来たとき
                 register(user_id, data.users[user_id])
+                twitter.follow(user_id)
             twitter.direct_message(user_id, msg_text)
             return
         else:
@@ -165,24 +180,27 @@ def parse(o):
         register(user_id, event.source())
         twitter.follow(user_id)
         return
-    # dm indicate typing event
-    event = data.direct_message_indicate_typing_events[lambda l:l[0]]
-    if event():
-        return
-    # tweet delete event
-    event = data.tweet_delete_events[lambda l:l[0]]
-    if event():
-        return
-    # favorite event
-    event = data.favorite_events[lambda l:l[0]]
-    if event():
-        return
-    # tweet create event
-    event = data.tweet_create_events[lambda l:l[0]]
-    if event():
-        return
+    # # dm indicate typing event
+    # event = data.direct_message_indicate_typing_events[lambda l:l[0]]
+    # if event():
+    #     return
+    # # tweet delete event
+    # event = data.tweet_delete_events[lambda l:l[0]]
+    # if event():
+    #     return
+    # # favorite event
+    # event = data.favorite_events[lambda l:l[0]]
+    # if event():
+    #     return
+    # # tweet create event
+    # event = data.tweet_create_events[lambda l:l[0]]
+    # if event():
+    #     return
 
-    print(o)
+
+def sends(user_id, msg_texts):
+    for msg_text in msg_texts:
+        send(user_id, msg_text)
 
 
 def send(user_id, msg_text):
@@ -195,7 +213,7 @@ def send(user_id, msg_text):
                     'recipient_id': user_id,
                 },
                 'message_data': {
-                    'text': msg_text,
+                    'text': f'{msg_text} [{util.generate_id(2)}]',
                 }
             }
         }
@@ -214,7 +232,7 @@ def tweet_basic(msg, oauth_token, oauth_token_secret):
     })
 
     if res.status_code != 200:
-        print('////////////////tweet', res.status_code, res.text)
+        log(__name__, res.text)
     return res
 
 

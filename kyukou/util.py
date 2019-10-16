@@ -1,3 +1,4 @@
+import requests
 import os
 import json
 from datetime import datetime
@@ -6,8 +7,14 @@ import inspect
 from threading import Lock
 import sys
 import traceback
+isinpackage = not __name__ in ['util', '__main__']
+
 
 dayofweek = '月火水木金土日'
+
+import functools
+def times_char(s: str, candidates: str, times: int) -> str:
+    return functools.reduce(lambda i, c: i+c*(not c in candidates or times), s, '')
 
 
 def ignore_error(fn_args_list=[]):
@@ -16,7 +23,8 @@ def ignore_error(fn_args_list=[]):
             try:
                 fn(*args)
             except:
-                log(__name__, traceback.format_exc())
+                from .log import log
+                log(__name__, traceback.format_exc(), 4)
     return _ignore_error
 
 
@@ -38,22 +46,6 @@ def dict_to_tuples(d):
 
 
 id_string = 'abcdefghijklmnopqrstuvwxyz0123456789'
-log_lock = Lock()
-log_file = None
-
-
-def log(__name__, message, log_level=2):
-    from .settings import settings
-    global log_file
-    log_file = log_file or os.path.join(os.path.dirname(__file__), settings.logfile())
-    msg = f'{datetime.now()}  |  [{__name__.ljust(20)}]  {message}'
-    with log_lock:
-        if log_level >= settings.log_level(0):
-            sys.stdout.write(msg)
-            sys.stdout.write('\n')
-            sys.stdout.flush()
-        with open(log_file, 'at', encoding='utf-8') as f:
-            f.write(msg+'\n')
 
 
 def generate_id(n):
@@ -209,3 +201,6 @@ def remove_them(x, array='1234'):
         if not c in array:
             result += c
     return result
+
+
+trans = str.maketrans({chr(0xFF01 + i): chr(0x21 + i) for i in range(94)})

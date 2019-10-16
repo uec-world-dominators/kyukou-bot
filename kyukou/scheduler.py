@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import sys
 import time
 from threading import Thread, Lock
@@ -30,9 +31,9 @@ def check_tasks():
             try:
                 task["func"](*task["args"])
             except:
-                from .util import log
+                from .log import log
                 import traceback
-                log(__name__, traceback.format_exc())
+                log(__name__, traceback.format_exc(),4)
             task["next"] = now+task["interval"]
     tasks_lock.release()
 
@@ -75,4 +76,7 @@ if not isinpackage:
         httpd.serve_forever()
 
 
-__all__ = ["init", "add_task"]
+pool = ThreadPoolExecutor(1000)
+
+
+__all__ = ["init", "add_task", "pool"]

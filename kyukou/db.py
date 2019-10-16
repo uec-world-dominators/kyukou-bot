@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 import datetime
 isinpackage = not __name__ in ['db', '__main__']
 if isinpackage:
-    from .util import log
+    from .log import log
     from .settings import settings
 else:
     from settings import settings
@@ -25,6 +25,8 @@ def init(url):
     log(__name__, '-'*50)
     log(__name__, f'Number of Users   : {len(list(get_collection("users").find({})))}')
     log(__name__, f'Number of Lectures: {len(list(get_collection("lectures").find({})))}')
+    log(__name__, f'Number of Syllabus: {len(list(get_collection("syllabus").find({})))}')
+    log(__name__, f'Number of Queue   : {len(list(get_collection("queue").find({})))}')
     log(__name__, '-'*50)
 
 

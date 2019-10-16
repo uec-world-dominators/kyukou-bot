@@ -1,8 +1,8 @@
-url_prefix: https://dev.shosato.jp
-mongo_url: 'mongodb://{username}:{password}@localhost:8070/'
-mongod:
-  username: kyukou
-  __ENV__password: KYUKOU_MONGOD_PASSWORD
+url_prefix: https://kyukou.shosato.jp
+mongo_url: 'mongodb://localhost:8070/'
+#mongod:
+#  username: kyukou
+#  __ENV__password: KYUKOU_MONGOD_PASSWORD
 
 port: 5426
 
@@ -42,6 +42,7 @@ google:
 public_dir: ./web/public
 index: index.html
 
+admin_email_addr: kyukou@shosato.jp
 
 default_notify:
   type: day
@@ -50,3 +51,7 @@ default_notify:
 __ENV__hash_salt: KYUKOU_HASH_SALT
 logfile: ../log/kyukou.log
 log_level: 1
+log:
+  slack:
+    __ENV__slack_webhook: KYUKOU_SLACK_WEBHOOK
+    log_level_gt: 3
