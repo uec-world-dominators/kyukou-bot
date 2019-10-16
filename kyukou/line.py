@@ -122,7 +122,7 @@ def validate_time(user_id, msg_text):
         line_api.reply(user_id, ['数値の形式が間違っています。もう一度入力してください'])
         time_procedure.set_progress(user_id, 2)
     except:
-        log(__name__, traceback.format_exc(),4)
+        log(__name__, traceback.format_exc(), 4)
         line_api.reply(user_id, ['不明なエラーが発生しました。申し訳ありませんが、最初からやり直してください。'])
         time_procedure.set_progress(user_id, 3)
 
@@ -222,15 +222,34 @@ def display_help(user_id, msg_text):
     help_procedure.set_progress(user_id, 0)
 
 
-cources_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'cources' or msg_text == 'cource', 'cources')
+cources_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'cources' or msg_text == 'cource' or msg_text == 'list', 'cources')
 
 
 @process(cources_procedure, 0)
 def get_request(user_id, msg_text):
     realid = line_api.get_real_user_id(user_id)
-    cources=user_data.list_of_courses(realid)
-    line_api.reply(user_id,  ['登録されている履修科目の一覧です', cources] if cources else ['登録されている履修科目はありません','【csv】と入力して履修情報のアップロードリンクを取得してください'])
+    cources = user_data.list_of_courses(realid)
+    line_api.reply(user_id,  ['登録されている履修科目の一覧です', cources] if cources else ['登録されている履修科目はありません', '【csv】と入力して履修情報のアップロードリンクを取得してください'])
     cources_procedure.set_progress(user_id, 0)
+
+
+copipe_procedure = ProcedureDB(lambda user_id, msg_text: msg_text == 'copipe', 'line_copipe')
+
+
+@process(copipe_procedure, 0)
+def get_request(user_id, msg_text):
+    realid = line_api.get_real_user_id(user_id)
+    line_api.reply(user_id,  ['【このコマンドは試験段階です】', 'コピペして貼り付けてください'])
+    copipe_procedure.set_progress(user_id, 0)
+
+@process(copipe_procedure, 1)
+def get_request(user_id, msg_text):
+    realid = line_api.get_real_user_id(user_id)
+    cources = user_data.list_of_courses(realid)
+    # from .import copipe
+    # copipe.
+    line_api.reply(user_id,  ['【このコマンドは試験段階です】', 'コピペして貼り付けてください'])
+    copipe_procedure.set_progress(user_id, 1)
 
 
 ps = ProcedureSelectorDB(
@@ -242,6 +261,7 @@ ps = ProcedureSelectorDB(
     help_procedure,
     request_procedure,
     cources_procedure,
+    copipe_procedure,
 )
 
 
